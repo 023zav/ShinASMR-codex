@@ -1,0 +1,22 @@
+[
+  {
+    "file": "lod-style-v2/lod-r1-nagoya-regional-corridor.png",
+    "size": "1536x1024",
+    "prompt": "Use case: stylized-concept\nAsset type: LOD regional game-map art plate for ASMR Shinkansen runtime overlay (zoom band between corridor and city)\nPrimary request: Create a polished early-2000s Japanese railway management simulator view of the Nobi plain around Nagoya: Ise Bay coastline at the lower left, the Kiso river valley, dense low-rise urban sprawl, rice fields, and an elevated double-track Shinkansen viaduct sweeping in one continuous diagonal across the scene from upper-right to lower-left with a small white 16-car train on it.\nStyle/medium: dense isometric pixel-art / A-Train / SimCity BuildIt reference, miniature transport sim map, crisp hand-painted pixels, readable geography, not photoreal. Identical palette, lighting and pixel density to the existing lod-style-v2 plates.\nComposition/framing: 16:9 wide, viaduct is the only dominant rail line, no UI panels, no labels, no readable text.\nLighting/mood: calm clear morning, relaxing, soft shadows.\nConstraints: one continuous unbroken viaduct diagonal; no logos, no watermark, no text."
+  },
+  {
+    "file": "lod-style-v2/lod-r2-nagoya-approach.png",
+    "size": "1536x1024",
+    "prompt": "Use case: stylized-concept\nAsset type: LOD approach game-map art plate for ASMR Shinkansen runtime overlay (zoom band just above city view)\nPrimary request: Create a polished isometric pixel-art scene of the Shinkansen approach into central Nagoya: elevated double-track viaduct running in one continuous diagonal from upper-left to lower-right through mid-rise Japanese cityscape, crossing a river and ordinary commuter rail lines, with station buildings beginning to appear near the lower-right.\nStyle/medium: dense isometric pixel-art / A-Train / SimCity BuildIt reference, identical palette, lighting and pixel density to the existing lod-style-v2 plates.\nComposition/framing: 16:9 wide, the Shinkansen viaduct is the single dominant diagonal, no UI panels, no labels, no readable text.\nLighting/mood: calm clear morning, relaxing, soft shadows.\nConstraints: one continuous unbroken viaduct diagonal; no logos, no watermark, no text."
+  },
+  {
+    "file": "lod-style-v2/lod-r3-kansai-regional-corridor.png",
+    "size": "1536x1024",
+    "prompt": "Use case: stylized-concept\nAsset type: LOD regional game-map art plate for ASMR Shinkansen runtime overlay (zoom band between corridor and city)\nPrimary request: Create a polished isometric pixel-art regional view of the Kansai basin between Kyoto and Osaka: the Yodo river valley, low mountains framing the basin, temple districts on the hills, dense urban carpet toward Osaka Bay at the lower left, and an elevated double-track Shinkansen viaduct sweeping in one continuous diagonal across the scene from upper-right to lower-left with a small white 16-car train.\nStyle/medium: dense isometric pixel-art / A-Train / SimCity BuildIt reference, identical palette, lighting and pixel density to the existing lod-style-v2 plates.\nComposition/framing: 16:9 wide, viaduct is the only dominant rail line, no UI panels, no labels, no readable text.\nLighting/mood: calm clear morning, relaxing, soft shadows.\nConstraints: one continuous unbroken viaduct diagonal; no logos, no watermark, no text."
+  },
+  {
+    "file": "lod-style-v2/lod-r4-kansai-approach.png",
+    "size": "1536x1024",
+    "prompt": "Use case: stylized-concept\nAsset type: LOD approach game-map art plate for ASMR Shinkansen runtime overlay (zoom band just above city view)\nPrimary request: Create a polished isometric pixel-art scene of the Shinkansen approach through northern Osaka toward Shin-Osaka: elevated double-track viaduct running in one continuous diagonal from upper-left to lower-right above mid-rise Japanese cityscape, crossing the Yodo river and commuter rail lines, with rail yards beginning near the lower-right.\nStyle/medium: dense isometric pixel-art / A-Train / SimCity BuildIt reference, identical palette, lighting and pixel density to the existing lod-style-v2 plates.\nComposition/framing: 16:9 wide, the Shinkansen viaduct is the single dominant diagonal, no UI panels, no labels, no readable text.\nLighting/mood: calm clear morning, relaxing, soft shadows.\nConstraints: one continuous unbroken viaduct diagonal; no logos, no watermark, no text."
+  }
+]
