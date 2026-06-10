@@ -14,7 +14,7 @@ import {
 import { initI18n, t } from "./i18n";
 import { Simulation } from "./sim";
 
-const DEFAULT_TOKYO_ART = "/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp";
+const DEFAULT_TOKYO_ART = "/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp";
 
 const errorMessage = (err: unknown) => {
   if (err instanceof Error) return err.message;
@@ -35,7 +35,6 @@ const showNoWebglFallback = (err: unknown) => {
   const loadingStatus = document.getElementById("loadingStatus") as HTMLDivElement | null;
   const artLayer = document.getElementById("artLayer") as HTMLDivElement | null;
   const scene = document.getElementById("scene") as HTMLCanvasElement | null;
-  const map = document.getElementById("map") as HTMLDivElement | null;
   const details = document.getElementById("details") as HTMLDivElement | null;
   const perfHud = document.getElementById("perfHud") as HTMLDivElement | null;
 
@@ -61,7 +60,6 @@ const showNoWebglFallback = (err: unknown) => {
   }
 
   if (scene) scene.hidden = true;
-  if (map) map.setAttribute("aria-hidden", "true");
   if (loadingStatus) loadingStatus.textContent = "WebGL is unavailable in this browser context; showing generated Tokyo Station fallback.";
   if (loadingScreen) {
     window.setTimeout(() => loadingScreen.classList.add("hidden"), 240);
@@ -147,6 +145,29 @@ const boot = async () => {
   );
   const audio = new AudioEngine();
 
+  // Deterministic state for visual QA runs and shareable links:
+  // ?time=480 sets the simulated clock (minutes), ?paused freezes it,
+  // ?zoom=6.5 selects the zoom band, ?station=kyoto sets the focus city.
+  const queryParams = new URLSearchParams(window.location.search);
+  const timeParam = Number(queryParams.get("time"));
+  if (Number.isFinite(timeParam) && queryParams.has("time")) sim.setTime(timeParam);
+  if (queryParams.has("paused")) sim.setPlaying(false);
+  const stationParam = queryParams.get("station");
+  if (stationParam) renderer.focusStation(stationParam);
+  const zoomParam = Number(queryParams.get("zoom"));
+  if (Number.isFinite(zoomParam) && queryParams.has("zoom")) renderer.setZoom(zoomParam);
+
+  // Automation hook used by scripts/visual-qa.mjs.
+  (window as Window & { __shinkansen?: unknown }).__shinkansen = {
+    setZoom: (z: number) => renderer.setZoom(z),
+    getZoom: () => renderer.getZoom(),
+    focusStation: (id: string) => renderer.focusStation(id),
+    setViewMode: (mode: "japan" | "corridor" | "station") => renderer.setViewMode(mode),
+    setTime: (minutes: number) => sim.setTime(minutes),
+    setPlaying: (playing: boolean) => sim.setPlaying(playing),
+    getStats: () => renderer.getStats()
+  };
+
   const playPauseBtn = document.getElementById("playPause") as HTMLButtonElement;
   const speedBtns = Array.from(
     document.querySelectorAll<HTMLButtonElement>(".speed button")
@@ -222,6 +243,19 @@ const boot = async () => {
   };
   syncCompactHud();
   window.addEventListener("resize", syncCompactHud, { passive: true });
+
+  // On compact layouts the train card starts collapsed so the world stays
+  // visible; tapping its header expands it.
+  if (document.body.classList.contains("compact-hud")) {
+    document.body.classList.add("details-collapsed");
+  }
+  details.addEventListener("click", (event) => {
+    if (!document.body.classList.contains("compact-hud")) return;
+    const target = event.target as HTMLElement;
+    if (target.closest(".details-title") || target.closest(".section-kicker")) {
+      document.body.classList.toggle("details-collapsed");
+    }
+  });
 
   let playing = true;
   let selectedTrainId: string | null = null;
@@ -555,17 +589,15 @@ const boot = async () => {
       const zoom = renderer.getZoom();
       zoomSlider.value = zoom.toFixed(2);
       const stats = renderer.getStats();
-      perfHud.textContent = `FPS: ${Math.round(fps)} | Z${stats.detailLevel}/16 ${stats.view} · ${stats.routeMode}`;
+      perfHud.textContent = `FPS: ${Math.round(fps)} | Z${stats.detailLevel}/8 ${stats.view} · ${stats.routeMode}`;
       debugZoom.textContent = zoom.toFixed(2);
-      debugLevel.textContent = `${stats.detailLevel}/16`;
+      debugLevel.textContent = `${stats.detailLevel}/8`;
       debugView.textContent = stats.view;
       debugCityArt.textContent = `${stats.loadedCityArt} loaded${stats.pendingCityArt ? ` / ${stats.pendingCityArt} pending` : ""}`;
       debugAccuracy.textContent = stats.accuracyDebug ? "On" : "Off";
       perfStats.textContent = `Performance: FPS ${Math.round(fps)} | Zoom ${zoom.toFixed(
         2
-      )} | Detail ${stats.detailLevel}/16 ${stats.view} | Route ${stats.routeMode} | Train ${stats.trainMode} | Platforms ${stats.platformDetail} | Trains ${stats.trains} | Track sprites ${stats.trackSprites} | Landmarks ${
-        stats.landmarks
-      } | Quality ${qualitySelect.value}`;
+      )} | Band ${stats.detailLevel}/8 ${stats.view} | Plate ${stats.routeMode} | Train ${stats.trainMode} | Trains ${stats.trains} | Plates cached ${stats.trackSprites} | Quality ${qualitySelect.value}`;
       fpsAccum = 0;
       fpsFrames = 0;
       fpsLastEmit = now;

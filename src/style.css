@@ -72,19 +72,19 @@ body,
   display: none;
 }
 
+/* The WebGL plate renderer owns the world. The CSS art layer exists only as
+   the no-WebGL fallback surface; it stays inert (display:none) unless the
+   fallback path explicitly enables it via body.no-webgl. */
 #artLayer {
   content: "";
   z-index: 1;
   pointer-events: none;
+  display: none;
   background:
     linear-gradient(180deg, rgba(7, 15, 18, 0.1), rgba(7, 15, 18, 0.22)),
-    url("/assets-generated/lod-style-v2/lod-01-japan-national-board.webp") center / cover no-repeat;
-  background-position:
-    center,
-    calc(50% + var(--art-x, 0px)) calc(50% + var(--art-y, 0px));
+    url("/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp") center / cover no-repeat;
   opacity: 0.98;
-  filter: saturate(1.13) contrast(1.08) brightness(0.92);
-  transition: opacity 120ms ease, filter 120ms ease, background-image 120ms ease, background-position 80ms linear;
+  transition: opacity 120ms ease;
 }
 
 #artLayer[data-detail="0"] {
@@ -2807,4 +2807,31 @@ html body.no-webgl #app > #artLayer {
     overflow: hidden !important;
     white-space: nowrap !important;
   }
+}
+
+/* v26 plate-ladder pass: the world is one authored plate per zoom band, so the
+   compact HUD keeps it visible by default. The train card collapses to its
+   title bar on touch layouts and expands on tap. */
+html body.compact-hud .current-card .details-title {
+  cursor: pointer;
+  user-select: none;
+}
+
+html body.compact-hud .current-card .details-title::after {
+  content: " ▾";
+  opacity: 0.62;
+  font-size: 0.82em;
+}
+
+html body.compact-hud.details-collapsed .current-card .details-title::after {
+  content: " ▸";
+}
+
+html body.compact-hud.details-collapsed .current-card .details-body {
+  display: none !important;
+}
+
+html body.compact-hud.details-collapsed .current-card {
+  max-height: 46px !important;
+  overflow: hidden !important;
 }

@@ -6,14 +6,9 @@
     <meta name="theme-color" content="#071018" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/assets-generated/zoom-plates-v3/tokyo-z10-station-district.webp" as="image" />
-    <link rel="preload" href="/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp" as="image" />
-    <link rel="preload" href="/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp" as="image" />
-    <link rel="preload" href="/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp" as="image" />
+    <link rel="preload" href="/assets-generated/lod-style-v2/lod-07-tokyo-yard-city.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp" as="image" />
+    <link rel="preload" href="/assets-generated/vehicle-alpha/train-n700s-blue.webp" as="image" />
     <title>ASMR Shinkansen</title>
     <script>
       (() => {
@@ -34,7 +29,6 @@
   </head>
   <body>
     <div id="app">
-      <div id="map"></div>
       <div id="artLayer" aria-hidden="true"></div>
       <canvas id="scene"></canvas>
 
@@ -78,7 +72,7 @@
             <input id="timeScrub" class="hud-range" type="range" min="0" max="1080" value="120" aria-label="Simulation time" />
             <div class="zoom-tools" aria-label="Map zoom controls">
               <button id="zoomOut" class="hud-button mini" type="button">−</button>
-              <input id="zoomSlider" class="hud-range zoom-range" type="range" min="4.15" max="12.65" step="0.01" value="12.35" aria-label="Map zoom level" />
+              <input id="zoomSlider" class="hud-range zoom-range" type="range" min="0" max="7.99" step="0.01" value="6.45" aria-label="Map zoom level" />
               <button id="zoomReset" class="hud-button mini" type="button">Fit</button>
               <button id="zoomIn" class="hud-button mini" type="button">+</button>
             </div>
@@ -176,9 +170,8 @@
           <section class="panel-section legend-card">
             <div class="section-header"><h3>Line Legend</h3></div>
             <div class="legend-row"><span class="legend-swatch blue"></span>Tokaido Shinkansen</div>
-            <div class="legend-row"><span class="legend-swatch green"></span>Generated city art</div>
-            <div class="legend-row"><span class="legend-swatch amber"></span>Station anchors</div>
-            <div class="legend-row"><span class="legend-swatch muted"></span>Coordinate guide</div>
+            <div class="legend-row"><span class="legend-swatch amber"></span>Station markers</div>
+            <div class="legend-row"><span class="legend-swatch green"></span>Authored world art</div>
           </section>
           <section class="panel-section minimap-card">
             <div class="section-header"><h3>Map of Japan</h3></div>
@@ -229,6 +222,6 @@
         </div>
       </div>
     </div>
-    <script type="module" src="/src/main.ts?v=generated-lod-v25-authoritative-art-20260510"></script>
+    <script type="module" src="/src/main.ts?v=plate-ladder-v26-20260610"></script>
   </body>
 </html>
