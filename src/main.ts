@@ -11,8 +11,37 @@ import {
   ServicesSchema,
   DerivedRuntimeSchema
 } from "./data/types";
-import { initI18n, t } from "./i18n";
+import {
+  initI18n,
+  t,
+  getLang,
+  setLang,
+  applyStaticTranslations,
+  formatDate,
+  formatNumber,
+  Lang
+} from "./i18n";
 import { Simulation } from "./sim";
+
+// Real-world reference data for the five featured Tokaido Shinkansen stops:
+// platform layout, operational distance from Tokyo, and approximate daily
+// Shinkansen riders (public pre-2020 figures, rounded).
+const STATION_FACTS: Record<
+  string,
+  { platforms: { en: string; ja: string }; km: number; riders: number }
+> = {
+  tokyo: { platforms: { en: "3 platforms · 6 tracks", ja: "3面6線" }, km: 0, riders: 93000 },
+  yokohama: { platforms: { en: "2 platforms · 4 tracks", ja: "2面4線" }, km: 28.8, riders: 33000 },
+  nagoya: { platforms: { en: "2 platforms · 4 tracks", ja: "2面4線" }, km: 366.0, riders: 69000 },
+  kyoto: { platforms: { en: "2 platforms · 4 tracks", ja: "2面4線" }, km: 513.6, riders: 36000 },
+  osaka: { platforms: { en: "5 platforms · 8 tracks", ja: "5面8線" }, km: 552.6, riders: 85000 }
+};
+
+/** Current wall-clock time in Japan (the corridor's timezone), in minutes. */
+const nowJstMinutes = () => {
+  const utc = Date.now() + new Date().getTimezoneOffset() * 60000;
+  return Math.floor((utc / 60000 + 9 * 60) % 1440);
+};
 
 const DEFAULT_TOKYO_ART = "/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp";
 
@@ -60,7 +89,9 @@ const showNoWebglFallback = (err: unknown) => {
   }
 
   if (scene) scene.hidden = true;
-  if (loadingStatus) loadingStatus.textContent = "WebGL is unavailable in this browser context; showing generated Tokyo Station fallback.";
+  if (loadingStatus)
+    loadingStatus.textContent =
+      "WebGL is unavailable in this browser context; showing generated Tokyo Station fallback.";
   if (loadingScreen) {
     window.setTimeout(() => loadingScreen.classList.add("hidden"), 240);
   }
@@ -115,6 +146,8 @@ const boot = async () => {
   document.body.classList.add("is-loading");
   setBootStatus("Loading timetable and station data");
   await initI18n();
+  applyStaticTranslations();
+  setBootStatus(t("loading_data"));
 
   const parsedStations = StationsSchema.parse(stations);
   const parsedLines = LinesSchema.parse(lines);
@@ -122,20 +155,15 @@ const boot = async () => {
   const parsedServices = ServicesSchema.parse(services);
   const parsedRuntime = DerivedRuntimeSchema.parse(derivedRuntime);
 
-  setBootStatus("Loading WebGL renderer and audio engine");
+  setBootStatus(t("loading_renderer"));
   const [{ initRenderer }, { AudioEngine }] = await Promise.all([
     import("./render"),
     import("./audio")
   ]);
 
-  setBootStatus("Building Tokyo Station close view");
+  setBootStatus(t("loading_scene"));
   const canvas = document.getElementById("scene") as HTMLCanvasElement;
-  const renderer = await initRenderer(
-    canvas,
-    parsedLines,
-    parsedStations,
-    parsedTrainTypes
-  );
+  const renderer = await initRenderer(canvas, parsedLines, parsedStations, parsedTrainTypes);
   const sim = new Simulation(
     parsedLines,
     parsedServices,
@@ -145,12 +173,13 @@ const boot = async () => {
   );
   const audio = new AudioEngine();
 
-  // Deterministic state for visual QA runs and shareable links:
-  // ?time=480 sets the simulated clock (minutes), ?paused freezes it,
-  // ?zoom=6.5 selects the zoom band, ?station=kyoto sets the focus city.
+  // The clock follows real Japan time by default. Deterministic state for
+  // visual QA runs and shareable links: ?time=480 sets the simulated clock
+  // (minutes), ?paused freezes it, ?zoom=6.5 selects the zoom band,
+  // ?station=kyoto sets the focus city.
   const queryParams = new URLSearchParams(window.location.search);
   const timeParam = Number(queryParams.get("time"));
-  if (Number.isFinite(timeParam) && queryParams.has("time")) sim.setTime(timeParam);
+  sim.setTime(Number.isFinite(timeParam) && queryParams.has("time") ? timeParam : nowJstMinutes());
   if (queryParams.has("paused")) sim.setPlaying(false);
   const stationParam = queryParams.get("station");
   if (stationParam) renderer.focusStation(stationParam);
@@ -165,54 +194,38 @@ const boot = async () => {
     setViewMode: (mode: "japan" | "corridor" | "station") => renderer.setViewMode(mode),
     setTime: (minutes: number) => sim.setTime(minutes),
     setPlaying: (playing: boolean) => sim.setPlaying(playing),
+    setLang: (lang: Lang) => switchLanguage(lang),
     getStats: () => renderer.getStats()
   };
 
   const playPauseBtn = document.getElementById("playPause") as HTMLButtonElement;
-  const speedBtns = Array.from(
-    document.querySelectorAll<HTMLButtonElement>(".speed button")
-  );
+  const speedBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".speed button"));
   const timeScrub = document.getElementById("timeScrub") as HTMLInputElement;
   const timeLabel = document.getElementById("timeLabel") as HTMLDivElement;
   const details = document.getElementById("details") as HTMLDivElement;
   const detailsTitle = details.querySelector(".details-title") as HTMLDivElement;
   const detailsBody = details.querySelector(".details-body") as HTMLDivElement;
-  const followToggle = document.getElementById(
-    "followToggle"
-  ) as HTMLInputElement;
-  const reducedMotionToggle = document.getElementById(
-    "reducedMotionToggle"
-  ) as HTMLInputElement;
-  const accuracyDebugToggle = document.getElementById(
-    "accuracyDebugToggle"
-  ) as HTMLInputElement;
+  const followToggle = document.getElementById("followToggle") as HTMLInputElement;
+  const reducedMotionToggle = document.getElementById("reducedMotionToggle") as HTMLInputElement;
+  const accuracyDebugToggle = document.getElementById("accuracyDebugToggle") as HTMLInputElement;
   const soundBtn = document.getElementById("soundBtn") as HTMLButtonElement;
   const volume = document.getElementById("volume") as HTMLInputElement;
   const aboutBtn = document.getElementById("aboutBtn") as HTMLButtonElement;
   const aboutModal = document.getElementById("aboutModal") as HTMLDivElement;
   const aboutClose = document.getElementById("aboutClose") as HTMLButtonElement;
-  const decalDebug = document.getElementById("decalDebug") as HTMLDivElement;
-  const decalGrid = document.getElementById("decalGrid") as HTMLDivElement;
-  const decalClose = document.getElementById("decalClose") as HTMLButtonElement;
   const lineFilter = document.getElementById("lineFilter") as HTMLSelectElement;
   const trainFilter = document.getElementById("trainFilter") as HTMLSelectElement;
   const perfHud = document.getElementById("perfHud") as HTMLDivElement;
   const perfStats = document.getElementById("perfStats") as HTMLDivElement;
   const viewModeSelect = document.getElementById("viewModeSelect") as HTMLSelectElement;
-  const qualitySelect = document.getElementById(
-    "qualitySelect"
-  ) as HTMLSelectElement;
+  const qualitySelect = document.getElementById("qualitySelect") as HTMLSelectElement;
   const zoomIn = document.getElementById("zoomIn") as HTMLButtonElement;
   const zoomOut = document.getElementById("zoomOut") as HTMLButtonElement;
   const zoomReset = document.getElementById("zoomReset") as HTMLButtonElement;
   const zoomSlider = document.getElementById("zoomSlider") as HTMLInputElement;
-  const activeServiceMetric = document.getElementById(
-    "activeServiceMetric"
-  ) as HTMLSpanElement;
+  const activeServiceMetric = document.getElementById("activeServiceMetric") as HTMLSpanElement;
   const timetableList = document.getElementById("timetableList") as HTMLDivElement;
-  const notificationFeed = document.getElementById(
-    "notificationFeed"
-  ) as HTMLDivElement;
+  const notificationFeed = document.getElementById("notificationFeed") as HTMLDivElement;
   const lodDebug = document.getElementById("lodDebug") as HTMLElement;
   const lodDebugToggle = document.getElementById("lodDebugToggle") as HTMLButtonElement;
   const hudToggle = document.getElementById("hudToggle") as HTMLButtonElement;
@@ -221,16 +234,45 @@ const boot = async () => {
   const debugView = document.getElementById("debugView") as HTMLElement;
   const debugCityArt = document.getElementById("debugCityArt") as HTMLElement;
   const debugAccuracy = document.getElementById("debugAccuracy") as HTMLElement;
-  const stationSummaryTitle = document.getElementById(
-    "stationSummaryTitle"
-  ) as HTMLHeadingElement;
+  const stationSummaryTitle = document.getElementById("stationSummaryTitle") as HTMLHeadingElement;
   const stationSummary = document.getElementById("stationSummary") as HTMLDListElement;
+  const dateLabel = document.getElementById("dateLabel") as HTMLSpanElement;
+  const dayPhase = document.getElementById("dayPhase") as HTMLSpanElement;
+  const flowMetric = document.getElementById("flowMetric") as HTMLElement;
+  const onTimeMetric = document.getElementById("onTimeMetric") as HTMLElement;
+  const serviceAlerts = document.getElementById("serviceAlerts") as HTMLElement;
+  const langToggle = document.getElementById("langToggle") as HTMLButtonElement;
+
+  const stationName = (id: string) => {
+    const station = sim.getStation(id);
+    if (!station) return id;
+    return getLang() === "ja" && station.name_local ? station.name_local : station.name_en;
+  };
+
+  const renderStationCard = (stationId: string) => {
+    const station = sim.getStation(stationId);
+    if (!station) return;
+    const facts = STATION_FACTS[stationId];
+    stationSummaryTitle.textContent = stationName(stationId);
+    const lang = getLang();
+    stationSummary.innerHTML = `
+      <div><dt>${t("local_label")}</dt><dd>${lang === "ja" ? station.name_en : (station.name_local ?? "—")}</dd></div>
+      <div><dt>${t("platforms")}</dt><dd>${facts ? facts.platforms[lang] : "—"}</dd></div>
+      <div><dt>${t("from_tokyo")}</dt><dd>${facts ? t("km_value", { km: facts.km.toFixed(1) }) : "—"}</dd></div>
+      <div><dt>${t("riders")}</dt><dd>${facts ? t("riders_value", { count: formatNumber(facts.riders) }) : "—"}</dd></div>`;
+  };
+
+  const dayPhaseLabel = (minutes: number) => {
+    const h = (minutes / 60) % 24;
+    if (h >= 5 && h < 10) return `☀ ${t("phase_morning")}`;
+    if (h >= 10 && h < 16) return `☀ ${t("phase_day")}`;
+    if (h >= 16 && h < 19) return `🌇 ${t("phase_evening")}`;
+    return `🌙 ${t("phase_night")}`;
+  };
 
   detailsTitle.textContent = t("no_selection");
   detailsBody.textContent = t("tap_hint");
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   reducedMotionToggle.checked = prefersReducedMotion;
   renderer.setReducedMotion(prefersReducedMotion);
 
@@ -264,7 +306,7 @@ const boot = async () => {
   playPauseBtn.addEventListener("click", () => {
     playing = !playing;
     sim.setPlaying(playing);
-    playPauseBtn.textContent = playing ? "Pause" : "Play";
+    playPauseBtn.textContent = playing ? t("pause") : t("play");
   });
 
   speedBtns.forEach((btn) => {
@@ -294,9 +336,6 @@ const boot = async () => {
   aboutClose.addEventListener("click", () => {
     aboutModal.classList.add("hidden");
   });
-  decalClose.addEventListener("click", () => {
-    decalDebug.classList.remove("active");
-  });
 
   followToggle.addEventListener("change", () => {
     renderer.setFollowTarget(followToggle.checked ? selectedTrainId : null);
@@ -324,11 +363,13 @@ const boot = async () => {
   zoomSlider.addEventListener("input", () => renderer.setZoom(Number(zoomSlider.value)));
   lodDebugToggle.addEventListener("click", () => {
     lodDebug.classList.toggle("collapsed");
-    lodDebugToggle.textContent = lodDebug.classList.contains("collapsed") ? "Show" : "Hide";
+    lodDebugToggle.textContent = lodDebug.classList.contains("collapsed") ? t("show") : t("hide");
   });
   hudToggle.addEventListener("click", () => {
     document.body.classList.toggle("hud-minimal");
-    hudToggle.textContent = document.body.classList.contains("hud-minimal") ? "Show HUD" : "Clean view";
+    hudToggle.textContent = document.body.classList.contains("hud-minimal")
+      ? t("show_hud")
+      : t("clean_view");
   });
 
   const updateDetails = (trainId: string | null, stationId: string | null) => {
@@ -336,26 +377,22 @@ const boot = async () => {
       const state = sim.getTrainStates().find((t) => t.id === trainId);
       if (!state) return;
       const trainType = sim.getTrainType(state.trainTypeId);
-      const nextStation = state.nextStationId
-        ? sim.getStation(state.nextStationId)
-        : null;
       const service = parsedServices.find((s) => s.id === state.id);
       const routeStops = service?.stops ?? [];
       const previewClass = `train-preview train-preview-${state.trainTypeId}`;
       detailsTitle.textContent = `${state.name} (${trainType?.name_en ?? ""})`;
       detailsBody.innerHTML = `
         <div class="${previewClass}" aria-hidden="true"></div>
-        <div class="detail-row"><span>Status</span><strong>${state.status === "moving" ? "Passing" : "At station"}</strong></div>
-        <div class="detail-row"><span>Next stop</span><strong>${nextStation?.name_en ?? "Terminal"}</strong></div>
-        <div class="detail-row"><span>Speed</span><strong>${state.speedKmh} km/h</strong></div>
-        <div class="detail-row"><span>Progress</span><strong>${Math.round(state.progress * 100)}%</strong></div>
-        <div class="detail-row"><span>Trainset</span><strong>${trainType?.length_m ?? 400} m</strong></div>
+        <div class="detail-row"><span>${t("status")}</span><strong>${state.status === "moving" ? t("status_passing") : t("status_at_station")}</strong></div>
+        <div class="detail-row"><span>${t("next_stop")}</span><strong>${state.nextStationId ? stationName(state.nextStationId) : t("terminal")}</strong></div>
+        <div class="detail-row"><span>${t("speed")}</span><strong>${state.speedKmh} km/h</strong></div>
+        <div class="detail-row"><span>${t("progress")}</span><strong>${Math.round(state.progress * 100)}%</strong></div>
+        <div class="detail-row"><span>${t("trainset")}</span><strong>${trainType?.length_m ?? 400} m</strong></div>
         <div class="route-timeline">
           ${routeStops
             .map((stop) => {
-              const station = sim.getStation(stop.station_id);
               const current = stop.station_id === state.nextStationId ? " current" : "";
-              return `<div class="route-stop${current}"><span>${station?.name_en ?? stop.station_id}</span><strong>${stop.departure ?? stop.arrival}</strong></div>`;
+              return `<div class="route-stop${current}"><span>${stationName(stop.station_id)}</span><strong>${stop.departure ?? stop.arrival}</strong></div>`;
             })
             .join("")}
         </div>`;
@@ -364,7 +401,7 @@ const boot = async () => {
     if (stationId) {
       const station = sim.getStation(stationId);
       if (!station) return;
-      detailsTitle.textContent = station.name_en;
+      detailsTitle.textContent = stationName(station.id);
       const departures = parsedServices
         .flatMap((service) =>
           service.stops
@@ -374,9 +411,9 @@ const boot = async () => {
         .slice(0, 5);
       detailsBody.innerHTML = `
         <div class="station-preview station-preview-${station.id}" aria-hidden="true"></div>
-        <div class="detail-row"><span>Local name</span><strong>${station.name_local ?? "Station"}</strong></div>
-        <div class="detail-row"><span>Line</span><strong>Tokaido</strong></div>
-        <div class="detail-row"><span>Ambience</span><strong>Platform hush</strong></div>
+        <div class="detail-row"><span>${t("local_label")}</span><strong>${getLang() === "ja" ? station.name_en : (station.name_local ?? "—")}</strong></div>
+        <div class="detail-row"><span>${t("line")}</span><strong>${t("tokaido_line")}</strong></div>
+        <div class="detail-row"><span>${t("ambience")}</span><strong>${t("platform_hush")}</strong></div>
         <div class="route-timeline">
           ${departures
             .map(
@@ -385,11 +422,7 @@ const boot = async () => {
             )
             .join("")}
         </div>`;
-      stationSummaryTitle.textContent = station.name_en;
-      stationSummary.innerHTML = `
-        <div><dt>Local</dt><dd>${station.name_local ?? "—"}</dd></div>
-        <div><dt>Platforms</dt><dd>${station.id === "tokyo" || station.id === "osaka" ? "8 tracks" : "4 tracks"}</dd></div>
-        <div><dt>Departures</dt><dd>${departures.length}</dd></div>`;
+      renderStationCard(station.id);
       return;
     }
     detailsTitle.textContent = t("no_selection");
@@ -412,20 +445,24 @@ const boot = async () => {
   });
 
   const populateFilters = () => {
-    lineFilter.innerHTML = `<option value="all">All lines</option>`;
+    const lineValue = lineFilter.value || "all";
+    const trainValue = trainFilter.value || "all";
+    lineFilter.innerHTML = `<option value="all">${t("all_lines")}</option>`;
     parsedLines.forEach((line) => {
       const opt = document.createElement("option");
       opt.value = line.id;
-      opt.textContent = line.name_en;
+      opt.textContent = getLang() === "ja" ? t("tokaido_line") : line.name_en;
       lineFilter.appendChild(opt);
     });
-    trainFilter.innerHTML = `<option value="all">All trains</option>`;
+    trainFilter.innerHTML = `<option value="all">${t("all_trains")}</option>`;
     parsedTrainTypes.forEach((tt) => {
       const opt = document.createElement("option");
       opt.value = tt.id;
       opt.textContent = tt.name_en;
       trainFilter.appendChild(opt);
     });
+    lineFilter.value = lineValue;
+    trainFilter.value = trainValue;
   };
 
   populateFilters();
@@ -440,15 +477,15 @@ const boot = async () => {
     const now = sim.timeMinutes;
     const first = parseClock(service.stops[0].arrival);
     const last = parseClock(service.stops[service.stops.length - 1].departure);
-    if (now < first) return { label: "Standby", active: false };
-    if (now > last + 8) return { label: "Complete", active: false };
+    if (now < first) return { label: t("svc_standby"), active: false };
+    if (now > last + 8) return { label: t("svc_complete"), active: false };
     const dwell = service.stops.find((stop) => {
       const arrival = parseClock(stop.arrival);
       const departure = parseClock(stop.departure);
       return now >= arrival && now <= departure;
     });
-    if (dwell) return { label: "Boarding", active: true };
-    return { label: "On Route", active: true };
+    if (dwell) return { label: t("svc_boarding"), active: true };
+    return { label: t("svc_on_route"), active: true };
   };
 
   const renderTimetable = () => {
@@ -457,8 +494,8 @@ const boot = async () => {
       .map((service, index) => {
         const first = service.stops[0];
         const last = service.stops[service.stops.length - 1];
-        const origin = sim.getStation(first.station_id)?.name_en ?? first.station_id;
-        const destination = sim.getStation(last.station_id)?.name_en ?? last.station_id;
+        const origin = stationName(first.station_id);
+        const destination = stationName(last.station_id);
         const color = service.train_type_id === "n700a" ? "var(--amber)" : "var(--blue)";
         const status = serviceStatus(service);
         return `
@@ -466,7 +503,7 @@ const boot = async () => {
             <span class="timetable-dot" style="background:${color}"></span>
             <span class="timetable-main">
               <span class="timetable-name">${service.name_en}</span>
-              <span class="timetable-route">${origin} → ${destination} · Track ${(index % 4) + 1}</span>
+              <span class="timetable-route">${origin} → ${destination} · ${t("track_n", { n: (index % 4) + 1 })}</span>
             </span>
             <span class="timetable-status">${status.label}</span>
           </div>`;
@@ -480,41 +517,67 @@ const boot = async () => {
       ? sim.getTrainStates().find((train) => train.id === selectedTrainId)?.name
       : null;
     notificationFeed.innerHTML = `
-      <span>${timeText}&nbsp;&nbsp;${activeTrains} active Shinkansen services in the corridor.</span>
-      <span>${timeText}&nbsp;&nbsp;Track ambience responding to timetable density.</span>
-      <span>${timeText}&nbsp;&nbsp;${selected ? `${selected} selected for close listening.` : "Tap a train for close listening."}</span>`;
+      <span>${timeText}&nbsp;&nbsp;${t("notif_active", { count: activeTrains })}</span>
+      <span>${timeText}&nbsp;&nbsp;${t("notif_ambience")}</span>
+      <span>${timeText}&nbsp;&nbsp;${selected ? t("notif_selected", { name: selected }) : t("notif_tap")}</span>`;
   };
 
+  // Language toggle: re-renders every translated surface, including the
+  // in-world station chips.
+  const syncLangToggle = () => {
+    langToggle.textContent = getLang() === "ja" ? "EN" : "日本語";
+  };
+  const refreshLocalizedHud = () => {
+    applyStaticTranslations();
+    syncLangToggle();
+    dateLabel.textContent = formatDate(new Date());
+    playPauseBtn.textContent = playing ? t("pause") : t("play");
+    hudToggle.textContent = document.body.classList.contains("hud-minimal")
+      ? t("show_hud")
+      : t("clean_view");
+    lodDebugToggle.textContent = lodDebug.classList.contains("collapsed") ? t("show") : t("hide");
+    if (!audio.isStarted()) soundBtn.textContent = t("enable_sound");
+    else soundBtn.textContent = t("disable_sound");
+    populateFilters();
+    renderTimetable();
+    renderStationCard(selectedStationId ?? "tokyo");
+    updateDetails(selectedTrainId, selectedStationId);
+    renderer.setStationLabelLanguage(getLang());
+  };
+  const switchLanguage = async (lang: Lang) => {
+    await setLang(lang);
+    refreshLocalizedHud();
+  };
+  langToggle.addEventListener("click", () => {
+    void switchLanguage(getLang() === "ja" ? "en" : "ja");
+  });
+
+  renderStationCard("tokyo");
   renderTimetable();
+  syncLangToggle();
+  dateLabel.textContent = formatDate(new Date());
+  renderer.setStationLabelLanguage(getLang());
   let lastTimetableMinute = -1;
   let lastDetailsUpdate = 0;
   let lastNotificationsUpdate = 0;
 
   document.body.classList.remove("is-loading");
   document.body.classList.add("is-ready");
-  setBootStatus("Ready");
+  setBootStatus(t("loading_ready"));
   if (loadingScreen) {
-    window.setTimeout(() => {
-      loadingScreen.classList.add("hidden");
-    }, prefersReducedMotion ? 0 : 240);
+    window.setTimeout(
+      () => {
+        loadingScreen.classList.add("hidden");
+      },
+      prefersReducedMotion ? 0 : 240
+    );
   }
 
-  if (window.location.search.includes("decals")) {
-    fetch("/assets/ui-decals.json")
-      .then((r) => r.json())
-      .then((data) => {
-        const frames = data.frames ?? {};
-        Object.entries(frames).forEach(([key, frame]) => {
-          const div = document.createElement("div");
-          div.className = "decal-item";
-          const f = (frame as { frame: { x: number; y: number } }).frame;
-          div.style.backgroundPosition = `calc(-${f.x}px * 0.28) calc(-${f.y}px * 0.28)`;
-          div.title = key;
-          decalGrid.appendChild(div);
-        });
-        decalDebug.classList.add("active");
-      });
-  }
+  window.addEventListener("shinasmr:plate-error", (event) => {
+    const url = (event as CustomEvent<{ url: string }>).detail?.url ?? "";
+    serviceAlerts.textContent = `⚠ ${url.split("/").pop() ?? "plate"}`;
+    console.warn("World plate unavailable; keeping previous view.", url);
+  });
 
   let last = performance.now();
   let fpsAccum = 0;
@@ -532,8 +595,7 @@ const boot = async () => {
     const filtered = trains.filter((t) => {
       if (t.status === "inactive") return false;
       const lineOk = lineFilterValue === "all" || t.lineId === lineFilterValue;
-      const trainOk =
-        trainFilterValue === "all" || t.trainTypeId === trainFilterValue;
+      const trainOk = trainFilterValue === "all" || t.trainTypeId === trainFilterValue;
       return lineOk && trainOk;
     });
     if (!selectedTrainId && !selectedStationId && filtered.length > 0) {
@@ -544,6 +606,17 @@ const boot = async () => {
     if (now - lastNotificationsUpdate > 1000) {
       lastNotificationsUpdate = now;
       renderNotifications(filtered.length);
+      // Topbar status strip: all values derived from the live simulation.
+      dayPhase.textContent = dayPhaseLabel(sim.timeMinutes);
+      flowMetric.textContent =
+        filtered.length < 4
+          ? t("flow_calm")
+          : filtered.length < 8
+            ? t("flow_steady")
+            : t("flow_busy");
+      onTimeMetric.textContent = "100%";
+      serviceAlerts.textContent = t("service_alerts", { count: 0 });
+      dateLabel.textContent = formatDate(new Date());
     }
     renderer.update(filtered);
     if (selectedTrainId && now - lastDetailsUpdate > 250) {
@@ -563,8 +636,7 @@ const boot = async () => {
     if (audio.isStarted()) {
       audioUpdateBudget += delta;
       const perfQuality = qualitySelect.value as "low" | "medium" | "high";
-      const minInterval =
-        perfQuality === "low" ? 0.2 : perfQuality === "medium" ? 0.08 : 0.03;
+      const minInterval = perfQuality === "low" ? 0.2 : perfQuality === "medium" ? 0.08 : 0.03;
       if (audioUpdateBudget >= minInterval) {
         audioUpdateBudget = 0;
         const cam = renderer.getCameraCenter();
@@ -576,8 +648,7 @@ const boot = async () => {
         }, Number.POSITIVE_INFINITY);
         const intensity = Math.max(0, 1 - minDist / 600);
         const activity = Math.min(1, filtered.length / 6);
-        const perfFactor =
-          perfQuality === "low" ? 0.7 : perfQuality === "medium" ? 0.85 : 1;
+        const perfFactor = perfQuality === "low" ? 0.7 : perfQuality === "medium" ? 0.85 : 1;
         audio.update(activity * perfFactor, intensity * perfFactor);
       }
     }
@@ -594,7 +665,7 @@ const boot = async () => {
       debugLevel.textContent = `${stats.detailLevel}/8`;
       debugView.textContent = stats.view;
       debugCityArt.textContent = `${stats.loadedCityArt} loaded${stats.pendingCityArt ? ` / ${stats.pendingCityArt} pending` : ""}`;
-      debugAccuracy.textContent = stats.accuracyDebug ? "On" : "Off";
+      debugAccuracy.textContent = stats.accuracyDebug ? t("on") : t("off");
       perfStats.textContent = `Performance: FPS ${Math.round(fps)} | Zoom ${zoom.toFixed(
         2
       )} | Band ${stats.detailLevel}/8 ${stats.view} | Plate ${stats.routeMode} | Train ${stats.trainMode} | Trains ${stats.trains} | Plates cached ${stats.trackSprites} | Quality ${qualitySelect.value}`;

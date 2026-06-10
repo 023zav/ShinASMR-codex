@@ -1,19 +1,13 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  DerivedRuntimeSchema,
-  LinesSchema,
-  StationsSchema
-} from "../src/data/types";
+import { DerivedRuntimeSchema, LinesSchema, StationsSchema } from "../src/data/types";
 
 const root = process.cwd();
 const stationsPath = resolve(root, "src/data/seed/stations.json");
 const linesPath = resolve(root, "src/data/seed/lines.json");
 const outputPath = resolve(root, "src/data/derived_runtime.json");
 
-const stations = StationsSchema.parse(
-  JSON.parse(readFileSync(stationsPath, "utf-8"))
-);
+const stations = StationsSchema.parse(JSON.parse(readFileSync(stationsPath, "utf-8")));
 const lines = LinesSchema.parse(JSON.parse(readFileSync(linesPath, "utf-8")));
 
 const stationById = new Map(stations.map((s) => [s.id, s]));
@@ -25,9 +19,7 @@ const haversine = (a: [number, number], b: [number, number]) => {
   const dLat = lat2 - lat1;
   const dLon = lon2 - lon1;
   const r = 6371000;
-  const h =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
   return 2 * r * Math.asin(Math.sqrt(h));
 };
 

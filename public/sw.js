@@ -39,6 +39,22 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Cache budget: skip very large responses and cap entry count so origin
+// storage stays bounded over long sessions.
+const MAX_CACHED_BYTES = 6 * 1024 * 1024;
+const MAX_CACHE_ENTRIES = 120;
+
+const putWithBudget = async (request, response) => {
+  const length = Number(response.headers.get("content-length") ?? 0);
+  if (length > MAX_CACHED_BYTES) return;
+  const cache = await caches.open(CACHE_NAME);
+  await cache.put(request, response);
+  const keys = await cache.keys();
+  for (let i = 0; i < keys.length - MAX_CACHE_ENTRIES; i += 1) {
+    await cache.delete(keys[i]);
+  }
+};
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.mode === "navigate") {
@@ -51,7 +67,7 @@ self.addEventListener("fetch", (event) => {
     fetch(event.request)
       .then((response) => {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        event.waitUntil(putWithBudget(event.request, copy));
         return response;
       })
       .catch(() => caches.match(event.request))

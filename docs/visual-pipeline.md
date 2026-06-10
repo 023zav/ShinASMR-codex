@@ -21,7 +21,7 @@ Zooming is continuous: within a band the plate magnifies up to ~1.38x, then
 the next plate crossfades in. Bands 6–7 resolve per focused station
 (Tokyo, Shin-Yokohama, Nagoya, Kyoto, Shin-Osaka).
 
-Each plate (`src/render.ts`) declares:
+Each plate (`src/plates.ts`) declares:
 
 - `route`: a hand-authored rail polyline in normalized image coordinates that
   traces the railway actually drawn in the plate;
@@ -77,5 +77,5 @@ OPENAI_API_KEY=... npm run generate:assets -- --overwrite
 
 When adding a new plate, keep the style prefix identical to lod-style-v2,
 export both `.png` (source) and `.webp` (runtime), then author its `route`,
-`coverage`, and `focus` in `src/render.ts` and verify with
+`coverage`, and `focus` in `src/plates.ts` and verify with
 `npm run qa:visual -- --debug-routes`.

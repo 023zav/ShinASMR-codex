@@ -10,7 +10,9 @@ type AssetPrompt = {
 
 const root = process.cwd();
 const promptsArg = process.argv.find((arg) => arg.startsWith("--prompts="));
-const promptsFile = promptsArg ? promptsArg.split("=").slice(1).join("=").trim() : "scripts/asset-prompts.json";
+const promptsFile = promptsArg
+  ? promptsArg.split("=").slice(1).join("=").trim()
+  : "scripts/asset-prompts.json";
 const promptsPath = resolve(root, promptsFile);
 const outDir = resolve(root, "public/assets-generated");
 const overwrite = process.argv.includes("--overwrite");
@@ -99,7 +101,9 @@ const generateOne = async (item: AssetPrompt, index: number, total: number) => {
 
 const main = async () => {
   const filtered = only
-    ? prompts.filter((item) => item.file.includes(only) || item.prompt.toLowerCase().includes(only.toLowerCase()))
+    ? prompts.filter(
+        (item) => item.file.includes(only) || item.prompt.toLowerCase().includes(only.toLowerCase())
+      )
     : prompts;
   const selected = filtered.slice(0, limit);
   let generated = 0;

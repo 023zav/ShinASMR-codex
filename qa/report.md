@@ -1,6 +1,6 @@
 # Visual QA report
 
-Generated: 2026-06-10T12:35:39.618Z
+Generated: 2026-06-10T20:08:29.542Z
 Bundle: fresh vite build
 Route debug overlay: off
 

@@ -26,12 +26,20 @@ const DEBUG_ROUTES = args.has("--debug-routes");
 const SKIP_BUILD = args.has("--skip-build");
 
 const findChromium = () => {
-  if (process.env.QA_CHROMIUM && fs.existsSync(process.env.QA_CHROMIUM)) return process.env.QA_CHROMIUM;
+  if (process.env.QA_CHROMIUM && fs.existsSync(process.env.QA_CHROMIUM))
+    return process.env.QA_CHROMIUM;
   const candidates = [];
-  for (const dir of ["/opt/pw-browsers", path.join(process.env.HOME ?? "", ".cache", "ms-playwright")]) {
+  for (const dir of [
+    "/opt/pw-browsers",
+    path.join(process.env.HOME ?? "", ".cache", "ms-playwright")
+  ]) {
     if (!fs.existsSync(dir)) continue;
     for (const entry of fs.readdirSync(dir)) {
-      for (const sub of ["chrome-linux/chrome", "chrome-linux64/chrome", "chrome-linux/headless_shell"]) {
+      for (const sub of [
+        "chrome-linux/chrome",
+        "chrome-linux64/chrome",
+        "chrome-linux/headless_shell"
+      ]) {
         const candidate = path.join(dir, entry, sub);
         if (fs.existsSync(candidate)) candidates.push(candidate);
       }
@@ -71,7 +79,9 @@ const run = async () => {
 
   const chromiumPath = findChromium();
   if (!chromiumPath) {
-    console.error("No Chromium binary found. Set QA_CHROMIUM or run `npx playwright install chromium`.");
+    console.error(
+      "No Chromium binary found. Set QA_CHROMIUM or run `npx playwright install chromium`."
+    );
     process.exit(1);
   }
 
@@ -123,7 +133,9 @@ const run = async () => {
       const open = async (query) => {
         await page.goto(`${BASE}/?time=485&paused${query}`, { waitUntil: "load" });
         await page.waitForSelector("body.is-ready", { timeout: 25000 });
-        await page.waitForFunction(() => Boolean(window.__shinkansen), undefined, { timeout: 10000 });
+        await page.waitForFunction(() => Boolean(window.__shinkansen), undefined, {
+          timeout: 10000
+        });
       };
 
       const shoot = async (name) => {
@@ -154,7 +166,10 @@ const run = async () => {
       }
 
       if (errors.length > 0) {
-        failures.push({ viewport: viewport.name, errors: Array.from(new Set(errors)).slice(0, 12) });
+        failures.push({
+          viewport: viewport.name,
+          errors: Array.from(new Set(errors)).slice(0, 12)
+        });
       }
       await context.close();
     }
@@ -176,11 +191,15 @@ const run = async () => {
       "",
       failures.length === 0
         ? "None."
-        : failures.map((f) => `### ${f.viewport}\n${f.errors.map((e) => `- ${e}`).join("\n")}`).join("\n\n")
+        : failures
+            .map((f) => `### ${f.viewport}\n${f.errors.map((e) => `- ${e}`).join("\n")}`)
+            .join("\n\n")
     ].join("\n");
     fs.writeFileSync(path.join(root, "qa", "report.md"), `${report}\n`);
 
-    console.log(`\nDone: ${captured.length} screenshots in qa/screenshots/, report in qa/report.md`);
+    console.log(
+      `\nDone: ${captured.length} screenshots in qa/screenshots/, report in qa/report.md`
+    );
     if (failures.length > 0) {
       console.error("Browser errors were captured; see qa/report.md");
       process.exitCode = 1;

@@ -1,10 +1,4 @@
-import {
-  Line,
-  Service,
-  Station,
-  TrainType,
-  DerivedRuntime
-} from "./data/types";
+import { Line, Service, Station, TrainType, DerivedRuntime } from "./data/types";
 
 export type SimTrainState = {
   id: string;
@@ -14,6 +8,8 @@ export type SimTrainState = {
   name: string;
   lat: number;
   lon: number;
+  /** Position along the full line, 0 = first polyline point, 1 = last. */
+  lineFraction: number;
   speedKmh: number;
   progress: number;
   nextStationId: string | null;
@@ -26,8 +22,7 @@ const parseTime = (t: string) => {
 };
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
-const easeInOut = (t: number) =>
-  t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
 export class Simulation {
   private lines: Line[];
@@ -75,9 +70,7 @@ export class Simulation {
   }
 
   getTrainStates(): SimTrainState[] {
-    const lineRuntimeMap = new Map(
-      this.runtime.line_runtime.map((l) => [l.id, l])
-    );
+    const lineRuntimeMap = new Map(this.runtime.line_runtime.map((l) => [l.id, l]));
     return this.services.map((service) => {
       const line = this.lines.find((l) => l.id === service.line_id);
       const lineRuntime = lineRuntimeMap.get(service.line_id);
@@ -90,12 +83,17 @@ export class Simulation {
           name: service.name_en,
           lat: 0,
           lon: 0,
+          lineFraction: 0,
           speedKmh: 0,
           progress: 0,
           nextStationId: null,
           status: "inactive"
         };
       }
+
+      const cum = lineRuntime.cumulative_lengths_m;
+      const totalLength = cum.length > 0 ? cum[cum.length - 1] : 0;
+      const fractionOf = (offset: number) => (totalLength > 0 ? clamp01(offset / totalLength) : 0);
 
       const stops = service.stops;
       const now = this.timeMinutes;
@@ -113,6 +111,7 @@ export class Simulation {
           name: service.name_en,
           lat,
           lon,
+          lineFraction: fractionOf(firstOffset),
           speedKmh: 0,
           progress: 0,
           nextStationId: null,
@@ -151,7 +150,7 @@ export class Simulation {
           posOffset = startOffset + (endOffset - startOffset) * eased;
           const distanceM = Math.abs(endOffset - startOffset);
           const durationH = Math.max(1, arrive - depart) / 60;
-          speedKmh = (distanceM / 1000) / durationH;
+          speedKmh = distanceM / 1000 / durationH;
           progress = eased;
           status = "moving";
           nextStationId = to.station_id;
@@ -176,6 +175,7 @@ export class Simulation {
         name: service.name_en,
         lat,
         lon,
+        lineFraction: fractionOf(posOffset),
         speedKmh: Math.round(speedKmh),
         progress,
         nextStationId,

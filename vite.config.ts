@@ -7,7 +7,7 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes("node_modules")) return undefined;
           if (id.includes("pixi.js")) return "vendor-pixi";
-          if (id.includes("openai")) return "vendor-openai";
+          
           return "vendor";
         }
       }
