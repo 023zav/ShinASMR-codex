@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071018" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/assets-generated/zoom-plates-v3/tokyo-z10-station-district.webp" as="image" />
+    <link rel="preload" href="/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp" as="image" />
+    <link rel="preload" href="/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp" as="image" />
+    <link rel="preload" href="/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp" as="image" />
+    <title>ASMR Shinkansen</title>
+    <script>
+      (() => {
+        const devHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+        if (!devHosts.has(location.hostname)) return;
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.getRegistrations().then((registrations) => {
+            registrations.forEach((registration) => registration.unregister());
+          });
+        }
+        if ("caches" in window) {
+          caches.keys().then((keys) => {
+            keys.forEach((key) => caches.delete(key));
+          });
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="map"></div>
+      <div id="artLayer" aria-hidden="true"></div>
+      <canvas id="scene"></canvas>
+
+      <div id="loadingScreen" class="loading-screen" role="status" aria-live="polite">
+        <div class="loading-card">
+          <div class="loading-kicker">ASMR Shinkansen</div>
+          <div class="loading-title">Preparing Tokyo Station</div>
+          <div class="loading-track" aria-hidden="true"><span></span></div>
+          <div id="loadingStatus" class="loading-status">Loading timetable and station data</div>
+        </div>
+      </div>
+
+      <div id="ui" aria-label="ASMR Shinkansen simulator interface">
+        <header class="topbar ops-topbar">
+          <div class="ops-clock" aria-label="Simulation status">
+            <span class="clock-icon">◷</span>
+            <strong id="timeLabel">06:00</strong>
+            <span class="status-divider"></span>
+            <span>May 18, 1995</span>
+            <span class="weather">☀ Clear</span>
+          </div>
+
+          <div class="ops-title">
+            <div class="logo">ASMR Shinkansen</div>
+            <div class="subtitle">Tokaido corridor / timetable-driven ambience</div>
+          </div>
+
+          <div class="ops-metrics" aria-label="Service metrics">
+            <span>Active <strong id="activeServiceMetric">--</strong></span>
+            <span>Flow <strong>Calm</strong></span>
+            <span>On-time <strong class="metric-good">98%</strong></span>
+          </div>
+
+          <div class="controls ops-controls" aria-label="Playback controls">
+            <button id="playPause" class="hud-button primary">Pause</button>
+            <div class="speed segmented" aria-label="Simulation speed">
+              <button data-speed="1" class="active">x1</button>
+              <button data-speed="10">x10</button>
+              <button data-speed="60">x60</button>
+            </div>
+            <input id="timeScrub" class="hud-range" type="range" min="0" max="1080" value="120" aria-label="Simulation time" />
+            <div class="zoom-tools" aria-label="Map zoom controls">
+              <button id="zoomOut" class="hud-button mini" type="button">−</button>
+              <input id="zoomSlider" class="hud-range zoom-range" type="range" min="4.15" max="12.65" step="0.01" value="12.35" aria-label="Map zoom level" />
+              <button id="zoomReset" class="hud-button mini" type="button">Fit</button>
+              <button id="zoomIn" class="hud-button mini" type="button">+</button>
+            </div>
+          </div>
+
+          <div class="right ops-sound" aria-label="Audio and app controls">
+            <button id="soundBtn" class="hud-button">Enable sound</button>
+            <input id="volume" class="hud-range compact" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Master volume" />
+            <button id="hudToggle" class="hud-button" type="button">Clean view</button>
+            <button id="aboutBtn" class="hud-button">About</button>
+            <a id="supportBtn" class="hud-button support" href="https://ko-fi.com" target="_blank" rel="noreferrer">Support</a>
+          </div>
+        </header>
+
+        <aside class="ops-panel ops-left" aria-label="Timetable and controls">
+          <section class="panel-section station-card">
+            <div class="section-kicker">Focus Station</div>
+            <h2 id="stationSummaryTitle">Tokyo Station</h2>
+            <div class="badge-row">
+              <span class="route-badge blue">Tokaido Shinkansen</span>
+              <span class="grade-badge">Quiet mode</span>
+            </div>
+            <dl id="stationSummary" class="stat-grid">
+              <div><dt>Platforms</dt><dd>8 tracks</dd></div>
+              <div><dt>Passengers</dt><dd>128k/day</dd></div>
+              <div><dt>Ambience</dt><dd>Soft rail bed</dd></div>
+            </dl>
+          </section>
+
+          <section class="panel-section filters" id="filters" aria-label="Filters">
+            <label>
+              Line
+              <select id="lineFilter"></select>
+            </label>
+            <label>
+              Train
+              <select id="trainFilter"></select>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="followToggle" class="toggle-decal" />
+              Follow train
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="reducedMotionToggle" class="toggle-decal" />
+              Reduced motion
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="accuracyDebugToggle" class="toggle-decal" />
+              Map accuracy
+            </label>
+            <label>
+              View
+              <select id="viewModeSelect">
+                <option value="station" selected>Tokyo station</option>
+                <option value="corridor">Corridor</option>
+                <option value="japan">Japan</option>
+              </select>
+            </label>
+            <label>
+              Detail
+              <select id="qualitySelect">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="panel-section timetable-card">
+            <div class="section-header">
+              <h3>Timetable</h3>
+              <span>1 / 1</span>
+            </div>
+            <div id="timetableList" class="timetable-list"></div>
+          </section>
+
+          <section class="panel-section passenger-card">
+            <div class="section-header">
+              <h3>Passenger Flow</h3>
+              <span>ASMR load</span>
+            </div>
+            <div class="flow-bars" aria-hidden="true">
+              <i style="height: 34%"></i><i style="height: 48%"></i><i style="height: 72%"></i><i style="height: 84%"></i><i style="height: 66%"></i><i style="height: 78%"></i><i style="height: 58%"></i><i style="height: 62%"></i><i style="height: 46%"></i>
+            </div>
+          </section>
+        </aside>
+
+        <aside id="details" class="ops-panel details current-card" aria-live="polite">
+          <div class="section-kicker">Current Train</div>
+          <div class="details-title">No selection</div>
+          <div class="details-body">Tap a train or station.</div>
+        </aside>
+
+        <aside class="ops-panel ops-right" aria-label="Legend and minimap">
+          <section class="panel-section legend-card">
+            <div class="section-header"><h3>Line Legend</h3></div>
+            <div class="legend-row"><span class="legend-swatch blue"></span>Tokaido Shinkansen</div>
+            <div class="legend-row"><span class="legend-swatch green"></span>Generated city art</div>
+            <div class="legend-row"><span class="legend-swatch amber"></span>Station anchors</div>
+            <div class="legend-row"><span class="legend-swatch muted"></span>Coordinate guide</div>
+          </section>
+          <section class="panel-section minimap-card">
+            <div class="section-header"><h3>Map of Japan</h3></div>
+            <div class="mini-japan" aria-hidden="true"><span></span></div>
+          </section>
+          <div id="perfHud" class="perf-hud">FPS: -- | Zoom: --</div>
+          <section id="lodDebug" class="panel-section lod-debug collapsed" aria-label="Zoom level debug">
+            <div class="section-header"><h3>LOD Debug</h3><button id="lodDebugToggle" class="hud-button mini" type="button">Show</button></div>
+            <div id="lodDebugBody" class="lod-debug-body">
+              <div><span>Zoom</span><strong id="debugZoom">--</strong></div>
+              <div><span>Level</span><strong id="debugLevel">--</strong></div>
+              <div><span>View</span><strong id="debugView">--</strong></div>
+              <div><span>City art</span><strong id="debugCityArt">--</strong></div>
+              <div><span>Accuracy</span><strong id="debugAccuracy">Off</strong></div>
+            </div>
+          </section>
+        </aside>
+
+        <footer class="ops-bottom" aria-label="Notifications">
+          <button class="notification-tab">Notifications</button>
+          <div id="notificationFeed" class="notification-feed">
+            <span>08:30&nbsp;&nbsp;Nozomi services running quietly through the Tokaido corridor.</span>
+            <span>08:31&nbsp;&nbsp;Ocean ambience active near Yokohama.</span>
+            <span>08:32&nbsp;&nbsp;Track rumble intensity low.</span>
+          </div>
+          <strong class="alert-soft">Service alerts: 0</strong>
+        </footer>
+
+        <div id="aboutModal" class="modal hidden">
+          <div class="modal-card">
+            <div class="modal-title">About & Attribution</div>
+            <div class="modal-body">
+              <p>ASMR Shinkansen is a simulated railway ambience prototype. Positions are timetable-driven, not live tracking.</p>
+              <p>Map data placeholder: © OpenStreetMap contributors, served through OpenFreeMap where available.</p>
+              <p>Schedules are synthetic for the MVP and will be replaced only with licensed/allowed data.</p>
+              <div id="perfStats" class="perf-stats">Performance: --</div>
+            </div>
+            <button id="aboutClose" class="hud-button primary">Close</button>
+          </div>
+        </div>
+
+        <div id="decalDebug">
+          <div class="modal-card">
+            <div class="modal-title">UI Decal Debug</div>
+            <div class="modal-body"><div class="decal-grid" id="decalGrid"></div></div>
+            <button id="decalClose" class="hud-button primary">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts?v=generated-lod-v25-authoritative-art-20260510"></script>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+[
+  {
+    "file": "zoom-plates-v3/tokyo-z10-station-district.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 10 generated game-map plate for ASMR Shinkansen. Create a polished isometric pixel-art Tokyo Station district viewed from an early-2000s Japanese railway management simulator. Show the real-feeling Tokyo Station / Marunouchi / Yaesu rail district: dense office blocks, multiple parallel rail yards, platform roofs, overhead gantries, roads, tiny trees, canal/river hints, small vehicles and passengers. This is a full background map plate, not a sprite. Wide 16:10 composition, no UI, no labels, no readable text, no logos, no watermark. Cohesive miniature-city game art, crisp detailed pixels, not photorealistic, no giant foreground trains."
+  },
+  {
+    "file": "zoom-plates-v3/tokyo-z13-station-yard.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 13 generated game-map plate for ASMR Shinkansen. Create a detailed isometric pixel-art Tokyo Station Shinkansen yard close view: arched platform roofs, many precise parallel tracks, signal gantries, overhead wires, tiny passengers on platforms, surrounding Marunouchi and Yaesu buildings, roads and trees. Early-2000s Japanese transport sim / A-Train visual quality, dense but readable. Wide 16:10, no UI, no labels, no readable text, no logos, no watermark. Keep tracks clear for interactive train sprites, only tiny parked train hints if any."
+  },
+  {
+    "file": "zoom-plates-v3/tokyo-z15-platform-macro.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: closest LOD 15 generated game-map plate for ASMR Shinkansen. Create a macro isometric pixel-art Tokyo Shinkansen platform area: platform canopies, platform edge markings, rail ballast, catenary poles, glass concourse, tiny passenger dots, vending-machine-like color accents without readable text, surrounding city building edges. Early-2000s Japanese railway management game, polished crisp dense pixels. Wide 16:10 background plate, no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/yokohama-z10-station-district.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 10 generated game-map plate for ASMR Shinkansen. Create a polished isometric pixel-art Shin-Yokohama station district: elevated Shinkansen station, mid-rise hotels and offices, local streets, small parks, river/canal hints, overhead wires, platforms, tiny cars and people. Early-2000s Japanese transport management simulator style, cohesive city game background. Wide 16:10, no UI, no labels, no readable text, no logos, no watermark, no giant trains."
+  },
+  {
+    "file": "zoom-plates-v3/yokohama-z13-station-yard.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 13 generated game-map plate for ASMR Shinkansen. Detailed isometric pixel-art Shin-Yokohama station yard close view: elevated platforms, viaduct approaches, catenary gantries, platform roofs, surrounding Kanagawa mid-rise urban blocks, intersections, canals and green strips. Crisp early-2000s Japanese railway simulator art. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/yokohama-z15-platform-macro.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: closest LOD 15 generated game-map plate for ASMR Shinkansen. Macro isometric pixel-art Shin-Yokohama Shinkansen platform scene: platform island, canopy, glass station edge, elevated rail deck, overhead catenary, road below, small signs as unreadable glyphs only, tiny passengers. Early-2000s Japanese transport sim, crisp detailed pixels. Wide 16:10 background plate, no UI, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/nagoya-z10-station-district.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 10 generated game-map plate for ASMR Shinkansen. Polished isometric pixel-art Nagoya Station district: broad avenue grid, commercial towers, railway approaches, terminal station massing, parks and civic hints, subtle castle-roof color accents in the distance, overhead wires, tiny vehicles. Early-2000s Japanese railway management simulator, dense cohesive miniature city. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/nagoya-z13-station-yard.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 13 generated game-map plate for ASMR Shinkansen. Detailed isometric pixel-art Nagoya Station Shinkansen yard: terminal platforms, many rail approaches, catenary gantries, station plaza, surrounding tower blocks, broad roads, trees, tiny pedestrians. Crisp late-1990s / early-2000s Japanese transport sim look. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/nagoya-z15-platform-macro.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: closest LOD 15 generated game-map plate for ASMR Shinkansen. Macro isometric pixel-art Nagoya Shinkansen platform: clean concrete platform, canopy roof, station glass, rail ballast, catenary poles, subtle gold/civic accents, city blocks cropped at edges, tiny passengers. Early-2000s Japanese transport sim, polished crisp pixels. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/kyoto-z10-station-district.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 10 generated game-map plate for ASMR Shinkansen. Polished isometric pixel-art Kyoto Station district: gridded streets, Shinkansen platforms, compact city blocks, temple roof accents, warm wood tones, river/canal hints, mountain edge in distance, tiny cars and people. Early-2000s Japanese transport management simulator, dense but calm. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/kyoto-z13-station-yard.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 13 generated game-map plate for ASMR Shinkansen. Detailed isometric pixel-art Kyoto Station Shinkansen yard close view: station roofs, rail platforms, overhead gantries, compact low/mid-rise city blocks, warm temple-inspired roof colors, trees, narrow roads and canals. Crisp early-2000s Japanese railway sim art. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/kyoto-z15-platform-macro.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: closest LOD 15 generated game-map plate for ASMR Shinkansen. Macro isometric pixel-art Kyoto Shinkansen platform: platform edge, canopy, catenary, rail bed, warm wood/bronze accents, tiled plaza, tiny passengers, temple-roof silhouettes at edges. Early-2000s Japanese transport sim, polished crisp pixels. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/osaka-z10-station-district.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 10 generated game-map plate for ASMR Shinkansen. Polished isometric pixel-art Shin-Osaka station district: urban rail interchange, dense Osaka apartment and office blocks, canals/rivers, roads, station approaches, elevated Shinkansen viaducts, overhead wires, tiny vehicles. Early-2000s Japanese railway management simulator, cohesive miniature-city board. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/osaka-z13-station-yard.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: close LOD 13 generated game-map plate for ASMR Shinkansen. Detailed isometric pixel-art Shin-Osaka station yard close view: many tracks, platform roofs, local lines, viaducts, catenary gantries, canals, overpasses, dense urban blocks, tiny passengers. Crisp late-1990s / early-2000s Japanese transport sim. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  },
+  {
+    "file": "zoom-plates-v3/osaka-z15-platform-macro.png",
+    "size": "1536x1024",
+    "prompt": "Asset type: closest LOD 15 generated game-map plate for ASMR Shinkansen. Macro isometric pixel-art Shin-Osaka Shinkansen platform/interchange: platform canopy, rail bed, overhead catenary, station glass, canal/road edges, tiny passengers, warm platform lights. Early-2000s Japanese railway sim, polished crisp dense pixels. Wide 16:10 no UI, no labels, no readable text, no logos, no watermark."
+  }
+]

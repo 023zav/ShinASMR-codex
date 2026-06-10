@@ -1,0 +1,62 @@
+[
+  {
+    "file": "v2-map-mood.png",
+    "size": "1536x1024",
+    "prompt": "Premium art direction frame for ASMR Shinkansen simulator, real Japan map inspiration, calm night-to-dawn railway ambience, early 2000s Japanese console transport game aesthetic, polished isometric UI/game art, soft coastal light, readable Shinkansen corridor, tasteful detail density, no text, no logos, not photorealistic."
+  },
+  {
+    "file": "v2-ocean-tile.png",
+    "size": "1024x1024",
+    "prompt": "Seamless calm ocean texture tile for a retro ASMR rail simulator, deep ink blue and mineral teal, subtle long wave bands, soft bloom, low contrast, elegant early 2000s console game texture, no foam clutter, no text."
+  },
+  {
+    "file": "v2-track-straight.png",
+    "size": "1536x1024",
+    "prompt": "Polished straight Shinkansen elevated track sprite, true isometric game angle, clean concrete guideway, twin steel rails, tiny cable trough details, soft baked shadows, early 2000s Japanese transport sim look, transparent background, no text."
+  },
+  {
+    "file": "v2-track-curve.png",
+    "size": "1536x1024",
+    "prompt": "Polished gentle curved Shinkansen elevated track sprite matching straight module, true isometric game angle, clean concrete guideway, twin steel rails, soft baked shadows, early 2000s Japanese transport sim look, transparent background, no text."
+  },
+  {
+    "file": "v2-station-platform.png",
+    "size": "1024x1024",
+    "prompt": "Polished compact Shinkansen station sprite, elevated platforms and simple canopy, teal-tinted glass, warm interior glow, clean small-scale silhouette, early 2000s Japanese console city-sim render, transparent background, no signs, no text."
+  },
+  {
+    "file": "v2-train-n700s.png",
+    "size": "1536x1024",
+    "prompt": "Production-ready N700S-inspired Shinkansen sprite for isometric rail simulator, three-quarter side view, long elegant aerodynamic nose, glossy pearl white body, precise thin blue stripe, dark continuous window band, subtle underside shadow, polished early 2000s console game rendering, transparent background, no logos, no text."
+  },
+  {
+    "file": "v2-train-n700a.png",
+    "size": "1536x1024",
+    "prompt": "Production-ready N700A-inspired Shinkansen sprite for isometric rail simulator, three-quarter side view, long elegant aerodynamic nose, glossy pearl white body, precise warm gold stripe, dark continuous window band, subtle underside shadow, polished early 2000s console game rendering, transparent background, no logos, no text."
+  },
+  {
+    "file": "v2-landmark-tokyo.png",
+    "size": "1024x1024",
+    "prompt": "Premium Tokyo landmark cluster sprite for isometric Shinkansen simulator, compact skyline blocks and Tokyo Tower inspired orange lattice silhouette, refined early 2000s Japanese city-sim style, soft baked lighting, transparent background, no text."
+  },
+  {
+    "file": "v2-landmark-yokohama.png",
+    "size": "1024x1024",
+    "prompt": "Premium Yokohama waterfront landmark sprite, ferris wheel, harbor deck, tiny lamps, calm pastel reflections, refined early 2000s Japanese city-sim style, transparent background, no text."
+  },
+  {
+    "file": "v2-landmark-nagoya.png",
+    "size": "1024x1024",
+    "prompt": "Premium Nagoya castle-inspired landmark sprite, compact isometric castle tiers, muted stone base, green-gray roofs, refined early 2000s Japanese city-sim style, transparent background, no text."
+  },
+  {
+    "file": "v2-landmark-kyoto.png",
+    "size": "1024x1024",
+    "prompt": "Premium Kyoto temple landmark sprite, layered wooden roof and warm lantern glow, compact readable isometric silhouette, refined early 2000s Japanese city-sim style, transparent background, no text."
+  },
+  {
+    "file": "v2-landmark-osaka.png",
+    "size": "1024x1024",
+    "prompt": "Premium Osaka tower-inspired landmark sprite, slim steel observation tower, cool metallic tones, compact readable isometric silhouette, refined early 2000s Japanese city-sim style, transparent background, no text."
+  }
+]

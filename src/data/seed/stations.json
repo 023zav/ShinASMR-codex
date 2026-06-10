@@ -1,0 +1,42 @@
+[
+  {
+    "id": "tokyo",
+    "name_en": "Tokyo",
+    "name_local": "東京",
+    "lat": 35.681236,
+    "lon": 139.767125,
+    "line_ids": ["tokaido"]
+  },
+  {
+    "id": "yokohama",
+    "name_en": "Shin-Yokohama",
+    "name_local": "新横浜",
+    "lat": 35.508971,
+    "lon": 139.6171,
+    "line_ids": ["tokaido"]
+  },
+  {
+    "id": "nagoya",
+    "name_en": "Nagoya",
+    "name_local": "名古屋",
+    "lat": 35.170915,
+    "lon": 136.881537,
+    "line_ids": ["tokaido"]
+  },
+  {
+    "id": "kyoto",
+    "name_en": "Kyoto",
+    "name_local": "京都",
+    "lat": 34.985849,
+    "lon": 135.758766,
+    "line_ids": ["tokaido"]
+  },
+  {
+    "id": "osaka",
+    "name_en": "Shin-Osaka",
+    "name_local": "新大阪",
+    "lat": 34.733452,
+    "lon": 135.500585,
+    "line_ids": ["tokaido"]
+  }
+]

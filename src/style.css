@@ -1,0 +1,2810 @@
+:root {
+  --ink: #061018;
+  --ink-2: #0a1820;
+  --panel: rgba(8, 21, 25, 0.91);
+  --panel-2: rgba(14, 31, 34, 0.88);
+  --panel-edge: rgba(154, 193, 183, 0.42);
+  --panel-line: rgba(199, 226, 215, 0.22);
+  --text: #dbe7df;
+  --muted: #9daea7;
+  --blue: #2477d1;
+  --cyan: #48c6cf;
+  --green: #66c84f;
+  --amber: #e0b650;
+  --orange: #e28734;
+  --danger: #e05c44;
+  --shadow: rgba(0, 0, 0, 0.52);
+  --pixel-font: "Trebuchet MS", "Arial Narrow", Verdana, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #061018;
+  color: var(--text);
+  font-family: var(--pixel-font);
+  letter-spacing: 0.01em;
+}
+
+#app::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 3px),
+    radial-gradient(circle at 52% 24%, rgba(78, 180, 160, 0.12), transparent 36%),
+    radial-gradient(circle at 50% 115%, rgba(0, 0, 0, 0.5), transparent 52%);
+  mix-blend-mode: screen;
+  opacity: 0.48;
+  z-index: 3;
+}
+
+#map,
+#artLayer,
+#scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#map {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(58, 114, 115, 0.2), transparent 48%),
+    linear-gradient(180deg, rgba(5, 12, 16, 0.04), rgba(5, 12, 16, 0.16)),
+    #07131b;
+  z-index: 0;
+}
+
+/* Coordinate-first rendering: OpenFreeMap is the source of truth at overview,
+   regional, and corridor zoom. Generated art is only a faint atmosphere layer
+   unless a close station plate is georeferenced by PIXI. */
+#map::before {
+  display: none;
+}
+
+#artLayer {
+  content: "";
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.1), rgba(7, 15, 18, 0.22)),
+    url("/assets-generated/lod-style-v2/lod-01-japan-national-board.webp") center / cover no-repeat;
+  background-position:
+    center,
+    calc(50% + var(--art-x, 0px)) calc(50% + var(--art-y, 0px));
+  opacity: 0.98;
+  filter: saturate(1.13) contrast(1.08) brightness(0.92);
+  transition: opacity 120ms ease, filter 120ms ease, background-image 120ms ease, background-position 80ms linear;
+}
+
+#artLayer[data-detail="0"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-01-japan-national-board.webp");
+}
+
+#artLayer[data-detail="1"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-02-japan-rail-atlas.webp");
+}
+
+#artLayer[data-detail="2"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.2)),
+    url("/assets-generated/lod-style-v2/lod-03-tokaido-national-corridor.webp");
+}
+
+#artLayer[data-detail="3"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.2)),
+    url("/assets-generated/lod-style-v2/lod-04-central-honshu-railway.webp");
+}
+
+#artLayer[data-detail="4"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.1), rgba(7, 15, 18, 0.22)),
+    url("/assets-generated/lod-style-v2/lod-05-kanagawa-corridor.webp");
+}
+
+#artLayer[data-detail="5"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.1), rgba(7, 15, 18, 0.22)),
+    url("/assets-generated/lod-style-v2/lod-06-tokyo-yokohama-approach.webp");
+}
+
+#artLayer[data-detail="6"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-07-tokyo-yard-city.webp");
+}
+
+#artLayer[data-detail="7"],
+#artLayer[data-detail="8"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp");
+}
+
+#artLayer[data-detail="9"],
+#artLayer[data-detail="10"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-10-yokohama-station-close.webp");
+}
+
+#artLayer[data-detail="11"],
+#artLayer[data-detail="12"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-12-nagoya-station-close.webp");
+}
+
+#artLayer[data-detail="13"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-14-kyoto-station-close.webp");
+}
+
+#artLayer[data-detail="14"],
+#artLayer[data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.08), rgba(7, 15, 18, 0.18)),
+    url("/assets-generated/lod-style-v2/lod-16-shin-osaka-close.webp");
+}
+
+#artLayer[data-station="tokyo"][data-detail="6"],
+#artLayer[data-station="tokyo"][data-detail="7"],
+#artLayer[data-station="tokyo"][data-detail="8"],
+#artLayer[data-station="tokyo"][data-detail="9"],
+#artLayer[data-station="tokyo"][data-detail="10"],
+#artLayer[data-station="tokyo"][data-detail="11"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/city-plates/tokyo-station-operations-plate.png");
+}
+
+#artLayer[data-station="tokyo"][data-detail="12"],
+#artLayer[data-station="tokyo"][data-detail="13"],
+#artLayer[data-station="tokyo"][data-detail="14"],
+#artLayer[data-station="tokyo"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp");
+}
+
+#artLayer[data-station="yokohama"][data-detail="6"],
+#artLayer[data-station="yokohama"][data-detail="7"],
+#artLayer[data-station="yokohama"][data-detail="8"],
+#artLayer[data-station="yokohama"][data-detail="9"],
+#artLayer[data-station="yokohama"][data-detail="10"],
+#artLayer[data-station="yokohama"][data-detail="11"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/city-plates/shin-yokohama-operations-plate.png");
+}
+
+#artLayer[data-station="yokohama"][data-detail="12"],
+#artLayer[data-station="yokohama"][data-detail="13"],
+#artLayer[data-station="yokohama"][data-detail="14"],
+#artLayer[data-station="yokohama"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/lod-style-v2/lod-10-yokohama-station-close.webp");
+}
+
+#artLayer[data-station="nagoya"][data-detail="6"],
+#artLayer[data-station="nagoya"][data-detail="7"],
+#artLayer[data-station="nagoya"][data-detail="8"],
+#artLayer[data-station="nagoya"][data-detail="9"],
+#artLayer[data-station="nagoya"][data-detail="10"],
+#artLayer[data-station="nagoya"][data-detail="11"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/city-plates/nagoya-station-operations-plate.png");
+}
+
+#artLayer[data-station="nagoya"][data-detail="12"],
+#artLayer[data-station="nagoya"][data-detail="13"],
+#artLayer[data-station="nagoya"][data-detail="14"],
+#artLayer[data-station="nagoya"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/lod-style-v2/lod-12-nagoya-station-close.webp");
+}
+
+#artLayer[data-station="kyoto"][data-detail="6"],
+#artLayer[data-station="kyoto"][data-detail="7"],
+#artLayer[data-station="kyoto"][data-detail="8"],
+#artLayer[data-station="kyoto"][data-detail="9"],
+#artLayer[data-station="kyoto"][data-detail="10"],
+#artLayer[data-station="kyoto"][data-detail="11"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/city-plates/kyoto-station-operations-plate.png");
+}
+
+#artLayer[data-station="kyoto"][data-detail="12"],
+#artLayer[data-station="kyoto"][data-detail="13"],
+#artLayer[data-station="kyoto"][data-detail="14"],
+#artLayer[data-station="kyoto"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/lod-style-v2/lod-14-kyoto-station-close.webp");
+}
+
+#artLayer[data-station="osaka"][data-detail="6"],
+#artLayer[data-station="osaka"][data-detail="7"],
+#artLayer[data-station="osaka"][data-detail="8"],
+#artLayer[data-station="osaka"][data-detail="9"],
+#artLayer[data-station="osaka"][data-detail="10"],
+#artLayer[data-station="osaka"][data-detail="11"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/city-plates/shin-osaka-operations-plate.png");
+}
+
+#artLayer[data-station="osaka"][data-detail="12"],
+#artLayer[data-station="osaka"][data-detail="13"],
+#artLayer[data-station="osaka"][data-detail="14"],
+#artLayer[data-station="osaka"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(7, 15, 18, 0.06), rgba(7, 15, 18, 0.16)),
+    url("/assets-generated/lod-style-v2/lod-16-shin-osaka-close.webp");
+}
+
+
+/* v3 close-zoom plates: each featured station now has separate district, yard,
+   and platform-macro art instead of scaling one image through every close LOD. */
+#artLayer[data-detail="10"],
+#artLayer[data-detail="11"],
+#artLayer[data-detail="12"] {
+  background-size: auto, 112% auto;
+  opacity: 0.12;
+}
+
+#artLayer[data-detail="13"],
+#artLayer[data-detail="14"] {
+  background-size: auto, 122% auto;
+  opacity: 0.08;
+}
+
+#artLayer[data-detail="15"] {
+  background-size: auto, 136% auto;
+  opacity: 0.06;
+}
+
+#artLayer[data-station="tokyo"][data-detail="10"],
+#artLayer[data-station="tokyo"][data-detail="11"],
+#artLayer[data-station="tokyo"][data-detail="12"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/tokyo-z10-station-district.webp");
+}
+#artLayer[data-station="tokyo"][data-detail="13"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp");
+}
+#artLayer[data-station="tokyo"][data-detail="14"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp");
+}
+#artLayer[data-station="tokyo"][data-detail="15"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/tokyo-z15-platform-macro.webp");
+}
+
+#artLayer[data-station="yokohama"][data-detail="10"],
+#artLayer[data-station="yokohama"][data-detail="11"],
+#artLayer[data-station="yokohama"][data-detail="12"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/yokohama-z10-station-district.webp");
+}
+#artLayer[data-station="yokohama"][data-detail="13"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/yokohama-z13-station-yard.webp");
+}
+#artLayer[data-station="yokohama"][data-detail="14"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/yokohama-z14-rail-district-v4.webp");
+}
+#artLayer[data-station="yokohama"][data-detail="15"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/yokohama-z15-platform-macro.webp");
+}
+
+#artLayer[data-station="nagoya"][data-detail="10"],
+#artLayer[data-station="nagoya"][data-detail="11"],
+#artLayer[data-station="nagoya"][data-detail="12"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/nagoya-z10-station-district.webp");
+}
+#artLayer[data-station="nagoya"][data-detail="13"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/nagoya-z13-station-yard.webp");
+}
+#artLayer[data-station="nagoya"][data-detail="14"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/nagoya-z14-rail-district-v4.webp");
+}
+#artLayer[data-station="nagoya"][data-detail="15"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/nagoya-z15-platform-macro.webp");
+}
+
+#artLayer[data-station="kyoto"][data-detail="10"],
+#artLayer[data-station="kyoto"][data-detail="11"],
+#artLayer[data-station="kyoto"][data-detail="12"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/kyoto-z10-station-district.webp");
+}
+#artLayer[data-station="kyoto"][data-detail="13"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/kyoto-z13-station-yard.webp");
+}
+#artLayer[data-station="kyoto"][data-detail="14"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/kyoto-z14-rail-district-v4.webp");
+}
+#artLayer[data-station="kyoto"][data-detail="15"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/kyoto-z15-platform-macro.webp");
+}
+
+#artLayer[data-station="osaka"][data-detail="10"],
+#artLayer[data-station="osaka"][data-detail="11"],
+#artLayer[data-station="osaka"][data-detail="12"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/osaka-z10-station-district.webp");
+}
+#artLayer[data-station="osaka"][data-detail="13"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/osaka-z13-station-yard.webp");
+}
+#artLayer[data-station="osaka"][data-detail="14"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/osaka-z14-rail-district-v4.webp");
+}
+#artLayer[data-station="osaka"][data-detail="15"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/osaka-z15-platform-macro.webp");
+}
+
+#map[data-view="overview"] .maplibregl-canvas {
+  opacity: 0.94;
+  filter: saturate(1.18) contrast(1.22) brightness(0.72);
+}
+
+#map[data-view="regional"] .maplibregl-canvas {
+  opacity: 0.9;
+  filter: saturate(1.12) contrast(1.18) brightness(0.7);
+}
+
+#map[data-view="corridor"] .maplibregl-canvas {
+  opacity: 0.8;
+  filter: saturate(1.04) contrast(1.12) brightness(0.68);
+}
+
+#map[data-view="city"] .maplibregl-canvas {
+  opacity: 0.62;
+  filter: saturate(0.98) contrast(1.08) brightness(0.66);
+}
+
+#scene {
+  display: block;
+  image-rendering: pixelated;
+  z-index: 2;
+}
+
+.maplibregl-canvas {
+  image-rendering: pixelated;
+  opacity: 0.96;
+  filter: saturate(1.04) contrast(1.08) brightness(0.9);
+  mix-blend-mode: normal;
+}
+
+.maplibregl-ctrl-attrib {
+  background: rgba(7, 16, 24, 0.72) !important;
+  color: #dce8df !important;
+  font-family: var(--pixel-font);
+}
+
+.maplibregl-ctrl-attrib a {
+  color: #e8c16e !important;
+}
+
+#ui {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+button,
+select,
+input,
+a {
+  font: inherit;
+}
+
+button,
+a,
+select,
+input[type="checkbox"],
+input[type="range"] {
+  pointer-events: auto;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.ops-topbar,
+.ops-panel,
+.ops-bottom,
+.modal-card {
+  pointer-events: auto;
+  background:
+    linear-gradient(180deg, rgba(25, 38, 38, 0.97), rgba(5, 13, 15, 0.98)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px),
+    var(--panel);
+  border: 1px solid rgba(133, 158, 150, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+    0 12px 32px rgba(0, 0, 0, 0.66);
+  backdrop-filter: blur(3px);
+}
+
+.ops-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
+  align-items: stretch;
+  min-height: 38px;
+  padding: 0 4px;
+  border-width: 0 0 2px;
+  border-color: rgba(150, 177, 168, 0.62);
+}
+
+.ops-clock,
+.ops-title,
+.ops-metrics,
+.ops-controls,
+.ops-sound {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-right: 1px solid rgba(196, 224, 214, 0.18);
+}
+
+.ops-sound {
+  border-right: 0;
+}
+
+.ops-clock {
+  color: #d8e3dc;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.clock-icon {
+  color: var(--cyan);
+  font-size: 18px;
+  text-shadow: 0 0 8px rgba(72, 198, 207, 0.7);
+}
+
+#timeLabel {
+  color: #f4f1cf;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+}
+
+.status-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(199, 226, 215, 0.24);
+}
+
+.weather {
+  color: #ffd866;
+}
+
+.logo {
+  color: #ecf5ec;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 0 #22363a, 0 0 16px rgba(126, 226, 200, 0.24);
+  white-space: nowrap;
+}
+
+.subtitle {
+  color: #91a6a1;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.ops-metrics {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.ops-metrics strong,
+.metric-good {
+  color: #ffe071;
+  margin-left: 4px;
+}
+
+.controls,
+.right,
+.speed,
+.filters {
+  display: flex;
+  align-items: center;
+}
+
+.ops-controls,
+.ops-sound {
+  gap: 8px;
+}
+
+.zoom-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-button,
+.segmented button,
+#supportBtn,
+select {
+  min-height: 27px;
+  padding: 4px 10px;
+  color: #dce9e4;
+  background: linear-gradient(180deg, #1b343d, #0a1b22);
+  border: 1px solid rgba(127, 180, 183, 0.5);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 0 rgba(0, 0, 0, 0.35);
+  font-weight: 800;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #000;
+}
+
+.hud-button:hover,
+.segmented button:hover,
+select:hover {
+  border-color: rgba(255, 226, 122, 0.66);
+}
+
+.hud-button.primary,
+.segmented button.active {
+  color: #061018;
+  background: linear-gradient(180deg, #f5d071, #a56f28);
+  border-color: rgba(255, 236, 156, 0.85);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.hud-button.support {
+  color: #061018;
+  background: linear-gradient(180deg, #ffe083, #b87a2e);
+  border-color: rgba(255, 230, 136, 0.8);
+  font-size: 16px;
+}
+
+.hud-button.mini {
+  min-width: 28px;
+  padding-inline: 7px;
+  font-size: 13px;
+}
+
+.segmented {
+  gap: 3px;
+}
+
+.segmented button {
+  min-width: 42px;
+  padding-inline: 8px;
+}
+
+.hud-range {
+  appearance: none;
+  width: 148px;
+  height: 19px;
+  border: 1px solid rgba(127, 180, 183, 0.5);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #112f3d, #07141d);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.72), 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.hud-range.compact {
+  width: 120px;
+}
+
+.zoom-range {
+  width: 116px;
+}
+
+.hud-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  background: #ffd675;
+  border: 2px solid #845e25;
+  box-shadow: 0 0 0 1px rgba(255, 239, 166, 0.7), 0 0 12px rgba(255, 213, 117, 0.3);
+}
+
+.hud-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  background: #ffd675;
+  border: 2px solid #845e25;
+}
+
+.ops-left {
+  position: absolute;
+  left: 6px;
+  top: 46px;
+  width: 286px;
+  max-height: calc(100vh - 95px);
+  overflow: hidden auto;
+}
+
+.ops-right {
+  position: absolute;
+  right: 10px;
+  bottom: 54px;
+  width: min(320px, 22vw);
+}
+
+.current-card {
+  position: absolute;
+  right: 10px;
+  top: 56px;
+  width: min(336px, 23vw);
+}
+
+.panel-section {
+  padding: 9px 11px;
+  border-bottom: 1px solid rgba(199, 226, 215, 0.16);
+}
+
+.panel-section:last-child {
+  border-bottom: 0;
+}
+
+.section-kicker {
+  color: #82bfe6;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+h2,
+h3 {
+  margin: 0;
+  color: #eef4e8;
+  line-height: 1.1;
+  text-shadow: 0 1px 0 #000;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 15px;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 9px 0;
+}
+
+.route-badge,
+.grade-badge,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  color: #eef8f8;
+  border: 1px solid rgba(222, 238, 231, 0.22);
+  background: rgba(20, 42, 46, 0.9);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.route-badge.blue {
+  background: linear-gradient(180deg, #185fa8, #113a69);
+}
+
+.grade-badge,
+.status-pill.good {
+  color: #80ef62;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  margin: 0;
+}
+
+.stat-grid div,
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+  border-top: 1px solid rgba(199, 226, 215, 0.12);
+  color: #cad8d1;
+}
+
+.stat-grid dt,
+.stat-grid dd {
+  margin: 0;
+}
+
+.stat-grid dt,
+.detail-row span:first-child {
+  color: #9fb0aa;
+}
+
+.stat-grid dd,
+.detail-row strong {
+  color: #edf4ee;
+  text-align: right;
+  font-weight: 800;
+}
+
+.filters {
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+
+.filters label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #d3e0da;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+select {
+  min-height: 24px;
+  padding: 2px 24px 2px 8px;
+  font-size: 12px;
+  color: #e6efe9;
+}
+
+.toggle-decal {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(127, 180, 183, 0.65);
+  border-radius: 2px;
+  background: #0f2530;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.62);
+}
+
+.toggle-decal:checked {
+  background: linear-gradient(180deg, #ffe083, #b77b31);
+  border-color: #ffe083;
+}
+
+.timetable-list {
+  display: grid;
+  gap: 3px;
+}
+
+.timetable-row {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 33px;
+  padding: 4px 0;
+  border-top: 1px solid rgba(199, 226, 215, 0.12);
+}
+
+.timetable-row.current {
+  margin-inline: -5px;
+  padding-inline: 5px;
+  background: linear-gradient(90deg, rgba(36, 119, 209, 0.2), rgba(36, 119, 209, 0.03));
+  border-color: rgba(111, 181, 255, 0.34);
+}
+
+.timetable-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--blue);
+  box-shadow: 0 0 8px rgba(36, 119, 209, 0.55);
+}
+
+.timetable-main {
+  display: grid;
+  gap: 2px;
+}
+
+.timetable-name {
+  color: #f0f5ed;
+  font-weight: 900;
+}
+
+.timetable-route {
+  color: #9fb0aa;
+  font-size: 12px;
+}
+
+.timetable-status {
+  color: #82e95f;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.flow-bars {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  align-items: end;
+  gap: 4px;
+  height: 86px;
+  padding: 10px 8px 6px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(199, 226, 215, 0.12);
+}
+
+.flow-bars i {
+  display: block;
+  min-height: 6px;
+  background: linear-gradient(180deg, #8be46c, #266daf);
+  box-shadow: 0 0 8px rgba(80, 184, 180, 0.2);
+}
+
+.details-title {
+  color: #f5faee;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.details-body {
+  color: #c6d6cf;
+  line-height: 1.35;
+  font-size: 13px;
+}
+
+.train-preview {
+  position: relative;
+  height: 86px;
+  margin: 8px 0 10px;
+  overflow: hidden;
+  border: 1px solid rgba(127, 180, 183, 0.38);
+  background:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.08), rgba(6, 16, 24, 0.5)),
+    url("/assets-generated/vehicle-alpha/train-n700s-blue.webp") center / 100% auto no-repeat,
+    #102b34;
+  border-radius: 2px;
+  image-rendering: auto;
+}
+
+.train-preview-n700a {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.08), rgba(6, 16, 24, 0.5)),
+    url("/assets-generated/vehicle-alpha/train-n700a-gold.webp");
+}
+
+.train-preview-series500 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.08), rgba(6, 16, 24, 0.5)),
+    url("/assets-generated/vehicle-alpha/train-500series-slate.webp");
+}
+
+.train-preview-doctor923 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.08), rgba(6, 16, 24, 0.5)),
+    url("/assets-generated/vehicle-alpha/train-doctor-yellow.webp");
+}
+
+.train-preview::before {
+  content: none;
+}
+
+.train-preview::after {
+  content: none;
+  position: absolute;
+}
+
+.station-preview {
+  height: 110px;
+  margin: 8px 0 10px;
+  overflow: hidden;
+  border: 1px solid rgba(127, 180, 183, 0.38);
+  border-radius: 2px;
+  background:
+    linear-gradient(180deg, rgba(6, 16, 24, 0), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp") center / cover no-repeat,
+    #102b34;
+}
+
+.station-preview-yokohama {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/lod-style-v2/lod-10-yokohama-station-close.webp");
+}
+
+.station-preview-nagoya {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/lod-style-v2/lod-12-nagoya-station-close.webp");
+}
+
+.station-preview-kyoto {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/lod-style-v2/lod-14-kyoto-station-close.webp");
+}
+
+.station-preview-osaka {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/lod-style-v2/lod-16-shin-osaka-close.webp");
+}
+
+.route-timeline {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+  padding-left: 8px;
+  border-left: 2px solid rgba(127, 180, 183, 0.5);
+}
+
+.route-stop {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #b8c9c2;
+  font-size: 12px;
+}
+
+.route-stop.current {
+  color: #ffe071;
+  font-weight: 900;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 23px;
+  color: #c5d4cd;
+  font-size: 13px;
+}
+
+.legend-swatch {
+  width: 25px;
+  height: 5px;
+  border-radius: 2px;
+  background: #9fb0aa;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.12);
+}
+
+.legend-swatch.blue { background: var(--blue); }
+.legend-swatch.green { background: var(--green); }
+.legend-swatch.amber { background: var(--amber); }
+.legend-swatch.muted { background: #98a3a0; }
+
+.mini-japan {
+  position: relative;
+  height: 116px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(5, 13, 15, 0.1), rgba(5, 13, 15, 0.32)),
+    url("/assets-generated/lod-style-v2/lod-01-japan-national-board.webp") center / cover no-repeat,
+    #07131a;
+  border: 1px solid rgba(127, 180, 183, 0.38);
+}
+
+.mini-japan::before {
+  content: none;
+}
+
+.mini-japan span {
+  position: absolute;
+  left: 58px;
+  top: 62px;
+  width: 70px;
+  height: 28px;
+  border: 2px solid #ffe071;
+  background: rgba(255, 224, 113, 0.07);
+}
+
+.perf-hud {
+  margin: 8px;
+  padding: 6px 8px;
+  color: #d4e3dc;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(127, 180, 183, 0.38);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.lod-debug {
+  margin-top: 0;
+  background: rgba(3, 10, 13, 0.35);
+}
+
+.lod-debug.hidden .lod-debug-body {
+  display: none;
+}
+
+.lod-debug .section-header {
+  margin-bottom: 4px;
+}
+
+.lod-debug-body {
+  display: grid;
+  gap: 3px;
+  font-size: 12px;
+}
+
+.lod-debug-body div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid rgba(199, 226, 215, 0.1);
+  padding-top: 3px;
+}
+
+.lod-debug-body span {
+  color: var(--muted);
+}
+
+.lod-debug-body strong {
+  color: #ffe071;
+}
+
+.ops-bottom {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  min-height: 38px;
+  overflow: hidden;
+}
+
+.notification-tab {
+  align-self: stretch;
+  padding: 0 13px;
+  color: #dbe7df;
+  background: linear-gradient(180deg, #1a3a42, #0c2026);
+  border: 0;
+  border-right: 1px solid rgba(199, 226, 215, 0.18);
+  font-weight: 900;
+}
+
+.notification-feed {
+  display: flex;
+  gap: 30px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 16px;
+  color: #c4d2cc;
+  white-space: nowrap;
+}
+
+.notification-feed span {
+  flex: 0 0 auto;
+}
+
+.alert-soft {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: #ffe071;
+  border-left: 1px solid rgba(199, 226, 215, 0.18);
+}
+
+.modal {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 8, 12, 0.72);
+  pointer-events: auto;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(480px, 92vw);
+  padding: 16px;
+}
+
+.modal-title {
+  margin-bottom: 8px;
+  color: #f5faee;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.modal-body {
+  color: #cad8d0;
+  line-height: 1.45;
+}
+
+.perf-stats {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid rgba(199, 226, 215, 0.18);
+  background: rgba(0, 0, 0, 0.24);
+  color: #b8cbc2;
+  font-size: 12px;
+}
+
+#decalDebug {
+  display: none;
+}
+
+#decalDebug.active {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  background: rgba(3, 8, 12, 0.72);
+}
+
+.decal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 52px);
+  gap: 8px;
+}
+
+.decal-item {
+  width: 52px;
+  height: 52px;
+  background-image: url("/assets/ui-decals.webp");
+  background-size: 286px 286px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 1180px) {
+  .ops-topbar {
+    grid-template-columns: auto 1fr auto;
+    grid-auto-rows: 38px;
+  }
+
+  .ops-metrics {
+    display: none;
+  }
+
+  .ops-sound {
+    grid-column: 3;
+  }
+
+  .ops-left {
+    width: 265px;
+  }
+
+  .current-card,
+  .ops-right {
+    width: 225px;
+  }
+}
+
+@media (max-width: 860px) {
+  .ops-topbar {
+    grid-template-columns: 1fr auto;
+    min-height: 82px;
+  }
+
+  .ops-clock,
+  .ops-title,
+  .ops-controls,
+  .ops-sound {
+    min-height: 38px;
+    padding-inline: 8px;
+  }
+
+  .ops-title {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+
+  .subtitle,
+  .ops-right,
+  .passenger-card {
+    display: none;
+  }
+
+  .ops-left {
+    top: 88px;
+    width: min(310px, calc(100vw - 16px));
+    max-height: 38vh;
+  }
+
+  .current-card {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: 52px;
+    width: auto;
+  }
+
+  .hud-range {
+    width: 110px;
+  }
+
+  .hud-range.compact {
+    width: 88px;
+  }
+}
+
+@media (max-width: 560px) {
+  .logo {
+    font-size: 18px;
+  }
+
+  .ops-clock {
+    font-size: 13px;
+    gap: 7px;
+  }
+
+  .weather,
+  .ops-sound .hud-range,
+  .station-card,
+  .legend-card {
+    display: none;
+  }
+
+  .ops-topbar {
+    grid-template-columns: 1fr;
+    min-height: 118px;
+  }
+
+  .ops-clock,
+  .ops-controls,
+  .ops-sound {
+    border-right: 0;
+    border-top: 1px solid rgba(199, 226, 215, 0.12);
+  }
+
+  .ops-left {
+    top: 124px;
+    max-height: 30vh;
+  }
+
+  .notification-feed {
+    gap: 18px;
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+
+  .alert-soft {
+    display: none;
+  }
+}
+
+/* v5 fills the previously jumpy close-zoom gaps with generated plates for
+   z11, z12, and z15. The PIXI georeferenced plates are primary; this CSS layer
+   stays faint as a low-cost atmospheric fallback. */
+#artLayer[data-detail="11"] { opacity: 0.11; background-size: auto, 108% auto; }
+#artLayer[data-detail="12"] { opacity: 0.095; background-size: auto, 116% auto; }
+#artLayer[data-detail="15"] { opacity: 0.05; background-size: auto, 130% auto; }
+
+#artLayer[data-station="tokyo"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="tokyo"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp"); }
+#artLayer[data-station="tokyo"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="yokohama"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="yokohama"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp"); }
+#artLayer[data-station="yokohama"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="nagoya"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="nagoya"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp"); }
+#artLayer[data-station="nagoya"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="kyoto"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="kyoto"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp"); }
+#artLayer[data-station="kyoto"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="osaka"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="osaka"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/osaka-z12-station-context-v5.webp"); }
+#artLayer[data-station="osaka"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp"); }
+
+
+/* Coordinate-fidelity override, v7.
+   Low/mid zoom no longer uses generated full-screen paintings as geography.
+   They were beautiful, but they made the real Tokaido line look detached from
+   Japan. Close-up generated art now enters only through georeferenced PIXI
+   plates, so rail/station positions remain map-authentic. */
+#artLayer {
+  background-image:
+    radial-gradient(circle at 48% 38%, rgba(76, 154, 136, 0.08), transparent 42%),
+    linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.1));
+  opacity: 0.045;
+  filter: saturate(1.02) contrast(1.02) brightness(0.9);
+}
+
+#artLayer[data-detail="0"],
+#artLayer[data-detail="1"],
+#artLayer[data-detail="2"],
+#artLayer[data-detail="3"],
+#artLayer[data-detail="4"],
+#artLayer[data-detail="5"],
+#artLayer[data-detail="6"],
+#artLayer[data-detail="7"],
+#artLayer[data-detail="8"],
+#artLayer[data-detail="9"],
+#artLayer[data-detail="10"],
+#artLayer[data-detail="11"] {
+  background-image:
+    radial-gradient(circle at 50% 36%, rgba(96, 178, 146, 0.07), transparent 38%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 4px);
+  opacity: 0.035;
+}
+
+#artLayer[data-detail="12"],
+#artLayer[data-detail="13"],
+#artLayer[data-detail="14"],
+#artLayer[data-detail="15"] {
+  opacity: 0.025;
+  background-image:
+    radial-gradient(circle at 50% 36%, rgba(96, 178, 146, 0.05), transparent 38%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.014) 0 1px, transparent 1px 4px);
+}
+
+#map[data-view="overview"] .maplibregl-canvas {
+  opacity: 0.96;
+  filter: saturate(1.16) contrast(1.2) brightness(0.74);
+}
+
+#map[data-view="regional"] .maplibregl-canvas {
+  opacity: 0.92;
+  filter: saturate(1.12) contrast(1.18) brightness(0.72);
+}
+
+#map[data-view="corridor"] .maplibregl-canvas {
+  opacity: 0.84;
+  filter: saturate(1.06) contrast(1.14) brightness(0.7);
+}
+
+#map[data-view="city"] .maplibregl-canvas {
+  opacity: 0.66;
+  filter: saturate(1.02) contrast(1.1) brightness(0.68);
+}
+
+/* Graphic-led restoration, v11.
+   The previous coordinate-fidelity override made OpenFreeMap visually primary
+   and reduced generated imagery to invisible gradients. The simulator should
+   feel like a custom retro railway world; OpenFreeMap remains underneath as a
+   coordinate guide, not the art direction. */
+#artLayer {
+  opacity: 0.94;
+  background-position:
+    center,
+    calc(50% + var(--art-x, 0px)) calc(50% + var(--art-y, 0px));
+  background-size: cover, cover;
+  filter: saturate(1.12) contrast(1.08) brightness(0.92);
+  mix-blend-mode: normal;
+}
+
+#artLayer[data-detail="0"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-01-japan-national-board.webp");
+}
+#artLayer[data-detail="1"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-02-japan-rail-atlas.webp");
+}
+#artLayer[data-detail="2"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-03-tokaido-national-corridor.webp");
+}
+#artLayer[data-detail="3"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-04-central-honshu-railway.webp");
+}
+#artLayer[data-detail="4"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-05-kanagawa-corridor.webp");
+}
+#artLayer[data-detail="5"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-06-tokyo-yokohama-approach.webp");
+}
+#artLayer[data-detail="6"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-07-tokyo-yard-city.webp");
+}
+#artLayer[data-detail="7"],
+#artLayer[data-detail="8"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp");
+}
+#artLayer[data-detail="9"],
+#artLayer[data-detail="10"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-10-yokohama-station-close.webp");
+}
+#artLayer[data-detail="11"],
+#artLayer[data-detail="12"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-12-nagoya-station-close.webp");
+}
+#artLayer[data-detail="13"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-14-kyoto-station-close.webp");
+}
+#artLayer[data-detail="14"],
+#artLayer[data-detail="15"] {
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.02), rgba(7, 15, 18, 0.12)), url("/assets-generated/lod-style-v2/lod-16-shin-osaka-close.webp");
+}
+
+#artLayer[data-station="tokyo"][data-detail="10"],
+#artLayer[data-station="tokyo"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="tokyo"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp"); }
+#artLayer[data-station="tokyo"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp"); }
+#artLayer[data-station="tokyo"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp"); }
+#artLayer[data-station="tokyo"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="yokohama"][data-detail="10"],
+#artLayer[data-station="yokohama"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="yokohama"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp"); }
+#artLayer[data-station="yokohama"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/yokohama-z13-station-yard.webp"); }
+#artLayer[data-station="yokohama"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/yokohama-z14-rail-district-v4.webp"); }
+#artLayer[data-station="yokohama"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="nagoya"][data-detail="10"],
+#artLayer[data-station="nagoya"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="nagoya"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp"); }
+#artLayer[data-station="nagoya"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/nagoya-z13-station-yard.webp"); }
+#artLayer[data-station="nagoya"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/nagoya-z14-rail-district-v4.webp"); }
+#artLayer[data-station="nagoya"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="kyoto"][data-detail="10"],
+#artLayer[data-station="kyoto"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="kyoto"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp"); }
+#artLayer[data-station="kyoto"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/kyoto-z13-station-yard.webp"); }
+#artLayer[data-station="kyoto"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/kyoto-z14-rail-district-v4.webp"); }
+#artLayer[data-station="kyoto"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp"); }
+
+#artLayer[data-station="osaka"][data-detail="10"],
+#artLayer[data-station="osaka"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp"); }
+#artLayer[data-station="osaka"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/osaka-z12-station-context-v5.webp"); }
+#artLayer[data-station="osaka"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/osaka-z13-station-yard.webp"); }
+#artLayer[data-station="osaka"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/osaka-z14-rail-district-v4.webp"); }
+#artLayer[data-station="osaka"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp"); }
+
+#map[data-view="overview"] .maplibregl-canvas { opacity: 0.28; filter: saturate(0.9) contrast(1.04) brightness(0.68); }
+#map[data-view="regional"] .maplibregl-canvas { opacity: 0.24; filter: saturate(0.86) contrast(1.04) brightness(0.64); }
+#map[data-view="corridor"] .maplibregl-canvas { opacity: 0.20; filter: saturate(0.82) contrast(1.02) brightness(0.6); }
+#map[data-view="city"] .maplibregl-canvas { opacity: 0.16; filter: saturate(0.78) contrast(1) brightness(0.58); }
+
+/* Tokyo-entry art direction, v12.
+   Generated city art is the close-view surface. OpenFreeMap stays as a faint
+   coordinate/debug underlay so the visitor sees a polished station world, not
+   a dark road map with pasted sprites. */
+#artLayer {
+  opacity: 1;
+  filter: saturate(1.22) contrast(1.12) brightness(1.08);
+  background-position: center, center;
+  background-size: cover, cover;
+}
+
+#artLayer[data-station="tokyo"][data-detail="10"],
+#artLayer[data-station="tokyo"][data-detail="11"],
+#artLayer[data-station="tokyo"][data-detail="12"],
+#artLayer[data-station="tokyo"][data-detail="13"],
+#artLayer[data-station="tokyo"][data-detail="14"],
+#artLayer[data-station="tokyo"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.07)),
+    url("/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp");
+  background-position: center, center;
+  background-size: cover, cover;
+}
+
+#artLayer[data-station="tokyo"][data-detail="15"] {
+  filter: saturate(1.3) contrast(1.15) brightness(1.14);
+}
+
+#map[data-view="overview"] .maplibregl-canvas {
+  opacity: 0.16;
+  filter: saturate(0.82) contrast(1.02) brightness(0.62);
+}
+
+#map[data-view="regional"] .maplibregl-canvas {
+  opacity: 0.11;
+  filter: saturate(0.78) contrast(1.0) brightness(0.58);
+}
+
+#map[data-view="corridor"] .maplibregl-canvas {
+  opacity: 0.07;
+  filter: saturate(0.7) contrast(0.96) brightness(0.5);
+}
+
+#map[data-view="city"] .maplibregl-canvas {
+  opacity: 0.025;
+  filter: saturate(0.6) contrast(0.9) brightness(0.42);
+}
+
+#map[data-view="city"] #scene {
+  mix-blend-mode: normal;
+}
+
+/* Tokyo close LOD specificity, v13.
+   Use distinct generated plates per close zoom band instead of enlarging one
+   low-resolution overlay across every scale. */
+#artLayer[data-station="tokyo"][data-detail="10"],
+#artLayer[data-station="tokyo"][data-detail="11"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.06)),
+    url("/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp");
+}
+
+#artLayer[data-station="tokyo"][data-detail="12"],
+#artLayer[data-station="tokyo"][data-detail="13"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.055)),
+    url("/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp");
+}
+
+#artLayer[data-station="tokyo"][data-detail="14"],
+#artLayer[data-station="tokyo"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.04)),
+    url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp");
+}
+
+/* Speed, usability, and reference-style pass, v15. */
+.loading-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(5, 13, 15, 0.68), rgba(5, 13, 15, 0.34)),
+    url("/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp") center / cover no-repeat,
+    #061018;
+  transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+.loading-screen.hidden,
+body.is-ready .loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loading-card {
+  width: min(420px, calc(100vw - 40px));
+  padding: 22px 24px 20px;
+  background: linear-gradient(180deg, rgba(22, 35, 35, 0.96), rgba(5, 13, 15, 0.98));
+  border: 1px solid rgba(180, 213, 198, 0.55);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.loading-kicker,
+.section-kicker {
+  letter-spacing: 0.14em;
+}
+
+.loading-title {
+  margin-top: 4px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #eef8ed;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+.loading-track {
+  position: relative;
+  height: 10px;
+  margin: 18px 0 12px;
+  overflow: hidden;
+  border: 1px solid rgba(166, 202, 190, 0.38);
+  background: rgba(5, 16, 20, 0.86);
+}
+
+.loading-track span {
+  position: absolute;
+  inset: 1px auto 1px 1px;
+  width: 42%;
+  background: linear-gradient(90deg, #3a7ed2, #e6c36f, #9be082);
+  animation: loadingRail 1.05s ease-in-out infinite alternate;
+}
+
+.loading-status {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+@keyframes loadingRail {
+  from { transform: translateX(0); }
+  to { transform: translateX(135%); }
+}
+
+.lod-debug.collapsed .lod-debug-body {
+  display: none;
+}
+
+.ops-right .lod-debug.collapsed {
+  padding-bottom: 10px;
+}
+
+.hud-button,
+.segmented button,
+select {
+  min-height: 34px;
+}
+
+body.hud-minimal .ops-left,
+body.hud-minimal .ops-right,
+body.hud-minimal .current-card,
+body.hud-minimal .ops-bottom {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+body.hud-minimal .ops-topbar {
+  opacity: 0.9;
+}
+
+body.hud-minimal #hudToggle {
+  pointer-events: auto;
+}
+
+#artLayer[data-station="yokohama"][data-detail="12"],
+#artLayer[data-station="yokohama"][data-detail="13"],
+#artLayer[data-station="yokohama"][data-detail="14"],
+#artLayer[data-station="yokohama"][data-detail="15"] {
+  filter: saturate(1.22) contrast(1.1) brightness(1.08);
+}
+
+#artLayer[data-station="nagoya"][data-detail="12"],
+#artLayer[data-station="nagoya"][data-detail="13"],
+#artLayer[data-station="nagoya"][data-detail="14"],
+#artLayer[data-station="nagoya"][data-detail="15"],
+#artLayer[data-station="kyoto"][data-detail="12"],
+#artLayer[data-station="kyoto"][data-detail="13"],
+#artLayer[data-station="kyoto"][data-detail="14"],
+#artLayer[data-station="kyoto"][data-detail="15"],
+#artLayer[data-station="osaka"][data-detail="12"],
+#artLayer[data-station="osaka"][data-detail="13"],
+#artLayer[data-station="osaka"][data-detail="14"],
+#artLayer[data-station="osaka"][data-detail="15"] {
+  filter: saturate(1.18) contrast(1.08) brightness(1.06);
+}
+
+@media (max-width: 900px) {
+  .ops-left {
+    max-height: 42vh;
+    overflow: auto;
+  }
+
+  .ops-right {
+    display: none;
+  }
+
+  .current-card {
+    left: 12px;
+    right: 12px;
+    bottom: 54px;
+    width: auto;
+  }
+
+  .ops-topbar {
+    gap: 8px;
+  }
+
+  .ops-title .subtitle,
+  .ops-metrics {
+    display: none;
+  }
+}
+
+/* City-view recovery, v16.
+   Station view must be unmistakably generated-art-led. OpenFreeMap is reduced
+   to a barely visible coordinate underlay; the city plate carries the look. */
+#artLayer {
+  z-index: 1;
+  opacity: 1;
+  background-color: #061018;
+  filter: saturate(1.28) contrast(1.16) brightness(1.16);
+  background-position: center, center;
+  background-size: cover, cover;
+}
+
+#map[data-view="city"] .maplibregl-canvas {
+  opacity: 0.018 !important;
+  filter: saturate(0.5) contrast(0.82) brightness(0.32) !important;
+}
+
+#map[data-view="corridor"] .maplibregl-canvas {
+  opacity: 0.08 !important;
+  filter: saturate(0.62) contrast(0.88) brightness(0.42) !important;
+}
+
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="12"],
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="13"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
+    url("/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="14"],
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
+    url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="yokohama"][data-detail="12"],
+#artLayer[data-view="city"][data-station="yokohama"][data-detail="13"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
+    url("/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="yokohama"][data-detail="14"],
+#artLayer[data-view="city"][data-station="yokohama"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
+    url("/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="nagoya"][data-detail="12"],
+#artLayer[data-view="city"][data-station="nagoya"][data-detail="13"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
+    url("/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="nagoya"][data-detail="14"],
+#artLayer[data-view="city"][data-station="nagoya"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
+    url("/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="kyoto"][data-detail="12"],
+#artLayer[data-view="city"][data-station="kyoto"][data-detail="13"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
+    url("/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="kyoto"][data-detail="14"],
+#artLayer[data-view="city"][data-station="kyoto"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
+    url("/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="osaka"][data-detail="12"],
+#artLayer[data-view="city"][data-station="osaka"][data-detail="13"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
+    url("/assets-generated/polish-v5/osaka-z12-station-context-v5.webp") !important;
+}
+
+#artLayer[data-view="city"][data-station="osaka"][data-detail="14"],
+#artLayer[data-view="city"][data-station="osaka"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
+    url("/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp") !important;
+}
+
+#map[data-view="city"] #scene {
+  filter: saturate(0.96) contrast(0.92) brightness(0.96);
+}
+
+/* Mobile rescue and station-art foreground pass, v17.
+   The portrait/tablet experience must be a simulator viewport first, not a
+   desktop control wall. Generated station art is promoted to the visible world
+   layer while MapLibre becomes a coordinate underlay. */
+#artLayer[data-view="city"] {
+  opacity: 1 !important;
+  filter: saturate(1.34) contrast(1.08) brightness(1.36) !important;
+  background-position: center 48%, center 48% !important;
+  background-size: cover, cover !important;
+}
+
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="12"],
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="13"],
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="14"],
+#artLayer[data-view="city"][data-station="tokyo"][data-detail="15"] {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.00)),
+    url("/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp") !important;
+}
+
+#map[data-view="city"] .maplibregl-canvas {
+  opacity: 0.006 !important;
+  filter: saturate(0.42) contrast(0.76) brightness(0.24) !important;
+}
+
+#map[data-view="city"] #scene {
+  filter: saturate(1.0) contrast(0.92) brightness(0.98);
+}
+
+@media (max-width: 1240px), (pointer: coarse) and (max-width: 1360px) {
+  #app::after {
+    opacity: 0.22;
+  }
+
+  .ops-topbar {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .ops-clock,
+  .ops-metrics,
+  .ops-sound,
+  .subtitle {
+    display: none !important;
+  }
+
+  .ops-title {
+    min-height: 44px;
+    padding: 8px 14px 4px;
+    border-right: 0;
+    justify-content: center;
+  }
+
+  .logo {
+    font-size: clamp(24px, 5vw, 42px);
+    text-align: center;
+  }
+
+  .ops-controls {
+    min-height: auto;
+    padding: 8px 10px 10px;
+    border-right: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .segmented {
+    gap: 5px;
+  }
+
+  .hud-button,
+  .segmented button,
+  select {
+    min-height: 42px;
+    padding: 6px 13px;
+    font-size: 16px;
+  }
+
+  .hud-button.mini {
+    min-width: 46px;
+  }
+
+  .hud-range {
+    width: min(230px, 28vw);
+    min-width: 150px;
+  }
+
+  .zoom-range {
+    width: min(230px, 30vw);
+  }
+
+  .ops-left,
+  .ops-right {
+    display: none !important;
+  }
+
+  .current-card {
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: 42px;
+    width: auto;
+    max-height: 30vh;
+    overflow: hidden auto;
+    padding: 0;
+  }
+
+  .current-card .section-kicker {
+    display: none;
+  }
+
+  .details-title {
+    margin: 10px 12px 4px;
+    font-size: 19px;
+  }
+
+  .details-body {
+    padding: 0 12px 10px;
+    font-size: 13px;
+  }
+
+  .train-preview {
+    height: 62px;
+    margin: 6px 0 8px;
+    background-size: 94% auto;
+    background-position: center 48%;
+  }
+
+  .detail-row {
+    min-height: 24px;
+    font-size: 12px;
+  }
+
+  .route-timeline {
+    display: none;
+  }
+
+  .ops-bottom {
+    height: 38px;
+  }
+
+  .notification-tab {
+    min-width: auto;
+    padding-inline: 12px;
+  }
+
+  .notification-feed {
+    gap: 18px;
+    padding-inline: 12px;
+    font-size: 12px;
+  }
+
+  .alert-soft {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .ops-title {
+    min-height: 38px;
+    padding-top: 6px;
+  }
+
+  .logo {
+    font-size: 25px;
+  }
+
+  .ops-controls {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-inline: 8px;
+  }
+
+  .hud-button,
+  .segmented button {
+    min-height: 36px;
+    padding-inline: 10px;
+    font-size: 14px;
+    flex: 0 0 auto;
+  }
+
+  #timeScrub {
+    display: none;
+  }
+
+  .zoom-tools {
+    flex: 0 0 auto;
+  }
+
+  .zoom-range {
+    width: 120px;
+    min-width: 120px;
+  }
+
+  .current-card {
+    max-height: 24vh;
+  }
+
+  .train-preview {
+    display: none;
+  }
+}
+
+/* Compact HUD hard gate, v18.
+   This is runtime-backed by body.compact-hud so portrait tablets and mobile
+   browsers cannot fall through into the desktop control-wall layout. */
+body.compact-hud .ops-clock,
+body.compact-hud .ops-metrics,
+body.compact-hud .ops-sound,
+body.compact-hud .subtitle,
+body.compact-hud .ops-left,
+body.compact-hud .ops-right {
+  display: none !important;
+}
+
+body.compact-hud .ops-topbar {
+  grid-template-columns: 1fr;
+  min-height: auto;
+  padding: 0;
+}
+
+body.compact-hud .ops-title {
+  min-height: 42px;
+  padding: 7px 12px 3px;
+  border-right: 0;
+  justify-content: center;
+}
+
+body.compact-hud .logo {
+  font-size: clamp(24px, 5vw, 40px);
+  text-align: center;
+}
+
+body.compact-hud .ops-controls {
+  min-height: auto;
+  padding: 8px 8px 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-right: 0;
+}
+
+body.compact-hud .hud-button,
+body.compact-hud .segmented button,
+body.compact-hud select {
+  min-height: 38px;
+  padding: 6px 12px;
+  font-size: clamp(14px, 2.2vw, 18px);
+}
+
+body.compact-hud #timeScrub {
+  display: none;
+}
+
+body.compact-hud .zoom-tools {
+  flex: 0 1 auto;
+}
+
+body.compact-hud .zoom-range {
+  width: min(180px, 34vw);
+  min-width: 112px;
+}
+
+body.compact-hud .current-card {
+  left: 10px !important;
+  right: 10px !important;
+  top: auto !important;
+  bottom: 40px !important;
+  width: auto !important;
+  max-height: min(255px, 28vh) !important;
+  overflow: hidden auto;
+  padding: 0;
+}
+
+body.compact-hud .current-card .section-kicker,
+body.compact-hud .route-timeline {
+  display: none !important;
+}
+
+body.compact-hud .details-title {
+  margin: 9px 12px 4px;
+  font-size: clamp(17px, 3vw, 22px);
+}
+
+body.compact-hud .details-body {
+  padding: 0 12px 10px;
+  font-size: 13px;
+}
+
+body.compact-hud .train-preview {
+  height: 58px;
+  margin: 5px 0 7px;
+  background-size: 88% auto;
+  background-position: center 46%;
+}
+
+body.compact-hud .detail-row {
+  min-height: 23px;
+  font-size: 12px;
+}
+
+body.compact-hud .ops-bottom {
+  height: 36px;
+}
+
+body.compact-hud .notification-tab {
+  padding-inline: 12px;
+  min-width: auto;
+}
+
+body.compact-hud .notification-feed {
+  gap: 16px;
+  padding-inline: 12px;
+  font-size: 12px;
+}
+
+body.compact-hud .alert-soft {
+  display: none;
+}
+
+body[data-view="city"] #artLayer {
+  opacity: 1 !important;
+  filter: saturate(1.28) contrast(1.08) brightness(1.22) !important;
+  background-size: cover, cover !important;
+  background-position: center, center !important;
+}
+
+body[data-view="city"][data-station="tokyo"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.00)),
+    url("/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp") !important;
+}
+
+body[data-view="city"] #map .maplibregl-canvas {
+  opacity: 0.001 !important;
+  filter: saturate(0.25) contrast(0.65) brightness(0.18) !important;
+}
+
+body[data-view="city"] #scene {
+  filter: saturate(1.03) contrast(0.98) brightness(1.04);
+}
+
+@media (max-width: 620px) {
+  body.compact-hud .ops-controls {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  body.compact-hud .current-card {
+    max-height: 22vh !important;
+  }
+
+  body.compact-hud .train-preview {
+    display: none;
+  }
+}
+
+/* World-layer ownership pass, v19: one art source owns each LOD, and train cards never crop vehicles. */
+.train-preview,
+body.compact-hud .train-preview {
+  background-size: contain !important;
+  background-position: center center !important;
+  overflow: hidden !important;
+}
+
+.train-preview {
+  height: 108px;
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/polish-v4/train-n700s-full-v4.webp") !important;
+}
+
+.train-preview-n700a {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/polish-v4/train-n700a-full-v4.webp") !important;
+}
+
+.train-preview-series500 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/polish-v4/train-500series-full-v4.webp") !important;
+}
+
+.train-preview-doctor923 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.36)),
+    url("/assets-generated/polish-v4/train-doctor-yellow-full-v4.webp") !important;
+}
+
+body.compact-hud .train-preview {
+  height: 72px;
+}
+
+body[data-view="overview"] #artLayer,
+body[data-view="regional"] #artLayer,
+body[data-view="corridor"] #artLayer {
+  opacity: 0 !important;
+}
+
+body[data-view="city"] #artLayer {
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+
+body[data-view="city"] #scene {
+  filter: saturate(1.02) contrast(1.0) brightness(1.02) !important;
+}
+
+body[data-view="city"] .maplibregl-canvas-container,
+body[data-view="city"] .maplibregl-canvas {
+  opacity: 0.001 !important;
+}
+
+@media (max-width: 620px) {
+  body.compact-hud .train-preview {
+    display: block;
+    height: 60px;
+  }
+}
+
+
+/* Operational layer integration, v20: generated city plate owns close-view realism; vectors become unobtrusive simulation affordances. */
+body[data-view="city"] .station-label,
+body[data-view="city"] .route-label {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.78));
+}
+
+body[data-view="city"] #scene {
+  mix-blend-mode: normal !important;
+}
+
+body[data-view="city"] .maplibregl-control-container {
+  display: none !important;
+}
+
+/* Generated LOD atlas pass, v21: every zoom band gets authored game art.
+   MapLibre remains the hidden coordinate engine; visitors should not fall back
+   to the dark road-map layer when zooming away from the station close-up. */
+body[data-view="overview"] #artLayer,
+body[data-view="regional"] #artLayer,
+body[data-view="corridor"] #artLayer,
+body[data-view="city"] #artLayer {
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  filter: saturate(1.18) contrast(1.07) brightness(1.05) !important;
+}
+
+body[data-view="overview"] .maplibregl-canvas-container,
+body[data-view="overview"] .maplibregl-canvas,
+body[data-view="regional"] .maplibregl-canvas-container,
+body[data-view="regional"] .maplibregl-canvas,
+body[data-view="corridor"] .maplibregl-canvas-container,
+body[data-view="corridor"] .maplibregl-canvas,
+body[data-view="city"] .maplibregl-canvas-container,
+body[data-view="city"] .maplibregl-canvas {
+  opacity: 0.001 !important;
+  filter: saturate(0.25) contrast(0.7) brightness(0.2) !important;
+}
+
+body[data-detail="0"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.02), rgba(6, 18, 20, 0.08)),
+    url("/assets-generated/lod-style-v2/lod-01-japan-national-board.webp") !important;
+}
+
+body[data-detail="1"] #artLayer,
+body[data-detail="2"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.02), rgba(6, 18, 20, 0.08)),
+    url("/assets-generated/lod-style-v2/lod-02-japan-rail-atlas.webp") !important;
+}
+
+body[data-detail="3"] #artLayer,
+body[data-detail="4"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.02), rgba(6, 18, 20, 0.08)),
+    url("/assets-generated/lod-style-v2/lod-03-tokaido-national-corridor.webp") !important;
+}
+
+body[data-detail="5"] #artLayer,
+body[data-detail="6"] #artLayer,
+body[data-detail="7"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.01), rgba(6, 18, 20, 0.06)),
+    url("/assets-generated/lod-style-v2/lod-04-central-honshu-railway.webp") !important;
+}
+
+body[data-detail="8"] #artLayer,
+body[data-detail="9"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.01), rgba(6, 18, 20, 0.05)),
+    url("/assets-generated/lod-style-v2/lod-06-tokyo-yokohama-approach.webp") !important;
+}
+
+body[data-detail="10"] #artLayer,
+body[data-detail="11"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.05)),
+    url("/assets-generated/lod-style-v2/lod-07-tokyo-yard-city.webp") !important;
+}
+
+body[data-station="tokyo"][data-detail="10"] #artLayer,
+body[data-station="tokyo"][data-detail="11"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
+    url("/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp") !important;
+}
+
+body[data-station="tokyo"][data-detail="12"] #artLayer,
+body[data-station="tokyo"][data-detail="13"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.035)),
+    url("/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp") !important;
+}
+
+body[data-station="tokyo"][data-detail="14"] #artLayer,
+body[data-station="tokyo"][data-detail="15"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.025)),
+    url("/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp") !important;
+}
+
+body[data-station="yokohama"][data-detail="10"] #artLayer,
+body[data-station="yokohama"][data-detail="11"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
+    url("/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp") !important;
+}
+
+body[data-station="nagoya"][data-detail="10"] #artLayer,
+body[data-station="nagoya"][data-detail="11"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
+    url("/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp") !important;
+}
+
+body[data-station="kyoto"][data-detail="10"] #artLayer,
+body[data-station="kyoto"][data-detail="11"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
+    url("/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp") !important;
+}
+
+body[data-station="osaka"][data-detail="10"] #artLayer,
+body[data-station="osaka"][data-detail="11"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
+    url("/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp") !important;
+}
+
+body[data-detail="12"] #scene,
+body[data-detail="13"] #scene,
+body[data-detail="14"] #scene,
+body[data-detail="15"] #scene {
+  filter: saturate(0.98) contrast(0.96) brightness(0.98) !important;
+}
+
+body[data-view="overview"] #scene,
+body[data-view="regional"] #scene,
+body[data-view="corridor"] #scene {
+  filter: saturate(1.02) contrast(1.01) brightness(1.02) !important;
+}
+
+.train-preview {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/vehicle-alpha/train-n700s-blue.webp") !important;
+}
+
+.train-preview-n700a {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/vehicle-alpha/train-n700a-gold.webp") !important;
+}
+
+.train-preview-series500 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/vehicle-alpha/train-500series-slate.webp") !important;
+}
+
+.train-preview-doctor923 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/vehicle-alpha/train-doctor-yellow.webp") !important;
+}
+
+/* LOD repair v22: generated plates own every visitor-facing zoom band.
+   MapLibre remains hidden coordinate infrastructure; old OSM/guide layers no
+   longer bleed through or flatten the generated city artwork. */
+#map[data-view="overview"] .maplibregl-canvas-container,
+#map[data-view="overview"] .maplibregl-canvas,
+#map[data-view="regional"] .maplibregl-canvas-container,
+#map[data-view="regional"] .maplibregl-canvas,
+#map[data-view="corridor"] .maplibregl-canvas-container,
+#map[data-view="corridor"] .maplibregl-canvas,
+#map[data-view="city"] .maplibregl-canvas-container,
+#map[data-view="city"] .maplibregl-canvas {
+  opacity: 0.001 !important;
+  filter: saturate(0.18) contrast(0.62) brightness(0.16) !important;
+}
+
+body[data-view="overview"] #artLayer,
+body[data-view="regional"] #artLayer,
+body[data-view="corridor"] #artLayer,
+body[data-view="city"] #artLayer {
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  background-color: #071018 !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  filter: saturate(1.16) contrast(1.06) brightness(1.04) !important;
+}
+
+body[data-detail="0"] #artLayer,
+body[data-detail="1"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.04)),
+    url("/assets-generated/map-lod-candidates/japan-overview-reference-style.webp") !important;
+}
+
+body[data-detail="2"] #artLayer,
+body[data-detail="3"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.04)),
+    url("/assets-generated/lod-style-v2/lod-02-japan-rail-atlas.webp") !important;
+}
+
+body[data-detail="4"] #artLayer,
+body[data-detail="5"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.04)),
+    url("/assets-generated/lod-style-v2/lod-03-tokaido-national-corridor.webp") !important;
+}
+
+body[data-detail="6"] #artLayer,
+body[data-detail="7"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.035)),
+    url("/assets-generated/lod-style-v2/lod-04-central-honshu-railway.webp") !important;
+}
+
+body[data-detail="8"] #artLayer,
+body[data-detail="9"] #artLayer,
+body[data-station="tokyo"][data-detail="8"] #artLayer,
+body[data-station="tokyo"][data-detail="9"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.025)),
+    url("/assets-generated/lod-style-v2/lod-06-tokyo-yokohama-approach.webp") !important;
+}
+
+body[data-detail="10"] #artLayer,
+body[data-detail="11"] #artLayer,
+body[data-station="tokyo"][data-detail="10"] #artLayer,
+body[data-station="tokyo"][data-detail="11"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.02)),
+    url("/assets-generated/lod-style-v2/lod-07-tokyo-yard-city.webp") !important;
+}
+
+body[data-detail="12"] #artLayer,
+body[data-detail="13"] #artLayer,
+body[data-detail="14"] #artLayer,
+body[data-detail="15"] #artLayer,
+body[data-station="tokyo"][data-detail="12"] #artLayer,
+body[data-station="tokyo"][data-detail="13"] #artLayer,
+body[data-station="tokyo"][data-detail="14"] #artLayer,
+body[data-station="tokyo"][data-detail="15"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.015)),
+    url("/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp") !important;
+}
+
+body[data-station="yokohama"][data-detail="10"] #artLayer,
+body[data-station="yokohama"][data-detail="11"] #artLayer,
+body[data-station="yokohama"][data-detail="12"] #artLayer,
+body[data-station="yokohama"][data-detail="13"] #artLayer,
+body[data-station="yokohama"][data-detail="14"] #artLayer,
+body[data-station="yokohama"][data-detail="15"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.02)),
+    url("/assets-generated/map-lod-candidates/shin-yokohama-city-reference-style.webp") !important;
+}
+
+body[data-station="nagoya"][data-detail="10"] #artLayer,
+body[data-station="nagoya"][data-detail="11"] #artLayer,
+body[data-station="nagoya"][data-detail="12"] #artLayer,
+body[data-station="nagoya"][data-detail="13"] #artLayer,
+body[data-station="nagoya"][data-detail="14"] #artLayer,
+body[data-station="nagoya"][data-detail="15"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.02)),
+    url("/assets-generated/map-lod-candidates/nagoya-city-reference-style.webp") !important;
+}
+
+body[data-station="kyoto"][data-detail="10"] #artLayer,
+body[data-station="kyoto"][data-detail="11"] #artLayer,
+body[data-station="kyoto"][data-detail="12"] #artLayer,
+body[data-station="kyoto"][data-detail="13"] #artLayer,
+body[data-station="kyoto"][data-detail="14"] #artLayer,
+body[data-station="kyoto"][data-detail="15"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.02)),
+    url("/assets-generated/map-lod-candidates/kyoto-city-reference-style.webp") !important;
+}
+
+body[data-station="osaka"][data-detail="10"] #artLayer,
+body[data-station="osaka"][data-detail="11"] #artLayer,
+body[data-station="osaka"][data-detail="12"] #artLayer,
+body[data-station="osaka"][data-detail="13"] #artLayer,
+body[data-station="osaka"][data-detail="14"] #artLayer,
+body[data-station="osaka"][data-detail="15"] #artLayer {
+  background-image:
+    linear-gradient(180deg, rgba(4, 12, 15, 0), rgba(4, 12, 15, 0.02)),
+    url("/assets-generated/map-lod-candidates/shin-osaka-city-reference-style.webp") !important;
+}
+
+body[data-detail="8"] #scene,
+body[data-detail="9"] #scene,
+body[data-detail="10"] #scene,
+body[data-detail="11"] #scene,
+body[data-detail="12"] #scene,
+body[data-detail="13"] #scene,
+body[data-detail="14"] #scene,
+body[data-detail="15"] #scene {
+  filter: saturate(0.92) contrast(0.9) brightness(0.98) !important;
+}
+
+.train-preview,
+body.compact-hud .train-preview {
+  height: clamp(96px, 8.5vw, 132px) !important;
+  background-size: 82% auto !important;
+  background-position: center center !important;
+}
+
+/* v23 architectural repair: one generated world plate owns every public zoom.
+   MapLibre stays as hidden coordinate infrastructure; generated art no longer
+   competes with older CSS selectors or semi-transparent projected plates. */
+html body #app > #artLayer {
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  background-color: #071018 !important;
+  background-repeat: no-repeat !important;
+  background-position: center center, center center !important;
+  background-size: 100% 100%, cover !important;
+  filter: saturate(1.05) contrast(1.03) brightness(1) !important;
+  transform: none !important;
+}
+
+html body #map .maplibregl-canvas-container,
+html body #map .maplibregl-canvas {
+  opacity: 0.001 !important;
+  filter: saturate(0.1) contrast(0.42) brightness(0.1) !important;
+}
+
+html body #scene {
+  filter: saturate(0.98) contrast(0.96) brightness(1) !important;
+}
+
+html body[data-detail="12"] #scene,
+html body[data-detail="13"] #scene,
+html body[data-detail="14"] #scene,
+html body[data-detail="15"] #scene {
+  filter: saturate(0.94) contrast(0.9) brightness(0.99) !important;
+}
+
+html body .train-preview,
+html body.compact-hud .train-preview {
+  height: clamp(112px, 9vw, 150px) !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: contain !important;
+}
+
+html body .train-preview,
+html body .train-preview-n700s {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/polish-v4/train-n700s-full-v4.webp") !important;
+}
+
+html body .train-preview-n700a {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/polish-v4/train-n700a-full-v4.webp") !important;
+}
+
+html body .train-preview-series500 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/polish-v4/train-500series-full-v4.webp") !important;
+}
+
+html body .train-preview-doctor923 {
+  background-image:
+    linear-gradient(180deg, rgba(6, 16, 24, 0.02), rgba(6, 16, 24, 0.28)),
+    url("/assets-generated/polish-v4/train-doctor-yellow-full-v4.webp") !important;
+}
+
+/* v24 generated art-space authority: public mode aligns operational rails,
+   station labels, and trains to authored image plates. The real map projection
+   is intentionally debug-only so it cannot visually fight the generated world. */
+html body:not(.accuracy-debug) #map .maplibregl-canvas-container,
+html body:not(.accuracy-debug) #map .maplibregl-canvas {
+  opacity: 0.001 !important;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  html body.compact-hud .ops-left,
+  html body.compact-hud .legend-card {
+    max-height: 46vh !important;
+    overflow: auto !important;
+  }
+
+  html body.compact-hud .details-panel {
+    max-height: 46vh !important;
+    overflow: auto !important;
+  }
+
+  html body.compact-hud .train-preview {
+    height: 92px !important;
+  }
+}
+
+/* v25 structural recovery: generated plates are the public world. The
+   coordinate map is no longer allowed to bleed through unless accuracy debug is
+   explicitly enabled, which prevents the old dark map/transparent-city failure. */
+html body.generated-world:not(.accuracy-debug) #app > #artLayer {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background-color: #071018 !important;
+  background-repeat: no-repeat !important;
+  background-position: center center, var(--world-art-position, center center) !important;
+  background-size: 100% 100%, var(--world-art-size, cover) !important;
+  mix-blend-mode: normal !important;
+  filter: saturate(1.06) contrast(1.03) brightness(1.02) !important;
+  transform: none !important;
+}
+
+html body.generated-world:not(.accuracy-debug) #map,
+html body.generated-world:not(.accuracy-debug) #map .maplibregl-canvas-container,
+html body.generated-world:not(.accuracy-debug) #map .maplibregl-canvas,
+html body.generated-world:not(.accuracy-debug) .maplibregl-canvas {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+html body.generated-world.accuracy-debug #map,
+html body.generated-world.accuracy-debug #map .maplibregl-canvas-container,
+html body.generated-world.accuracy-debug #map .maplibregl-canvas {
+  opacity: 0.42 !important;
+  visibility: visible !important;
+  filter: saturate(0.85) contrast(1.05) brightness(0.72) !important;
+}
+
+html body.generated-world:not(.accuracy-debug) #scene {
+  filter: saturate(1) contrast(0.99) brightness(1) !important;
+}
+
+html body.generated-world[data-view="overview"] #scene,
+html body.generated-world[data-view="regional"] #scene {
+  filter: saturate(1.02) contrast(1) brightness(1) !important;
+}
+
+html body.generated-world[data-view="city"] #scene {
+  filter: saturate(0.98) contrast(0.98) brightness(1) !important;
+}
+
+html body.generated-world .train-preview {
+  min-height: 118px !important;
+  max-height: 170px !important;
+  background-size: contain !important;
+  background-position: center center !important;
+}
+
+html body.no-webgl #scene {
+  display: none !important;
+}
+
+html body.no-webgl #map,
+html body.no-webgl #map .maplibregl-canvas-container,
+html body.no-webgl #map .maplibregl-canvas {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+html body.no-webgl #app > #artLayer {
+  display: block !important;
+  opacity: 1 !important;
+  filter: saturate(1.08) contrast(1.05) brightness(1.04) !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+  html body.compact-hud {
+    --panel-bg: rgba(7, 17, 18, 0.92);
+  }
+
+  html body.compact-hud .ops-topbar {
+    min-height: 82px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+    gap: 6px !important;
+    padding: 8px 10px !important;
+  }
+
+  html body.compact-hud .ops-title {
+    min-width: 0 !important;
+  }
+
+  html body.compact-hud .logo {
+    font-size: clamp(28px, 7vw, 42px) !important;
+    white-space: nowrap !important;
+  }
+
+  html body.compact-hud .ops-controls {
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    padding-bottom: 2px !important;
+    scrollbar-width: none !important;
+  }
+
+  html body.compact-hud .ops-controls::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  html body.compact-hud .ops-left,
+  html body.compact-hud .ops-right,
+  html body.compact-hud .legend-card {
+    display: none !important;
+  }
+
+  html body.compact-hud .current-card {
+    top: auto !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 42px !important;
+    width: auto !important;
+    max-height: 38vh !important;
+    overflow: auto !important;
+    border-radius: 10px !important;
+  }
+
+  html body.compact-hud .current-card .section-kicker,
+  html body.compact-hud .route-timeline {
+    display: none !important;
+  }
+
+  html body.compact-hud .train-preview {
+    height: 86px !important;
+    min-height: 86px !important;
+    max-height: 86px !important;
+  }
+
+  html body.compact-hud .details-body {
+    grid-template-columns: 1fr !important;
+    gap: 4px !important;
+  }
+
+  html body.compact-hud .ops-bottom {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 38px !important;
+    font-size: 13px !important;
+  }
+
+  html body.compact-hud .notification-feed {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+}

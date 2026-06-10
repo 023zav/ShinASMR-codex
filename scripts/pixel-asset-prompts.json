@@ -1,0 +1,27 @@
+[
+  {
+    "file": "v3-pixel-train-n700s.png",
+    "size": "1536x1024",
+    "prompt": "Crisp isometric pixel-art Shinkansen N700S-inspired train sprite, blue stripe, white aerodynamic nose, detailed windows, doors, roof panels, pantograph equipment, rails underneath, early 2000s Japanese transport game style, dense hand-authored pixel art, no text, no logos, transparent background."
+  },
+  {
+    "file": "v3-pixel-train-n700a.png",
+    "size": "1536x1024",
+    "prompt": "Crisp isometric pixel-art Shinkansen N700A-inspired train sprite, warm gold stripe, white aerodynamic nose, detailed windows, doors, roof panels, pantograph equipment, rails underneath, early 2000s Japanese transport game style, dense hand-authored pixel art, no text, no logos, transparent background."
+  },
+  {
+    "file": "v3-pixel-station.png",
+    "size": "1024x1024",
+    "prompt": "Crisp isometric pixel-art Shinkansen station module, elevated platform, canopy, overhead wires, guardrails, platform markings, tiny lamps, early 2000s Japanese transport game style, dense hand-authored pixel art, no text, transparent background."
+  },
+  {
+    "file": "v3-pixel-city-kit.png",
+    "size": "1536x1024",
+    "prompt": "Crisp isometric pixel-art Japanese city tile kit for Shinkansen simulator, compact office towers, apartment blocks, small houses, trees, roads, lamps, park pieces, rooftop details, bright but tasteful early 2000s city-builder style, dense hand-authored pixel art, no text, transparent background."
+  },
+  {
+    "file": "v3-pixel-track.png",
+    "size": "1536x1024",
+    "prompt": "Crisp isometric pixel-art elevated Shinkansen track module, concrete viaduct, ballast, sleepers, twin rails, overhead catenary poles and wires, platform-side detail, early 2000s Japanese transport game style, dense hand-authored pixel art, no text, transparent background."
+  }
+]

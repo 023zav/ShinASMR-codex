@@ -1,0 +1,34 @@
+[
+  {
+    "id": "n700s",
+    "name_en": "N700S",
+    "max_speed_kmh": 300,
+    "length_m": 400,
+    "livery_key": "white-blue",
+    "facts_en": ["Flagship Tokaido Shinkansen trainset.", "Designed for quiet, smooth high-speed service."]
+  },
+  {
+    "id": "n700a",
+    "name_en": "N700A",
+    "max_speed_kmh": 285,
+    "length_m": 400,
+    "livery_key": "white-gold",
+    "facts_en": ["Workhorse service on the corridor.", "Comfort-focused interiors."]
+  },
+  {
+    "id": "series500",
+    "name_en": "500 Series",
+    "max_speed_kmh": 300,
+    "length_m": 320,
+    "livery_key": "white-slate",
+    "facts_en": ["Retro-futuristic profile used here as a heritage visual variant.", "Narrow pointed nose gives it a distinct silhouette."]
+  },
+  {
+    "id": "doctor923",
+    "name_en": "923 Doctor Yellow",
+    "max_speed_kmh": 270,
+    "length_m": 400,
+    "livery_key": "doctor-yellow",
+    "facts_en": ["Inspection train inspired livery for visual variety.", "A rare service used here as a calm special run."]
+  }
+]
