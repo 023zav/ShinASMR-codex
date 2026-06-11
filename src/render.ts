@@ -3,6 +3,7 @@ import maplibregl from "maplibre-gl";
 import * as PIXI from "pixi.js";
 import { Line, Station, TrainType } from "./data/types";
 import { SimTrainState } from "./sim";
+import { withBase } from "./asset-base";
 
 export type RenderHandles = {
   app: PIXI.Application;
@@ -369,10 +370,10 @@ const applyWorldArt = (artEl: HTMLDivElement, plate: WorldArtPlate, band: Detail
       : band.index >= 8
         ? "linear-gradient(180deg, rgba(2, 8, 10, 0.015), rgba(2, 8, 10, 0.065))"
         : "linear-gradient(180deg, rgba(2, 8, 10, 0.00), rgba(2, 8, 10, 0.025))";
-  artEl.style.setProperty("--world-art-url", `url("${plate.url}")`);
+  artEl.style.setProperty("--world-art-url", `url("${withBase(plate.url)}")`);
   artEl.style.setProperty("--world-art-position", plate.position ?? "center center");
   artEl.style.setProperty("--world-art-size", plate.size ?? "cover");
-  artEl.style.setProperty("background-image", `${wash}, url("${plate.url}")`, "important");
+  artEl.style.setProperty("background-image", `${wash}, url("${withBase(plate.url)}")`, "important");
   artEl.style.setProperty("background-position", `center center, ${plate.position ?? "center center"}`, "important");
   artEl.style.setProperty("background-size", `100% 100%, ${plate.size ?? "cover"}`, "important");
   artEl.style.setProperty("background-repeat", "no-repeat", "important");
@@ -402,7 +403,7 @@ const loadGeneratedTextureKey = async (key: AssetKey, target: GeneratedTextures)
   const url = GENERATED_ASSETS[key];
   if (!url) return undefined;
   try {
-    const texture = await PIXI.Assets.load(url);
+    const texture = await PIXI.Assets.load(withBase(url));
     target[key] = texture;
     return texture;
   } catch {

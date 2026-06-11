@@ -13,8 +13,9 @@ import {
 } from "./data/types";
 import { initI18n, t } from "./i18n";
 import { Simulation } from "./sim";
+import { withBase } from "./asset-base";
 
-const DEFAULT_TOKYO_ART = "/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp";
+const DEFAULT_TOKYO_ART = withBase("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp");
 
 const errorMessage = (err: unknown) => {
   if (err instanceof Error) return err.message;
@@ -101,7 +102,7 @@ if (import.meta.env.DEV && "serviceWorker" in navigator) {
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch((err) => {
+    navigator.serviceWorker.register(withBase("/sw.js")).catch((err) => {
       console.warn("Service worker registration failed", err);
     });
   });
@@ -466,7 +467,7 @@ const boot = async () => {
   }
 
   if (window.location.search.includes("decals")) {
-    fetch("/assets/ui-decals.json")
+    fetch(withBase("/assets/ui-decals.json"))
       .then((r) => r.json())
       .then((data) => {
         const frames = data.frames ?? {};

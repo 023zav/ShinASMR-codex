@@ -1,7 +1,10 @@
 const DEV_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 const IS_DEV_HOST = DEV_HOSTS.has(self.location.hostname);
 const CACHE_NAME = "asmr-shinkansen-v3";
-const CORE_ASSETS = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg"];
+// Resolve against the registration scope so the worker also functions when
+// the app is served from a subpath (e.g. GitHub Pages project sites).
+const SCOPE_PATH = new URL(self.registration.scope).pathname;
+const CORE_ASSETS = [SCOPE_PATH, `${SCOPE_PATH}index.html`, `${SCOPE_PATH}manifest.webmanifest`, `${SCOPE_PATH}icon.svg`];
 
 if (IS_DEV_HOST) {
   self.addEventListener("install", (event) => {
@@ -43,7 +46,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match("/index.html"))
+      fetch(event.request).catch(() => caches.match(`${SCOPE_PATH}index.html`))
     );
     return;
   }
