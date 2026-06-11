@@ -84,19 +84,26 @@ const LANDMARK_BRIEFS: Record<string, string> = {
   hakata: "Fukuoka Tower: a slender triangular tower of silver-blue mirrored glass"
 };
 
+// Live trains are rendered as animated sprites on top of these plates, so the
+// painted scene must never contain a train of its own — an unmoving painted
+// train next to moving sprite trains breaks the illusion instantly.
+const NO_TRAINS =
+  " Important: every track and platform is completely empty — absolutely no trains, " +
+  "no locomotives, no carriages anywhere in the image.";
+
 const ZOOM_BRIEFS: Record<number, (theme: string) => string> = {
   10: (theme) =>
-    `Wide city-district map plate seen from high above: a Japanese city built around its shinkansen station, dense small rooftops in a street grid, the white elevated shinkansen station and its straight tracks crossing the scene. Surrounding geography and identity: ${theme}.`,
+    `Wide city-district map plate seen from high above: a Japanese city built around its shinkansen station, dense small rooftops in a street grid, the white elevated shinkansen station and its straight empty tracks crossing the scene. Surrounding geography and identity: ${theme}.${NO_TRAINS}`,
   11: (theme) =>
-    `Wide approach map plate: elevated shinkansen viaduct sweeping through city blocks toward the station district, rooftops and streets below. City identity: ${theme}.`,
+    `Wide approach map plate: empty elevated shinkansen viaduct sweeping through city blocks toward the station district, rooftops and streets below. City identity: ${theme}.${NO_TRAINS}`,
   12: (theme) =>
-    `Station-context map plate: the shinkansen station complex within several city blocks, elevated tracks entering the station hall, plazas and bus loops. City identity: ${theme}.`,
+    `Station-context map plate: the shinkansen station complex within several city blocks, empty elevated tracks entering the station hall, plazas and bus loops. City identity: ${theme}.${NO_TRAINS}`,
   13: (theme) =>
-    `Station-yard map plate: the shinkansen station building with its platforms and rail yard, elevated viaduct tracks, canopies over platforms, nearby blocks. City identity: ${theme}.`,
+    `Station-yard map plate: the shinkansen station building with its empty platforms and rail yard, elevated viaduct tracks, canopies over platforms, nearby blocks. City identity: ${theme}.${NO_TRAINS}`,
   14: (theme) =>
-    `Rail-district map plate: close on the elevated shinkansen corridor cutting through the district next to the station, supporting pillars, catenary masts, rooftops close by. City identity: ${theme}.`,
+    `Rail-district map plate: close on the empty elevated shinkansen corridor cutting through the district next to the station, supporting pillars, catenary masts, rooftops close by. City identity: ${theme}.${NO_TRAINS}`,
   15: (theme) =>
-    `Platform close-up map plate: shinkansen island platforms with long ribbed canopies, several parallel tracks with overhead catenary, one white-and-blue high speed train waiting, platform furniture. Subtle hint of the city beyond: ${theme}.`
+    `Platform close-up map plate: empty shinkansen island platforms with long ribbed canopies, several parallel empty tracks with overhead catenary, platform furniture, waiting passengers standing behind the safety line. Subtle hint of the city beyond: ${theme}.${NO_TRAINS}`
 };
 
 type Job = {
@@ -124,18 +131,22 @@ for (const st of stations) {
   const entry: { plates: Record<string, string>; landmark?: string; node?: string } = { plates: {} };
   manifest[st.id] = entry;
 
+  // Every city, including the original five, gets freshly generated plates:
+  // the earlier hand-tuned plates contained painted trains, and only live
+  // sprite trains may appear in the world.
+  for (const z of plateLevelsForRank(rank)) {
+    const rel = `cities/${st.id}/z${z}.webp`;
+    entry.plates[String(z)] = `/assets-generated/${rel}`;
+    jobs.push({
+      file: rel,
+      prompt: `${STYLE}\n\n${ZOOM_BRIEFS[z](theme)}`,
+      size: "1536x1024",
+      quality: rank === "terminal" ? "high" : "medium",
+      webp: { width: 1280, quality: 72 }
+    });
+  }
+
   if (!LEGACY_CITIES.has(st.id)) {
-    for (const z of plateLevelsForRank(rank)) {
-      const rel = `cities/${st.id}/z${z}.webp`;
-      entry.plates[String(z)] = `/assets-generated/${rel}`;
-      jobs.push({
-        file: rel,
-        prompt: `${STYLE}\n\n${ZOOM_BRIEFS[z](theme)}`,
-        size: "1536x1024",
-        quality: rank === "terminal" ? "high" : "medium",
-        webp: { width: 1280, quality: 72 }
-      });
-    }
     const landmarkRel = `landmarks/${st.id}.webp`;
     entry.landmark = `/assets-generated/${landmarkRel}`;
     jobs.push({
@@ -169,17 +180,8 @@ for (const st of stations) {
       webp: { width: 640, quality: 88, alpha: true }
     });
   } else {
-    // Legacy cities keep their existing hand-tuned plates; record them so the
-    // renderer reads everything from one manifest.
-    const key = st.id === "yokohama" ? "yokohama" : st.id;
-    entry.plates = {
-      "10": `/assets-generated/zoom-plates-v3/${key}-z10-station-district.webp`,
-      "11": `/assets-generated/polish-v5/${key}-z11-wide-approach-v5.webp`,
-      "12": `/assets-generated/polish-v5/${key}-z12-station-context-v5.webp`,
-      "13": `/assets-generated/zoom-plates-v3/${key}-z13-station-yard.webp`,
-      "14": `/assets-generated/polish-v4/${key}-z14-rail-district-v4.webp`,
-      "15": `/assets-generated/polish-v5/${key}-z15-platform-close-v5.webp`
-    };
+    // Legacy cities keep their original landmark/node art (it contains no
+    // trains); their plates are regenerated above like everyone else's.
     const legacyLandmark = st.id === "yokohama" ? "yokohama" : st.id;
     entry.landmark = `/assets/landmark-${legacyLandmark}.png`;
     const nodeNames: Record<string, string> = {
