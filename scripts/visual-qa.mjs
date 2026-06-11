@@ -70,6 +70,9 @@ const VIEWPORTS = [
 // Zoom band midpoints across the 8-plate ladder, plus each focused city close-up.
 const BAND_SHOTS = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5];
 const CITY_SHOTS = ["tokyo", "yokohama", "nagoya", "kyoto", "osaka"];
+// Bands 4-5 resolve per focused region; Tokyo/Yokohama is already covered by
+// the band sweep, so capture the Nagoya and Kansai regional/approach plates.
+const REGIONAL_SHOTS = ["nagoya", "osaka"];
 
 const run = async () => {
   if (!SKIP_BUILD) {
@@ -147,6 +150,16 @@ const run = async () => {
         console.log(`  captured ${viewport.name}/${name}.png`);
       };
 
+      // The zoom tween plus first-time texture decode can outlast the fixed
+      // settle delay, so regional shots wait for the expected plate to land.
+      const waitForPlate = async (plateId) => {
+        await page.waitForFunction(
+          (id) => window.__shinkansen.getStats().routeMode === id,
+          plateId,
+          { timeout: 15000 }
+        );
+      };
+
       const routeDebugQuery = DEBUG_ROUTES ? "&routedebug" : "";
 
       await open(routeDebugQuery);
@@ -163,6 +176,23 @@ const run = async () => {
         await shoot(`city-${station}`);
         await page.evaluate(() => window.__shinkansen.setZoom(7.5));
         await shoot(`close-${station}`);
+      }
+
+      const REGIONAL_PLATE_IDS = {
+        nagoya: ["nagoya-regional", "nagoya-approach"],
+        osaka: ["kansai-regional", "kansai-approach"]
+      };
+      for (const station of REGIONAL_SHOTS) {
+        const [regionalId, approachId] = REGIONAL_PLATE_IDS[station];
+        await page.evaluate((id) => {
+          window.__shinkansen.focusStation(id);
+          window.__shinkansen.setZoom(4.5);
+        }, station);
+        await waitForPlate(regionalId);
+        await shoot(`regional-${station}`);
+        await page.evaluate(() => window.__shinkansen.setZoom(5.5));
+        await waitForPlate(approachId);
+        await shoot(`approach-${station}`);
       }
 
       if (errors.length > 0) {

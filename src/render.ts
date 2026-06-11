@@ -125,7 +125,7 @@ export const initRenderer = async (
   // ----------------------------------------------------- texture pipeline --
   const MAX_CACHED_PLATES = 6;
   const plateTextures = new Map<string, PIXI.Texture>();
-  const pendingTextures = new Set<string>();
+  const pendingTextures = new Map<string, Promise<PIXI.Texture | undefined>>();
   const textureLru: string[] = [];
 
   const touchLru = (url: string) => {
@@ -147,34 +147,40 @@ export const initRenderer = async (
     }
   };
 
-  const loadPlateTexture = async (url: string): Promise<PIXI.Texture | undefined> => {
+  const loadPlateTexture = (url: string): Promise<PIXI.Texture | undefined> => {
     const cached = plateTextures.get(url);
     if (cached) {
       touchLru(url);
-      return cached;
+      return Promise.resolve(cached);
     }
-    if (pendingTextures.has(url)) return undefined;
-    pendingTextures.add(url);
-    try {
-      for (let attempt = 0; attempt < 2; attempt += 1) {
-        try {
-          const texture = (await PIXI.Assets.load(url)) as PIXI.Texture;
-          plateTextures.set(url, texture);
-          touchLru(url);
-          return texture;
-        } catch (err) {
-          if (attempt === 1) {
-            // Keep the previous plate on screen and tell the HUD instead of
-            // silently leaving an empty world.
-            window.dispatchEvent(new CustomEvent("shinasmr:plate-error", { detail: { url } }));
-            console.warn("Plate texture failed to load:", url, err);
+    // Share the in-flight load: a plate switch must be able to await a
+    // texture the neighbour prefetch already started, not give up on it.
+    const pending = pendingTextures.get(url);
+    if (pending) return pending;
+    const load = (async () => {
+      try {
+        for (let attempt = 0; attempt < 2; attempt += 1) {
+          try {
+            const texture = (await PIXI.Assets.load(url)) as PIXI.Texture;
+            plateTextures.set(url, texture);
+            touchLru(url);
+            return texture;
+          } catch (err) {
+            if (attempt === 1) {
+              // Keep the previous plate on screen and tell the HUD instead of
+              // silently leaving an empty world.
+              window.dispatchEvent(new CustomEvent("shinasmr:plate-error", { detail: { url } }));
+              console.warn("Plate texture failed to load:", url, err);
+            }
           }
         }
+        return undefined;
+      } finally {
+        pendingTextures.delete(url);
       }
-      return undefined;
-    } finally {
-      pendingTextures.delete(url);
-    }
+    })();
+    pendingTextures.set(url, load);
+    return load;
   };
 
   const trainTextures = new Map<string, PIXI.Texture>();

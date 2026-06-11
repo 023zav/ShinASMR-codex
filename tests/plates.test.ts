@@ -45,6 +45,36 @@ describe("plate ladder invariants", () => {
     expect(ids.size).toBe(stations.length);
   });
 
+  it("regional bands resolve per focused region", () => {
+    // Tokyo and Yokohama share the Kanagawa pair; Nagoya and Kansai get
+    // their own regional + approach plates.
+    for (const band of [4, 5]) {
+      expect(plateForBand(band, "tokyo").id).toBe(plateForBand(band, "yokohama").id);
+      expect(plateForBand(band, "kyoto").id).toBe(plateForBand(band, "osaka").id);
+      const ids = new Set(
+        ["tokyo", "nagoya", "kyoto"].map((station) => plateForBand(band, station).id)
+      );
+      expect(ids.size).toBe(3);
+    }
+  });
+
+  it("regional plates cover their focused station's line progress", () => {
+    const anchors: Record<string, number> = {
+      tokyo: 0,
+      yokohama: 0.0458,
+      nagoya: 0.6657,
+      kyoto: 0.9275,
+      osaka: 1
+    };
+    for (const [station, progress] of Object.entries(anchors)) {
+      for (const band of [4, 5]) {
+        const plate = plateForBand(band, station);
+        expect(progress).toBeGreaterThanOrEqual(plate.coverage[0] - 0.05);
+        expect(progress).toBeLessThanOrEqual(plate.coverage[1] + 0.05);
+      }
+    }
+  });
+
   it.each(allPlates().map((p) => [p.id, p] as const))("%s declares sane data", (_id, plate) => {
     // Coverage is an ordered slice of real line progress.
     expect(plate.coverage[0]).toBeGreaterThanOrEqual(0);

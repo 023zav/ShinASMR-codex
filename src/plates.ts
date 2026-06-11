@@ -156,6 +156,106 @@ const TOKYO_APPROACH: PlateSpec = {
   laneSpread: 0.007
 };
 
+const NAGOYA_REGIONAL: PlateSpec = {
+  id: "nagoya-regional",
+  url: `${ART}/lod-r1-nagoya-regional-corridor.webp`,
+  macro: "regional",
+  trainMode: "full",
+  trainScale: 0.085,
+  coverage: [0.45, 0.8],
+  route: [
+    [1.0, 0.14],
+    [0.85, 0.225],
+    [0.7, 0.32],
+    [0.55, 0.425],
+    [0.405, 0.525],
+    [0.285, 0.62],
+    [0.15, 0.745],
+    [0.0, 0.875]
+  ],
+  stations: { nagoya: 0.62 },
+  focus: [0.46, 0.42],
+  lanes: 2,
+  laneSpread: 0.006
+};
+
+const NAGOYA_APPROACH: PlateSpec = {
+  id: "nagoya-approach",
+  url: `${ART}/lod-r2-nagoya-approach.webp`,
+  macro: "regional",
+  trainMode: "full",
+  trainScale: 0.1,
+  coverage: [0.6, 0.73],
+  route: [
+    [1.0, 0.125],
+    [0.8, 0.285],
+    [0.6, 0.44],
+    [0.39, 0.575],
+    [0.225, 0.7],
+    [0.0, 0.875]
+  ],
+  stations: { nagoya: 0.51 },
+  focus: [0.5, 0.42],
+  lanes: 2,
+  laneSpread: 0.007
+};
+
+const KANSAI_REGIONAL: PlateSpec = {
+  id: "kansai-regional",
+  url: `${ART}/lod-r3-kansai-regional-corridor.webp`,
+  macro: "regional",
+  trainMode: "full",
+  trainScale: 0.085,
+  coverage: [0.85, 1],
+  route: [
+    [1.0, 0.31],
+    [0.86, 0.39],
+    [0.7, 0.46],
+    [0.55, 0.55],
+    [0.42, 0.66],
+    [0.2, 0.775],
+    [0.0, 0.86]
+  ],
+  stations: { kyoto: 0.52, osaka: 1 },
+  focus: [0.48, 0.52],
+  lanes: 2,
+  laneSpread: 0.006
+};
+
+const KANSAI_APPROACH: PlateSpec = {
+  id: "kansai-approach",
+  url: `${ART}/lod-r4-kansai-approach.webp`,
+  macro: "regional",
+  trainMode: "full",
+  trainScale: 0.1,
+  coverage: [0.92, 1],
+  route: [
+    [0.0, 0.105],
+    [0.2, 0.28],
+    [0.37, 0.425],
+    [0.6, 0.605],
+    [0.8, 0.745],
+    [1.0, 0.885]
+  ],
+  stations: { kyoto: 0.09, osaka: 0.97 },
+  focus: [0.5, 0.44],
+  lanes: 2,
+  laneSpread: 0.007
+};
+
+/**
+ * Bands 4-5 resolve per focused station the same way the city bands do:
+ * the Tokyo/Yokohama focus keeps the original Kanagawa pair, Nagoya and
+ * Kyoto/Shin-Osaka get their own regional + approach plates.
+ */
+export const REGIONAL_PLATES: Record<string, { regional: PlateSpec; approach: PlateSpec }> = {
+  tokyo: { regional: KANAGAWA, approach: TOKYO_APPROACH },
+  yokohama: { regional: KANAGAWA, approach: TOKYO_APPROACH },
+  nagoya: { regional: NAGOYA_REGIONAL, approach: NAGOYA_APPROACH },
+  kyoto: { regional: KANSAI_REGIONAL, approach: KANSAI_APPROACH },
+  osaka: { regional: KANSAI_REGIONAL, approach: KANSAI_APPROACH }
+};
+
 export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> = {
   tokyo: {
     city: {
@@ -367,6 +467,7 @@ export const CROSSFADE_MS = 320;
 
 export const plateForBand = (band: number, focusedStationId: string): PlateSpec => {
   const cityArt = CITY_PLATES[focusedStationId] ?? CITY_PLATES.tokyo;
+  const regionalArt = REGIONAL_PLATES[focusedStationId] ?? REGIONAL_PLATES.tokyo;
   switch (clamp(Math.floor(band), 0, BAND_COUNT - 1)) {
     case 0:
       return JAPAN_BOARD;
@@ -377,9 +478,9 @@ export const plateForBand = (band: number, focusedStationId: string): PlateSpec 
     case 3:
       return CENTRAL_HONSHU;
     case 4:
-      return KANAGAWA;
+      return regionalArt.regional;
     case 5:
-      return TOKYO_APPROACH;
+      return regionalArt.approach;
     case 6:
       return cityArt.city;
     default:
