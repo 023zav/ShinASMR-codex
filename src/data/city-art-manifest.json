@@ -1,0 +1,359 @@
+{
+  "tokyo": {
+    "plates": {
+      "10": "/assets-generated/zoom-plates-v3/tokyo-z10-station-district.webp",
+      "11": "/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp",
+      "12": "/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp",
+      "13": "/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp",
+      "14": "/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp",
+      "15": "/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp"
+    },
+    "landmark": "/assets/landmark-tokyo.png",
+    "node": "/assets-generated/station-nodes-alpha/station-node-tokyo.png"
+  },
+  "shinagawa": {
+    "plates": {
+      "10": "/assets-generated/cities/shinagawa/z10.webp",
+      "11": "/assets-generated/cities/shinagawa/z11.webp",
+      "12": "/assets-generated/cities/shinagawa/z12.webp",
+      "13": "/assets-generated/cities/shinagawa/z13.webp",
+      "14": "/assets-generated/cities/shinagawa/z14.webp",
+      "15": "/assets-generated/cities/shinagawa/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shinagawa.webp",
+    "node": "/assets-generated/station-nodes-v2/shinagawa.webp"
+  },
+  "yokohama": {
+    "plates": {
+      "10": "/assets-generated/zoom-plates-v3/yokohama-z10-station-district.webp",
+      "11": "/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp",
+      "12": "/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp",
+      "13": "/assets-generated/zoom-plates-v3/yokohama-z13-station-yard.webp",
+      "14": "/assets-generated/polish-v4/yokohama-z14-rail-district-v4.webp",
+      "15": "/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp"
+    },
+    "landmark": "/assets/landmark-yokohama.png",
+    "node": "/assets-generated/station-nodes-alpha/station-node-shin-yokohama.png"
+  },
+  "odawara": {
+    "plates": {
+      "10": "/assets-generated/cities/odawara/z10.webp",
+      "13": "/assets-generated/cities/odawara/z13.webp",
+      "15": "/assets-generated/cities/odawara/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/odawara.webp",
+    "node": "/assets-generated/station-nodes-v2/odawara.webp"
+  },
+  "atami": {
+    "plates": {
+      "10": "/assets-generated/cities/atami/z10.webp",
+      "13": "/assets-generated/cities/atami/z13.webp",
+      "15": "/assets-generated/cities/atami/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/atami.webp",
+    "node": "/assets-generated/station-nodes-v2/atami.webp"
+  },
+  "mishima": {
+    "plates": {
+      "10": "/assets-generated/cities/mishima/z10.webp",
+      "13": "/assets-generated/cities/mishima/z13.webp",
+      "15": "/assets-generated/cities/mishima/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/mishima.webp",
+    "node": "/assets-generated/station-nodes-v2/mishima.webp"
+  },
+  "shin-fuji": {
+    "plates": {
+      "10": "/assets-generated/cities/shin-fuji/z10.webp",
+      "13": "/assets-generated/cities/shin-fuji/z13.webp",
+      "15": "/assets-generated/cities/shin-fuji/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shin-fuji.webp",
+    "node": "/assets-generated/station-nodes-v2/shin-fuji.webp"
+  },
+  "shizuoka": {
+    "plates": {
+      "10": "/assets-generated/cities/shizuoka/z10.webp",
+      "11": "/assets-generated/cities/shizuoka/z11.webp",
+      "12": "/assets-generated/cities/shizuoka/z12.webp",
+      "13": "/assets-generated/cities/shizuoka/z13.webp",
+      "14": "/assets-generated/cities/shizuoka/z14.webp",
+      "15": "/assets-generated/cities/shizuoka/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shizuoka.webp",
+    "node": "/assets-generated/station-nodes-v2/shizuoka.webp"
+  },
+  "kakegawa": {
+    "plates": {
+      "10": "/assets-generated/cities/kakegawa/z10.webp",
+      "13": "/assets-generated/cities/kakegawa/z13.webp",
+      "15": "/assets-generated/cities/kakegawa/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/kakegawa.webp",
+    "node": "/assets-generated/station-nodes-v2/kakegawa.webp"
+  },
+  "hamamatsu": {
+    "plates": {
+      "10": "/assets-generated/cities/hamamatsu/z10.webp",
+      "11": "/assets-generated/cities/hamamatsu/z11.webp",
+      "12": "/assets-generated/cities/hamamatsu/z12.webp",
+      "13": "/assets-generated/cities/hamamatsu/z13.webp",
+      "14": "/assets-generated/cities/hamamatsu/z14.webp",
+      "15": "/assets-generated/cities/hamamatsu/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/hamamatsu.webp",
+    "node": "/assets-generated/station-nodes-v2/hamamatsu.webp"
+  },
+  "toyohashi": {
+    "plates": {
+      "10": "/assets-generated/cities/toyohashi/z10.webp",
+      "13": "/assets-generated/cities/toyohashi/z13.webp",
+      "15": "/assets-generated/cities/toyohashi/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/toyohashi.webp",
+    "node": "/assets-generated/station-nodes-v2/toyohashi.webp"
+  },
+  "mikawa-anjo": {
+    "plates": {
+      "10": "/assets-generated/cities/mikawa-anjo/z10.webp",
+      "13": "/assets-generated/cities/mikawa-anjo/z13.webp",
+      "15": "/assets-generated/cities/mikawa-anjo/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/mikawa-anjo.webp",
+    "node": "/assets-generated/station-nodes-v2/mikawa-anjo.webp"
+  },
+  "nagoya": {
+    "plates": {
+      "10": "/assets-generated/zoom-plates-v3/nagoya-z10-station-district.webp",
+      "11": "/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp",
+      "12": "/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp",
+      "13": "/assets-generated/zoom-plates-v3/nagoya-z13-station-yard.webp",
+      "14": "/assets-generated/polish-v4/nagoya-z14-rail-district-v4.webp",
+      "15": "/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp"
+    },
+    "landmark": "/assets/landmark-nagoya.png",
+    "node": "/assets-generated/station-nodes-alpha/station-node-nagoya.png"
+  },
+  "gifu-hashima": {
+    "plates": {
+      "10": "/assets-generated/cities/gifu-hashima/z10.webp",
+      "13": "/assets-generated/cities/gifu-hashima/z13.webp",
+      "15": "/assets-generated/cities/gifu-hashima/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/gifu-hashima.webp",
+    "node": "/assets-generated/station-nodes-v2/gifu-hashima.webp"
+  },
+  "maibara": {
+    "plates": {
+      "10": "/assets-generated/cities/maibara/z10.webp",
+      "13": "/assets-generated/cities/maibara/z13.webp",
+      "15": "/assets-generated/cities/maibara/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/maibara.webp",
+    "node": "/assets-generated/station-nodes-v2/maibara.webp"
+  },
+  "kyoto": {
+    "plates": {
+      "10": "/assets-generated/zoom-plates-v3/kyoto-z10-station-district.webp",
+      "11": "/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp",
+      "12": "/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp",
+      "13": "/assets-generated/zoom-plates-v3/kyoto-z13-station-yard.webp",
+      "14": "/assets-generated/polish-v4/kyoto-z14-rail-district-v4.webp",
+      "15": "/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp"
+    },
+    "landmark": "/assets/landmark-kyoto.png",
+    "node": "/assets-generated/station-nodes-alpha/station-node-kyoto.png"
+  },
+  "osaka": {
+    "plates": {
+      "10": "/assets-generated/zoom-plates-v3/osaka-z10-station-district.webp",
+      "11": "/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp",
+      "12": "/assets-generated/polish-v5/osaka-z12-station-context-v5.webp",
+      "13": "/assets-generated/zoom-plates-v3/osaka-z13-station-yard.webp",
+      "14": "/assets-generated/polish-v4/osaka-z14-rail-district-v4.webp",
+      "15": "/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp"
+    },
+    "landmark": "/assets/landmark-osaka.png",
+    "node": "/assets-generated/station-nodes-alpha/station-node-shin-osaka.png"
+  },
+  "shin-kobe": {
+    "plates": {
+      "10": "/assets-generated/cities/shin-kobe/z10.webp",
+      "11": "/assets-generated/cities/shin-kobe/z11.webp",
+      "12": "/assets-generated/cities/shin-kobe/z12.webp",
+      "13": "/assets-generated/cities/shin-kobe/z13.webp",
+      "14": "/assets-generated/cities/shin-kobe/z14.webp",
+      "15": "/assets-generated/cities/shin-kobe/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shin-kobe.webp",
+    "node": "/assets-generated/station-nodes-v2/shin-kobe.webp"
+  },
+  "nishi-akashi": {
+    "plates": {
+      "10": "/assets-generated/cities/nishi-akashi/z10.webp",
+      "13": "/assets-generated/cities/nishi-akashi/z13.webp",
+      "15": "/assets-generated/cities/nishi-akashi/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/nishi-akashi.webp",
+    "node": "/assets-generated/station-nodes-v2/nishi-akashi.webp"
+  },
+  "himeji": {
+    "plates": {
+      "10": "/assets-generated/cities/himeji/z10.webp",
+      "11": "/assets-generated/cities/himeji/z11.webp",
+      "12": "/assets-generated/cities/himeji/z12.webp",
+      "13": "/assets-generated/cities/himeji/z13.webp",
+      "14": "/assets-generated/cities/himeji/z14.webp",
+      "15": "/assets-generated/cities/himeji/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/himeji.webp",
+    "node": "/assets-generated/station-nodes-v2/himeji.webp"
+  },
+  "aioi": {
+    "plates": {
+      "10": "/assets-generated/cities/aioi/z10.webp",
+      "13": "/assets-generated/cities/aioi/z13.webp",
+      "15": "/assets-generated/cities/aioi/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/aioi.webp",
+    "node": "/assets-generated/station-nodes-v2/aioi.webp"
+  },
+  "okayama": {
+    "plates": {
+      "10": "/assets-generated/cities/okayama/z10.webp",
+      "11": "/assets-generated/cities/okayama/z11.webp",
+      "12": "/assets-generated/cities/okayama/z12.webp",
+      "13": "/assets-generated/cities/okayama/z13.webp",
+      "14": "/assets-generated/cities/okayama/z14.webp",
+      "15": "/assets-generated/cities/okayama/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/okayama.webp",
+    "node": "/assets-generated/station-nodes-v2/okayama.webp"
+  },
+  "shin-kurashiki": {
+    "plates": {
+      "10": "/assets-generated/cities/shin-kurashiki/z10.webp",
+      "13": "/assets-generated/cities/shin-kurashiki/z13.webp",
+      "15": "/assets-generated/cities/shin-kurashiki/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shin-kurashiki.webp",
+    "node": "/assets-generated/station-nodes-v2/shin-kurashiki.webp"
+  },
+  "fukuyama": {
+    "plates": {
+      "10": "/assets-generated/cities/fukuyama/z10.webp",
+      "13": "/assets-generated/cities/fukuyama/z13.webp",
+      "15": "/assets-generated/cities/fukuyama/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/fukuyama.webp",
+    "node": "/assets-generated/station-nodes-v2/fukuyama.webp"
+  },
+  "shin-onomichi": {
+    "plates": {
+      "10": "/assets-generated/cities/shin-onomichi/z10.webp",
+      "13": "/assets-generated/cities/shin-onomichi/z13.webp",
+      "15": "/assets-generated/cities/shin-onomichi/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shin-onomichi.webp",
+    "node": "/assets-generated/station-nodes-v2/shin-onomichi.webp"
+  },
+  "mihara": {
+    "plates": {
+      "10": "/assets-generated/cities/mihara/z10.webp",
+      "13": "/assets-generated/cities/mihara/z13.webp",
+      "15": "/assets-generated/cities/mihara/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/mihara.webp",
+    "node": "/assets-generated/station-nodes-v2/mihara.webp"
+  },
+  "higashi-hiroshima": {
+    "plates": {
+      "10": "/assets-generated/cities/higashi-hiroshima/z10.webp",
+      "13": "/assets-generated/cities/higashi-hiroshima/z13.webp",
+      "15": "/assets-generated/cities/higashi-hiroshima/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/higashi-hiroshima.webp",
+    "node": "/assets-generated/station-nodes-v2/higashi-hiroshima.webp"
+  },
+  "hiroshima": {
+    "plates": {
+      "10": "/assets-generated/cities/hiroshima/z10.webp",
+      "11": "/assets-generated/cities/hiroshima/z11.webp",
+      "12": "/assets-generated/cities/hiroshima/z12.webp",
+      "13": "/assets-generated/cities/hiroshima/z13.webp",
+      "14": "/assets-generated/cities/hiroshima/z14.webp",
+      "15": "/assets-generated/cities/hiroshima/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/hiroshima.webp",
+    "node": "/assets-generated/station-nodes-v2/hiroshima.webp"
+  },
+  "shin-iwakuni": {
+    "plates": {
+      "10": "/assets-generated/cities/shin-iwakuni/z10.webp",
+      "13": "/assets-generated/cities/shin-iwakuni/z13.webp",
+      "15": "/assets-generated/cities/shin-iwakuni/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shin-iwakuni.webp",
+    "node": "/assets-generated/station-nodes-v2/shin-iwakuni.webp"
+  },
+  "tokuyama": {
+    "plates": {
+      "10": "/assets-generated/cities/tokuyama/z10.webp",
+      "13": "/assets-generated/cities/tokuyama/z13.webp",
+      "15": "/assets-generated/cities/tokuyama/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/tokuyama.webp",
+    "node": "/assets-generated/station-nodes-v2/tokuyama.webp"
+  },
+  "shin-yamaguchi": {
+    "plates": {
+      "10": "/assets-generated/cities/shin-yamaguchi/z10.webp",
+      "13": "/assets-generated/cities/shin-yamaguchi/z13.webp",
+      "15": "/assets-generated/cities/shin-yamaguchi/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shin-yamaguchi.webp",
+    "node": "/assets-generated/station-nodes-v2/shin-yamaguchi.webp"
+  },
+  "asa": {
+    "plates": {
+      "10": "/assets-generated/cities/asa/z10.webp",
+      "13": "/assets-generated/cities/asa/z13.webp",
+      "15": "/assets-generated/cities/asa/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/asa.webp",
+    "node": "/assets-generated/station-nodes-v2/asa.webp"
+  },
+  "shin-shimonoseki": {
+    "plates": {
+      "10": "/assets-generated/cities/shin-shimonoseki/z10.webp",
+      "13": "/assets-generated/cities/shin-shimonoseki/z13.webp",
+      "15": "/assets-generated/cities/shin-shimonoseki/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/shin-shimonoseki.webp",
+    "node": "/assets-generated/station-nodes-v2/shin-shimonoseki.webp"
+  },
+  "kokura": {
+    "plates": {
+      "10": "/assets-generated/cities/kokura/z10.webp",
+      "11": "/assets-generated/cities/kokura/z11.webp",
+      "12": "/assets-generated/cities/kokura/z12.webp",
+      "13": "/assets-generated/cities/kokura/z13.webp",
+      "14": "/assets-generated/cities/kokura/z14.webp",
+      "15": "/assets-generated/cities/kokura/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/kokura.webp",
+    "node": "/assets-generated/station-nodes-v2/kokura.webp"
+  },
+  "hakata": {
+    "plates": {
+      "10": "/assets-generated/cities/hakata/z10.webp",
+      "11": "/assets-generated/cities/hakata/z11.webp",
+      "12": "/assets-generated/cities/hakata/z12.webp",
+      "13": "/assets-generated/cities/hakata/z13.webp",
+      "14": "/assets-generated/cities/hakata/z14.webp",
+      "15": "/assets-generated/cities/hakata/z15.webp"
+    },
+    "landmark": "/assets-generated/landmarks/hakata.webp",
+    "node": "/assets-generated/station-nodes-v2/hakata.webp"
+  }
+}

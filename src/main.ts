@@ -153,6 +153,7 @@ const boot = async () => {
     document.querySelectorAll<HTMLButtonElement>(".speed button")
   );
   const timeScrub = document.getElementById("timeScrub") as HTMLInputElement;
+  const scheduleMetric = document.getElementById("scheduleMetric") as HTMLSpanElement;
   const timeLabel = document.getElementById("timeLabel") as HTMLDivElement;
   const details = document.getElementById("details") as HTMLDivElement;
   const detailsTitle = details.querySelector(".details-title") as HTMLDivElement;
@@ -273,6 +274,13 @@ const boot = async () => {
     });
   });
 
+  let scrubbing = false;
+  timeScrub.addEventListener("pointerdown", () => {
+    scrubbing = true;
+  });
+  window.addEventListener("pointerup", () => {
+    scrubbing = false;
+  });
   timeScrub.addEventListener("input", () => {
     sim.setTime(Number(timeScrub.value));
     syncClockModeUi();
@@ -602,7 +610,8 @@ const boot = async () => {
 
     const timeLabelText = formatTime(sim.timeMinutes);
     timeLabel.textContent = timeLabelText;
-    timeScrub.value = `${Math.round(sim.timeMinutes)}`;
+    if (!scrubbing) timeScrub.value = `${Math.round(sim.timeMinutes)}`;
+    scheduleMetric.textContent = filtered.length === 0 ? "Night pause" : "On time";
     const currentMinute = Math.floor(sim.timeMinutes);
     if (currentMinute !== lastTimetableMinute) {
       lastTimetableMinute = currentMinute;

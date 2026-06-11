@@ -4,6 +4,10 @@ import * as PIXI from "pixi.js";
 import { Line, Station, TrainType } from "./data/types";
 import { SimTrainState } from "./sim";
 import { withBase } from "./asset-base";
+import cityArtManifest from "./data/city-art-manifest.json";
+
+type CityArtEntry = { plates: Record<string, string>; landmark?: string; node?: string };
+const CITY_ART = cityArtManifest as Record<string, CityArtEntry>;
 
 export type RenderHandles = {
   app: PIXI.Application;
@@ -174,10 +178,40 @@ type CityProfile = {
 
 const CITY_PROFILES: Record<string, CityProfile> = {
   tokyo: { tone: 0x526f75, accent: 0xd65a3a, density: 1, terrain: "terminal" },
+  shinagawa: { tone: 0x59707e, accent: 0x9fc4d4, density: 0.9, terrain: "tower" },
   yokohama: { tone: 0x5b8990, accent: 0x78d4df, density: 0.86, terrain: "bay" },
+  odawara: { tone: 0x5f7a6a, accent: 0xd9d3c0, density: 0.42, terrain: "castle" },
+  atami: { tone: 0x6b7f82, accent: 0xe8b08a, density: 0.4, terrain: "bay" },
+  mishima: { tone: 0x5f7f63, accent: 0x9fd4e0, density: 0.38, terrain: "temple" },
+  "shin-fuji": { tone: 0x6e7f86, accent: 0xe3e8ec, density: 0.36, terrain: "bay" },
+  shizuoka: { tone: 0x647f5c, accent: 0xb9d077, density: 0.6, terrain: "castle" },
+  kakegawa: { tone: 0x687d57, accent: 0xc9b873, density: 0.3, terrain: "castle" },
+  hamamatsu: { tone: 0x5f7d85, accent: 0x8fc9c4, density: 0.62, terrain: "bay" },
+  toyohashi: { tone: 0x6b7a6e, accent: 0xd0975a, density: 0.46, terrain: "castle" },
+  "mikawa-anjo": { tone: 0x6e7a5e, accent: 0xc9d49a, density: 0.3, terrain: "temple" },
   nagoya: { tone: 0x697060, accent: 0xd0bc71, density: 0.72, terrain: "castle" },
+  "gifu-hashima": { tone: 0x6f7c61, accent: 0xb8cf90, density: 0.26, terrain: "temple" },
+  maibara: { tone: 0x5e7a80, accent: 0xa8d4dd, density: 0.3, terrain: "bay" },
   kyoto: { tone: 0x627f50, accent: 0xd78643, density: 0.58, terrain: "temple" },
-  osaka: { tone: 0x6f7d87, accent: 0xbacbd7, density: 0.92, terrain: "tower" }
+  osaka: { tone: 0x6f7d87, accent: 0xbacbd7, density: 0.92, terrain: "tower" },
+  "shin-kobe": { tone: 0x5d7e87, accent: 0xd66a4f, density: 0.78, terrain: "bay" },
+  "nishi-akashi": { tone: 0x607d88, accent: 0x9cc4dc, density: 0.4, terrain: "bay" },
+  himeji: { tone: 0x70808a, accent: 0xf0f2ea, density: 0.52, terrain: "castle" },
+  aioi: { tone: 0x5f7a7e, accent: 0x9bb4ad, density: 0.26, terrain: "bay" },
+  okayama: { tone: 0x687c5e, accent: 0x474f48, density: 0.56, terrain: "castle" },
+  "shin-kurashiki": { tone: 0x6e7c6e, accent: 0xe6e0cc, density: 0.36, terrain: "temple" },
+  fukuyama: { tone: 0x6b7a73, accent: 0xd99aa6, density: 0.46, terrain: "castle" },
+  "shin-onomichi": { tone: 0x647e74, accent: 0xd2a263, density: 0.3, terrain: "temple" },
+  mihara: { tone: 0x5f7c80, accent: 0xa9c2bd, density: 0.28, terrain: "bay" },
+  "higashi-hiroshima": { tone: 0x707b65, accent: 0xe4ddc4, density: 0.28, terrain: "temple" },
+  hiroshima: { tone: 0x647a82, accent: 0xc4575a, density: 0.7, terrain: "bay" },
+  "shin-iwakuni": { tone: 0x657d62, accent: 0xc8a05e, density: 0.26, terrain: "temple" },
+  tokuyama: { tone: 0x6c7a80, accent: 0xd9c089, density: 0.34, terrain: "bay" },
+  "shin-yamaguchi": { tone: 0x697e5e, accent: 0xc97f4e, density: 0.3, terrain: "temple" },
+  asa: { tone: 0x707d62, accent: 0xc5cf9d, density: 0.2, terrain: "temple" },
+  "shin-shimonoseki": { tone: 0x5e7a85, accent: 0xd0644e, density: 0.36, terrain: "bay" },
+  kokura: { tone: 0x667680, accent: 0xc9b061, density: 0.62, terrain: "castle" },
+  hakata: { tone: 0x5d7a84, accent: 0xe0b15e, density: 0.88, terrain: "terminal" }
 };
 
 const cityProfile = (stationId: string) => CITY_PROFILES[stationId] ?? CITY_PROFILES.nagoya;
@@ -192,10 +226,19 @@ type StationArtBounds = {
 
 const STATION_ART_BOUNDS: Record<string, StationArtBounds> = {
   tokyo: { lat: 0.033, lon: 0.052, side: -1, terminalTracks: 8, terminalScale: 1.18 },
+  shinagawa: { lat: 0.027, lon: 0.042, side: -1, terminalTracks: 6, terminalScale: 1.0 },
   yokohama: { lat: 0.024, lon: 0.038, side: -1, terminalTracks: 4, terminalScale: 0.92 },
+  shizuoka: { lat: 0.026, lon: 0.04, side: 1, terminalTracks: 4, terminalScale: 0.94 },
+  hamamatsu: { lat: 0.026, lon: 0.042, side: 1, terminalTracks: 4, terminalScale: 0.94 },
   nagoya: { lat: 0.029, lon: 0.045, side: 1, terminalTracks: 6, terminalScale: 1.02 },
   kyoto: { lat: 0.026, lon: 0.04, side: 1, terminalTracks: 4, terminalScale: 0.94 },
-  osaka: { lat: 0.034, lon: 0.054, side: 1, terminalTracks: 8, terminalScale: 1.16 }
+  osaka: { lat: 0.034, lon: 0.054, side: 1, terminalTracks: 8, terminalScale: 1.16 },
+  "shin-kobe": { lat: 0.025, lon: 0.04, side: 1, terminalTracks: 4, terminalScale: 0.94 },
+  himeji: { lat: 0.026, lon: 0.04, side: 1, terminalTracks: 4, terminalScale: 0.96 },
+  okayama: { lat: 0.028, lon: 0.044, side: 1, terminalTracks: 6, terminalScale: 1.0 },
+  hiroshima: { lat: 0.029, lon: 0.045, side: 1, terminalTracks: 6, terminalScale: 1.02 },
+  kokura: { lat: 0.027, lon: 0.043, side: 1, terminalTracks: 6, terminalScale: 0.98 },
+  hakata: { lat: 0.033, lon: 0.052, side: 1, terminalTracks: 8, terminalScale: 1.16 }
 };
 
 const stationArtBounds = (stationId: string) => STATION_ART_BOUNDS[stationId] ?? STATION_ART_BOUNDS.nagoya;
@@ -235,37 +278,7 @@ const GENERATED_ASSETS: Partial<Record<AssetKey, string>> = {
   stationNodeKyoto: "/assets-generated/station-nodes-alpha/station-node-kyoto.png",
   stationNodeOsaka: "/assets-generated/station-nodes-alpha/station-node-shin-osaka.png",
   stationYardTokyo: "/assets-generated/vehicle-plates/tokyo-station-yard-detail.png",
-  hudOperationsKit: "/assets-generated/vehicle-plates/hud-operations-kit.png",
-  cityTokyoZ10: "/assets-generated/zoom-plates-v3/tokyo-z10-station-district.webp",
-  cityTokyoZ11: "/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp",
-  cityTokyoZ12: "/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp",
-  cityTokyoZ13: "/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp",
-  cityTokyoZ14: "/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp",
-  cityTokyoZ15: "/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp",
-  cityYokohamaZ10: "/assets-generated/zoom-plates-v3/yokohama-z10-station-district.webp",
-  cityYokohamaZ11: "/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp",
-  cityYokohamaZ12: "/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp",
-  cityYokohamaZ13: "/assets-generated/zoom-plates-v3/yokohama-z13-station-yard.webp",
-  cityYokohamaZ14: "/assets-generated/polish-v4/yokohama-z14-rail-district-v4.webp",
-  cityYokohamaZ15: "/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp",
-  cityNagoyaZ10: "/assets-generated/zoom-plates-v3/nagoya-z10-station-district.webp",
-  cityNagoyaZ11: "/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp",
-  cityNagoyaZ12: "/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp",
-  cityNagoyaZ13: "/assets-generated/zoom-plates-v3/nagoya-z13-station-yard.webp",
-  cityNagoyaZ14: "/assets-generated/polish-v4/nagoya-z14-rail-district-v4.webp",
-  cityNagoyaZ15: "/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp",
-  cityKyotoZ10: "/assets-generated/zoom-plates-v3/kyoto-z10-station-district.webp",
-  cityKyotoZ11: "/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp",
-  cityKyotoZ12: "/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp",
-  cityKyotoZ13: "/assets-generated/zoom-plates-v3/kyoto-z13-station-yard.webp",
-  cityKyotoZ14: "/assets-generated/polish-v4/kyoto-z14-rail-district-v4.webp",
-  cityKyotoZ15: "/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp",
-  cityOsakaZ10: "/assets-generated/zoom-plates-v3/osaka-z10-station-district.webp",
-  cityOsakaZ11: "/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp",
-  cityOsakaZ12: "/assets-generated/polish-v5/osaka-z12-station-context-v5.webp",
-  cityOsakaZ13: "/assets-generated/zoom-plates-v3/osaka-z13-station-yard.webp",
-  cityOsakaZ14: "/assets-generated/polish-v4/osaka-z14-rail-district-v4.webp",
-  cityOsakaZ15: "/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp"
+  hudOperationsKit: "/assets-generated/vehicle-plates/hud-operations-kit.png"
 };
 
 type WorldArtPlate = {
@@ -300,21 +313,11 @@ const WORLD_ART_PLATES: WorldArtPlate[] = [
   { url: "/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp", position: "center center", size: "cover" }
 ];
 
-const STATION_WORLD_ART: Record<string, WorldArtPlate> = {
-  tokyo: { url: "/assets-generated/map-lod-candidates/tokyo-station-city-reference-style.webp", position: "center center", size: "cover" },
-  yokohama: { url: "/assets-generated/map-lod-candidates/shin-yokohama-city-reference-style.webp", position: "center center", size: "cover" },
-  nagoya: { url: "/assets-generated/map-lod-candidates/nagoya-city-reference-style.webp", position: "center center", size: "cover" },
-  kyoto: { url: "/assets-generated/map-lod-candidates/kyoto-city-reference-style.webp", position: "center center", size: "cover" },
-  osaka: { url: "/assets-generated/map-lod-candidates/shin-osaka-city-reference-style.webp", position: "center center", size: "cover" }
-};
-
 const worldArtFor = (stationId: string, band: DetailBand): WorldArtPlate => {
   if (band.index >= 10) {
-    const key = cityPlateKey(stationId, band);
-    const url = key ? GENERATED_ASSETS[key] : undefined;
+    const url = cityPlateKey(stationId, band);
     if (url) return { url, position: "center center", size: "cover" };
   }
-  if (band.index >= 12) return STATION_WORLD_ART[stationId] ?? STATION_WORLD_ART.tokyo;
   return WORLD_ART_PLATES[band.index] ?? WORLD_ART_PLATES[0];
 };
 
@@ -395,6 +398,16 @@ const loadGeneratedTextures = async (): Promise<GeneratedTextures> => {
   const loaded: GeneratedTextures = {};
   await Promise.all(STARTUP_TEXTURE_KEYS.map(async (key) => loadGeneratedTextureKey(key, loaded)));
   return loaded;
+};
+
+const manifestTexturePromises = new Map<string, Promise<PIXI.Texture | undefined>>();
+const loadManifestTexture = (url: string) => {
+  let promise = manifestTexturePromises.get(url);
+  if (!promise) {
+    promise = (PIXI.Assets.load(withBase(url)) as Promise<PIXI.Texture>).catch(() => undefined);
+    manifestTexturePromises.set(url, promise);
+  }
+  return promise;
 };
 
 const loadGeneratedTextureKey = async (key: AssetKey, target: GeneratedTextures): Promise<PIXI.Texture | undefined> => {
@@ -507,11 +520,18 @@ export const initRenderer = async (
   let requestedViewMode: "japan" | "corridor" | "station" = "station";
   let focusedStationId = "tokyo";
   let detailBand = getDetailBand(map.getZoom());
+  const warmedCityArt = new Set<string>();
   const prewarmCityArt = (stationId: string, band: DetailBand) => {
     if (band.index < 10) return;
     [band.index - 1, band.index, band.index + 1]
       .filter((index) => index >= 10 && index <= 15)
-      .forEach((index) => textureForKey(cityPlateKey(stationId, getDetailBandByIndex(index))));
+      .forEach((index) => {
+        const url = cityPlateKey(stationId, getDetailBandByIndex(index));
+        if (!url || warmedCityArt.has(url)) return;
+        warmedCityArt.add(url);
+        const img = new Image();
+        img.src = withBase(url);
+      });
   };
   const syncVisualLayers = (band: DetailBand) => {
     mapEl.dataset.view = band.macro;
@@ -756,7 +776,9 @@ export const initRenderer = async (
         const landmarkPos = landmarkOffset(station.id);
         landmark.position.set(pos.x + landmarkPos.x, pos.y + landmarkPos.y);
         landmark.zIndex = landmark.position.y + 35;
-        landmark.visible = false;
+        // Each city's signature landmark appears alongside its station node at
+        // the mid zooms; close plates carry the landmark in the art itself.
+        landmark.visible = band.index >= 5 && band.index <= 9;
         landmark.scale.set(clamp(0.44 + band.cityIntensity * 0.52, 0.42, 0.96));
       }
     });
@@ -834,21 +856,22 @@ export const initRenderer = async (
     const existing = new Set(trainSprites.keys());
     const stationSlots = new Map<string, number>();
     const stationAlongSlots = new Map<string, number>();
+    const focusProgress = 1 - (stationRouteT.get(focusedStationId) ?? 1);
     trains.forEach((train) => {
       const rawPos = toScreen(train.lat, train.lon);
       const line = lines.find((candidate) => candidate.id === train.lineId) ?? lines[0];
       const artLineProgress = line ? routeProgressFromLatLon(line, train.lat, train.lon) : 0;
-      // Trains beyond the local approach do not exist on the close-up Tokyo
-      // plate; they fade out with the zoom instead of popping at a band edge.
+      // Trains beyond the local approach do not exist on the focused city's
+      // close-up plate; they fade out with the zoom instead of popping at a
+      // band edge.
       const hiddenOutsideCloseStation =
         !showAccuracyDebug &&
-        focusedStationId === "tokyo" &&
-        artLineProgress > 0.085;
+        Math.abs(artLineProgress - focusProgress) > 0.085;
       const closeFade = clamp((lod - 11.2) / 0.8, 0, 1);
       const targetAlpha = hiddenOutsideCloseStation ? 1 - closeFade : 1;
 
       const pose = !showAccuracyDebug && line
-        ? sampleArtPoseBlended(app, lod, artLineProgress, focusedStationId)
+        ? sampleArtPoseBlended(app, lod, artLineProgress, focusedStationId, focusProgress)
         : line
           ? routePoseAtScreen(line, rawPos, toScreen)
           : null;
@@ -1069,7 +1092,7 @@ export const initRenderer = async (
       routeMode: syncDetailBand().routeMode,
       trainMode: syncDetailBand().trainMode,
       platformDetail: syncDetailBand().platformDetail,
-      loadedCityArt: Object.keys(textures).filter((key) => key.startsWith("city")).length,
+      loadedCityArt: warmedCityArt.size,
       pendingCityArt: Array.from(pendingTextureLoads).filter((key) => key.startsWith("city")).length,
       accuracyDebug: showAccuracyDebug
     })
@@ -1264,14 +1287,22 @@ const cityPlateTexture = (stationId: string, band: DetailBand, textures: Generat
   return key ? textures[key] : undefined;
 };
 
-const cityPlateKey = (stationId: string, band: DetailBand): AssetKey | undefined => {
-  const stationKey = stationId === "yokohama" ? "Yokohama" : capitalizeStationId(stationId);
-  const level =
-    band.index >= 15 ? "Z15" : band.index >= 14 ? "Z14" : band.index >= 13 ? "Z13" : band.index >= 12 ? "Z12" : band.index >= 11 ? "Z11" : "Z10";
-  return `city${stationKey}${level}`;
+// Resolves the manifest plate URL closest to the requested zoom level: major
+// cities ship all six z10–z15 plates, smaller stations ship z10/z13/z15 and
+// borrow the nearest level in between.
+const cityPlateKey = (stationId: string, band: DetailBand): string | undefined => {
+  const entry = CITY_ART[stationId];
+  if (!entry) return undefined;
+  const target = clamp(band.index, 10, 15);
+  const levels = Object.keys(entry.plates)
+    .map(Number)
+    .filter((z) => Number.isFinite(z));
+  if (levels.length === 0) return undefined;
+  const best = levels.reduce((acc, z) =>
+    Math.abs(z - target) < Math.abs(acc - target) || (Math.abs(z - target) === Math.abs(acc - target) && z < acc) ? z : acc
+  );
+  return entry.plates[String(best)];
 };
-
-const capitalizeStationId = (stationId: string) => stationId.charAt(0).toUpperCase() + stationId.slice(1);
 
 const cityPlateSpan = (stationId: string, band: DetailBand) => {
   const bounds = stationArtBounds(stationId);
@@ -1514,14 +1545,21 @@ const routeProgressFromLatLon = (line: Line, lat: number, lon: number) => {
   return clamp(bestProgress, 0, 1);
 };
 
-const artRouteTFor = (band: DetailBand, focusedStationId: string, lineProgress: number) =>
-  band.index >= 12 && focusedStationId === "tokyo"
-    // Close Tokyo station art should only show the local Tokyo/Shin-Yokohama
-    // approach. More distant timetable services are hidden by updateTrains.
-    // The multiplier is calibrated in corridor kilometres: the full line is
-    // now Tokyo–Hakata (~1025 km), so the local approach is a smaller slice.
-    ? clamp(0.70 - lineProgress * 10.4, 0.12, 0.86)
-    : 1 - lineProgress;
+// Close station art shows only the local approach around the focused
+// station. The multiplier is calibrated in corridor kilometres: the full
+// line is Tokyo–Hakata (~1025 km), so the visible slice is small.
+const artRouteTFor = (
+  band: DetailBand,
+  focusedStationId: string,
+  lineProgress: number,
+  focusProgress = 0
+) => {
+  if (band.index >= 12) {
+    const anchor = focusedStationId === "tokyo" ? 0.70 : 0.55;
+    return clamp(anchor - (lineProgress - focusProgress) * 10.4, 0.12, 0.86);
+  }
+  return 1 - lineProgress;
+};
 
 const artTrainPose = (
   app: PIXI.Application,
@@ -1541,16 +1579,17 @@ const sampleArtPoseBlended = (
   app: PIXI.Application,
   lod: number,
   lineProgress: number,
-  focusedStationId: string
+  focusedStationId: string,
+  focusProgress = 0
 ) => {
   const lower = Math.floor(lod);
   const frac = lod - lower;
   const bandA = getDetailBandByIndex(lower);
-  const poseA = sampleArtRoute(app, bandA, artRouteTFor(bandA, focusedStationId, lineProgress));
+  const poseA = sampleArtRoute(app, bandA, artRouteTFor(bandA, focusedStationId, lineProgress, focusProgress));
   const bandB = getDetailBandByIndex(Math.min(15, lower + 1));
   if (frac < 0.02 || bandA.index === bandB.index) return poseA;
   if (artRouteSpecIndex(bandA) === artRouteSpecIndex(bandB)) return poseA;
-  const poseB = sampleArtRoute(app, bandB, artRouteTFor(bandB, focusedStationId, lineProgress));
+  const poseB = sampleArtRoute(app, bandB, artRouteTFor(bandB, focusedStationId, lineProgress, focusProgress));
   const point = new PIXI.Point(
     poseA.point.x + (poseB.point.x - poseA.point.x) * frac,
     poseA.point.y + (poseB.point.y - poseA.point.y) * frac
@@ -2638,6 +2677,22 @@ const buildStationSprite = (stationId: string, textures: GeneratedTextures) => {
     sprite.alpha = 0.97;
     generated.addChild(sprite);
 
+    // New corridor cities upgrade the generic platform to their own generated
+    // station building once the manifest texture arrives.
+    const manifestEntry = CITY_ART[stationId];
+    const hasLegacyNode = ["tokyo", "yokohama", "nagoya", "kyoto", "osaka"].includes(stationId);
+    if (manifestEntry?.node && !hasLegacyNode) {
+      void loadManifestTexture(manifestEntry.node).then((tex) => {
+        if (!tex || generated.destroyed) return;
+        sprite.visible = false;
+        const stationNode = new PIXI.Sprite(tex);
+        stationNode.anchor.set(0.5, 0.76);
+        stationNode.width = 220;
+        stationNode.scale.y = stationNode.scale.x;
+        stationNode.alpha = 0.98;
+        generated.addChild(stationNode);
+      });
+    }
   } else {
     const nodeTexture = stationNodeTexture(stationId, textures);
     if (nodeTexture) {
@@ -2944,7 +2999,20 @@ const buildLandmark = (stationId: string, textures: GeneratedTextures) => {
     g.rect(-24, -4, 48, 14).fill(0x6f8796);
     c.addChild(g);
   } else {
-    return null;
+    // New corridor cities: generated landmark sprite from the art manifest,
+    // attached asynchronously when its texture finishes loading.
+    const entry = CITY_ART[stationId];
+    if (!entry?.landmark) return null;
+    void loadManifestTexture(entry.landmark).then((tex) => {
+      if (!tex || c.destroyed) return;
+      const sprite = new PIXI.Sprite(tex);
+      sprite.anchor.set(0.5, 0.82);
+      sprite.width = 78;
+      sprite.scale.y = sprite.scale.x;
+      sprite.alpha = 0.95;
+      c.addChild(sprite);
+    });
+    return c;
   }
 
   c.scale.set(0.48);
