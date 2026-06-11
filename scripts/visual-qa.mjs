@@ -9,21 +9,78 @@
  *   npm run qa:visual              # full matrix
  *   npm run qa:visual -- --debug-routes   # adds ?routedebug overlay shots
  *   npm run qa:visual -- --skip-build     # reuse existing dist/
+ *   npm run qa:visual -- --compare        # diff against qa/goldens, fail on drift
+ *   npm run qa:visual -- --update-goldens # regenerate qa/goldens from this run
  */
 import { execFile, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
+import { PNG } from "pngjs";
+import pixelmatch from "pixelmatch";
 
 const execFileAsync = promisify(execFile);
 const root = process.cwd();
 const outDir = path.join(root, "qa", "screenshots");
+const goldenDir = path.join(root, "qa", "goldens");
 const PORT = 4173;
 const BASE = `http://127.0.0.1:${PORT}`;
 
 const args = new Set(process.argv.slice(2));
 const DEBUG_ROUTES = args.has("--debug-routes");
 const SKIP_BUILD = args.has("--skip-build");
+const COMPARE = args.has("--compare");
+const UPDATE_GOLDENS = args.has("--update-goldens");
+
+// Goldens are committed low-res (360px wide) so they stay light in git while
+// still catching layout/art/regression drift. A capture fails the compare
+// when more than 2% of golden pixels differ.
+const GOLDEN_WIDTH = 360;
+const PIXEL_DIFF_RATIO = 0.02;
+const PIXELMATCH_THRESHOLD = 0.16;
+
+/** Box-filter downscale to the golden width (pngjs has no resampler). */
+const downscale = (png, targetWidth) => {
+  if (png.width <= targetWidth) return png;
+  const scale = png.width / targetWidth;
+  const targetHeight = Math.max(1, Math.round(png.height / scale));
+  const out = new PNG({ width: targetWidth, height: targetHeight });
+  for (let ty = 0; ty < targetHeight; ty += 1) {
+    const y0 = Math.floor(ty * scale);
+    const y1 = Math.min(png.height, Math.max(y0 + 1, Math.floor((ty + 1) * scale)));
+    for (let tx = 0; tx < targetWidth; tx += 1) {
+      const x0 = Math.floor(tx * scale);
+      const x1 = Math.min(png.width, Math.max(x0 + 1, Math.floor((tx + 1) * scale)));
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let a = 0;
+      let n = 0;
+      for (let sy = y0; sy < y1; sy += 1) {
+        for (let sx = x0; sx < x1; sx += 1) {
+          const i = (sy * png.width + sx) * 4;
+          r += png.data[i];
+          g += png.data[i + 1];
+          b += png.data[i + 2];
+          a += png.data[i + 3];
+          n += 1;
+        }
+      }
+      const o = (ty * targetWidth + tx) * 4;
+      out.data[o] = Math.round(r / n);
+      out.data[o + 1] = Math.round(g / n);
+      out.data[o + 2] = Math.round(b / n);
+      out.data[o + 3] = Math.round(a / n);
+    }
+  }
+  return out;
+};
+
+const readPng = (file) => PNG.sync.read(fs.readFileSync(file));
+const writePng = (file, png) => {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, PNG.sync.write(png));
+};
 
 const findChromium = () => {
   if (process.env.QA_CHROMIUM && fs.existsSync(process.env.QA_CHROMIUM))
@@ -114,6 +171,7 @@ const run = async () => {
     });
 
     const captured = [];
+    const shots = [];
     const failures = [];
 
     for (const viewport of VIEWPORTS) {
@@ -148,6 +206,7 @@ const run = async () => {
         const file = path.join(dir, `${name}.png`);
         await page.screenshot({ path: file });
         captured.push(path.relative(root, file));
+        shots.push({ viewport: viewport.name, name, file });
         console.log(`  captured ${viewport.name}/${name}.png`);
       };
 
@@ -164,8 +223,21 @@ const run = async () => {
       const routeDebugQuery = DEBUG_ROUTES ? "&routedebug" : "";
 
       await open(routeDebugQuery);
+      // Expected plate per band with the default Tokyo focus; waiting on the
+      // plate id keeps captures deterministic for the golden compare.
+      const BAND_PLATE_IDS = [
+        "japan-board",
+        "japan-atlas",
+        "tokaido-corridor",
+        "central-honshu",
+        "kanagawa-corridor",
+        "tokyo-approach",
+        "tokyo-city",
+        "tokyo-close"
+      ];
       for (const zoom of BAND_SHOTS) {
         await page.evaluate((z) => window.__shinkansen.setZoom(z), zoom);
+        await waitForPlate(BAND_PLATE_IDS[Math.floor(zoom)]);
         await shoot(`band-${zoom.toFixed(1).replace(".", "_")}`);
       }
 
@@ -174,8 +246,10 @@ const run = async () => {
           window.__shinkansen.focusStation(id);
           window.__shinkansen.setZoom(6.5);
         }, station);
+        await waitForPlate(`${station}-city`);
         await shoot(`city-${station}`);
         await page.evaluate(() => window.__shinkansen.setZoom(7.5));
+        await waitForPlate(`${station}-close`);
         await shoot(`close-${station}`);
       }
 
@@ -207,6 +281,66 @@ const run = async () => {
 
     await browser.close();
 
+    // ----------------------------------------------- golden regression pass --
+    const goldenResults = [];
+    let goldenDrift = false;
+    if ((COMPARE || UPDATE_GOLDENS) && DEBUG_ROUTES) {
+      console.warn("Skipping golden compare: --debug-routes changes the captures.");
+    } else if (COMPARE || UPDATE_GOLDENS) {
+      const diffDir = path.join(outDir, "diffs");
+      for (const shot of shots) {
+        const key = `${shot.viewport}/${shot.name}`;
+        const goldenFile = path.join(goldenDir, shot.viewport, `${shot.name}.png`);
+        const small = downscale(readPng(shot.file), GOLDEN_WIDTH);
+        if (UPDATE_GOLDENS) {
+          writePng(goldenFile, small);
+          goldenResults.push({ key, status: "updated", detail: "" });
+          continue;
+        }
+        if (!fs.existsSync(goldenFile)) {
+          goldenDrift = true;
+          goldenResults.push({
+            key,
+            status: "missing",
+            detail: "no golden; run --update-goldens"
+          });
+          continue;
+        }
+        const golden = readPng(goldenFile);
+        if (golden.width !== small.width || golden.height !== small.height) {
+          goldenDrift = true;
+          goldenResults.push({
+            key,
+            status: "drift",
+            detail: `size ${small.width}x${small.height} vs golden ${golden.width}x${golden.height}`
+          });
+          continue;
+        }
+        const diff = new PNG({ width: golden.width, height: golden.height });
+        const changed = pixelmatch(golden.data, small.data, diff.data, golden.width, golden.height, {
+          threshold: PIXELMATCH_THRESHOLD
+        });
+        const ratio = changed / (golden.width * golden.height);
+        const detail = `${(ratio * 100).toFixed(2)}% pixels differ`;
+        if (ratio > PIXEL_DIFF_RATIO) {
+          goldenDrift = true;
+          writePng(path.join(diffDir, shot.viewport, `${shot.name}.png`), diff);
+          goldenResults.push({ key, status: "drift", detail });
+        } else {
+          goldenResults.push({ key, status: "ok", detail });
+        }
+      }
+      const counts = goldenResults.reduce((acc, r) => {
+        acc[r.status] = (acc[r.status] ?? 0) + 1;
+        return acc;
+      }, {});
+      console.log(
+        UPDATE_GOLDENS
+          ? `Goldens updated: ${goldenResults.length} in qa/goldens/`
+          : `Golden compare: ${counts.ok ?? 0} ok, ${counts.drift ?? 0} drift, ${counts.missing ?? 0} missing`
+      );
+    }
+
     const report = [
       "# Visual QA report",
       "",
@@ -224,7 +358,15 @@ const run = async () => {
         ? "None."
         : failures
             .map((f) => `### ${f.viewport}\n${f.errors.map((e) => `- ${e}`).join("\n")}`)
-            .join("\n\n")
+            .join("\n\n"),
+      ...(goldenResults.length > 0
+        ? [
+            "",
+            "## Golden comparison",
+            "",
+            ...goldenResults.map((r) => `- ${r.status.toUpperCase()} ${r.key}${r.detail ? ` (${r.detail})` : ""}`)
+          ]
+        : [])
     ].join("\n");
     fs.writeFileSync(path.join(root, "qa", "report.md"), `${report}\n`);
 
@@ -233,6 +375,13 @@ const run = async () => {
     );
     if (failures.length > 0) {
       console.error("Browser errors were captured; see qa/report.md");
+      process.exitCode = 1;
+    }
+    if (goldenDrift) {
+      console.error(
+        "Golden comparison failed; see qa/report.md and qa/screenshots/diffs/. " +
+          "If the change is intentional, refresh with `npm run qa:visual -- --update-goldens`."
+      );
       process.exitCode = 1;
     }
   } finally {

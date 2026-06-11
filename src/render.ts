@@ -685,7 +685,8 @@ export const initRenderer = async (
           visual.displayY = targetY;
           visual.hasDisplay = true;
         } else {
-          const blend = reducedMotion ? 1 : 0.16;
+          // QA captures snap so trains sit at their exact simulated pose.
+          const blend = reducedMotion || qaMode ? 1 : 0.16;
           visual.displayX += (targetX - visual.displayX) * blend;
           visual.displayY += (targetY - visual.displayY) * blend;
         }
@@ -712,7 +713,7 @@ export const initRenderer = async (
           const mirrored = axisDelta(Math.PI - TRAIN_SPRITE_AXIS, theta);
           const useMirror = Math.abs(mirrored) < Math.abs(plain);
           const desired = clamp(useMirror ? mirrored : plain, -0.6, 0.6);
-          const blend = reducedMotion || quality === "low" ? 1 : 0.2;
+          const blend = reducedMotion || qaMode || quality === "low" ? 1 : 0.2;
           visual.rotation += normalizeAngle(desired - visual.rotation) * blend;
           sprite.rotation = visual.rotation;
           sprite.scale.set(useMirror ? -scale : scale, scale);
@@ -749,7 +750,8 @@ export const initRenderer = async (
 
   const zoomTo = (next: number) => {
     markInteraction();
-    if (reducedMotion) {
+    // QA captures need exact zoom states, so the tween snaps there too.
+    if (reducedMotion || qaMode) {
       zoomTweenTarget = null;
       setZoomImmediate(next);
       return;

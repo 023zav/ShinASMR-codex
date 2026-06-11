@@ -178,6 +178,10 @@ const boot = async () => {
   // (minutes), ?paused freezes it, ?zoom=6.5 selects the zoom band,
   // ?station=kyoto sets the focus city.
   const queryParams = new URLSearchParams(window.location.search);
+  // ?qa pins anything wall-clock-dependent so screenshot runs are
+  // reproducible (the renderer also disables idle drift and zoom tweens).
+  const qaMode = queryParams.has("qa");
+  const hudDate = () => (qaMode ? new Date(2026, 0, 1) : new Date());
   const timeParam = Number(queryParams.get("time"));
   sim.setTime(Number.isFinite(timeParam) && queryParams.has("time") ? timeParam : nowJstMinutes());
   if (queryParams.has("paused")) sim.setPlaying(false);
@@ -530,7 +534,7 @@ const boot = async () => {
   const refreshLocalizedHud = () => {
     applyStaticTranslations();
     syncLangToggle();
-    dateLabel.textContent = formatDate(new Date());
+    dateLabel.textContent = formatDate(hudDate());
     playPauseBtn.textContent = playing ? t("pause") : t("play");
     hudToggle.textContent = document.body.classList.contains("hud-minimal")
       ? t("show_hud")
@@ -555,7 +559,7 @@ const boot = async () => {
   renderStationCard("tokyo");
   renderTimetable();
   syncLangToggle();
-  dateLabel.textContent = formatDate(new Date());
+  dateLabel.textContent = formatDate(hudDate());
   renderer.setStationLabelLanguage(getLang());
   let lastTimetableMinute = -1;
   let lastDetailsUpdate = 0;
@@ -616,7 +620,7 @@ const boot = async () => {
             : t("flow_busy");
       onTimeMetric.textContent = "100%";
       serviceAlerts.textContent = t("service_alerts", { count: 0 });
-      dateLabel.textContent = formatDate(new Date());
+      dateLabel.textContent = formatDate(hudDate());
     }
     renderer.setAmbientMinutes(sim.timeMinutes);
     renderer.update(filtered);
