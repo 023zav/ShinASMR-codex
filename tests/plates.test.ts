@@ -7,7 +7,9 @@ import {
   PlateSpec,
   TRAIN_TEXTURES,
   TRAIN_SPRITE_AXIS,
+  ambientGradeForMinutes,
   axisDelta,
+  gradeToTint,
   lineProgress,
   plateForBand,
   sampleRoute
@@ -166,6 +168,41 @@ describe("lineProgress", () => {
     for (let i = 1; i < ordered.length; i += 1) {
       expect(ordered[i]).toBeGreaterThan(ordered[i - 1]);
     }
+  });
+});
+
+describe("ambientGradeForMinutes (day/night grade)", () => {
+  it("is neutral during the day and cool at night", () => {
+    expect(ambientGradeForMinutes(720)).toEqual({ r: 1, g: 1, b: 1 });
+    const night = ambientGradeForMinutes(60);
+    expect(night.b).toBeGreaterThan(night.r);
+    expect(night.r).toBeLessThan(1);
+  });
+
+  it("stays subtle: every channel within [0.7, 1]", () => {
+    for (let m = 0; m < 1440; m += 10) {
+      const grade = ambientGradeForMinutes(m);
+      for (const channel of [grade.r, grade.g, grade.b]) {
+        expect(channel).toBeGreaterThanOrEqual(0.7);
+        expect(channel).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it("interpolates smoothly across phase boundaries", () => {
+    for (let m = 0; m < 1440; m += 5) {
+      const a = ambientGradeForMinutes(m);
+      const b = ambientGradeForMinutes(m + 5);
+      expect(Math.abs(a.r - b.r)).toBeLessThan(0.03);
+      expect(Math.abs(a.g - b.g)).toBeLessThan(0.03);
+      expect(Math.abs(a.b - b.b)).toBeLessThan(0.03);
+    }
+  });
+
+  it("wraps the clock and converts to a tint", () => {
+    expect(ambientGradeForMinutes(-60)).toEqual(ambientGradeForMinutes(1380));
+    expect(gradeToTint({ r: 1, g: 1, b: 1 })).toBe(0xffffff);
+    expect(gradeToTint(ambientGradeForMinutes(60))).not.toBe(0xffffff);
   });
 });
 

@@ -508,6 +508,48 @@ export const PALETTE = {
 
 export const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
+export type AmbientGrade = { r: number; g: number; b: number };
+
+/**
+ * Day/night color grade keyframes over the 24h sim clock (minutes), as a
+ * multiplicative tint on the art plates. Deliberately subtle: the plates
+ * stay readable, the world just cools down at night and warms at the
+ * golden hours.
+ */
+const AMBIENT_KEYFRAMES: Array<[number, AmbientGrade]> = [
+  [0, { r: 0.74, g: 0.78, b: 0.94 }], // deep night
+  [270, { r: 0.74, g: 0.78, b: 0.94 }], // 04:30 still night
+  [330, { r: 0.97, g: 0.88, b: 0.86 }], // 05:30 dawn blush
+  [420, { r: 1, g: 1, b: 1 }], // 07:00 full day
+  [990, { r: 1, g: 1, b: 1 }], // 16:30 late afternoon
+  [1110, { r: 1, g: 0.9, b: 0.8 }], // 18:30 dusk gold
+  [1170, { r: 0.74, g: 0.78, b: 0.94 }], // 19:30 night again
+  [1440, { r: 0.74, g: 0.78, b: 0.94 }]
+];
+
+/** Multiplicative plate tint for a sim clock time, interpolated between phases. */
+export const ambientGradeForMinutes = (minutes: number): AmbientGrade => {
+  const m = ((minutes % 1440) + 1440) % 1440;
+  for (let i = 0; i < AMBIENT_KEYFRAMES.length - 1; i += 1) {
+    const [t0, c0] = AMBIENT_KEYFRAMES[i];
+    const [t1, c1] = AMBIENT_KEYFRAMES[i + 1];
+    if (m >= t0 && m <= t1) {
+      const f = t1 === t0 ? 0 : (m - t0) / (t1 - t0);
+      return {
+        r: c0.r + (c1.r - c0.r) * f,
+        g: c0.g + (c1.g - c0.g) * f,
+        b: c0.b + (c1.b - c0.b) * f
+      };
+    }
+  }
+  return { r: 1, g: 1, b: 1 };
+};
+
+export const gradeToTint = (grade: AmbientGrade) =>
+  (Math.round(clamp(grade.r, 0, 1) * 255) << 16) |
+  (Math.round(clamp(grade.g, 0, 1) * 255) << 8) |
+  Math.round(clamp(grade.b, 0, 1) * 255);
+
 export const normalizeAngle = (angle: number) => {
   while (angle > Math.PI) angle -= Math.PI * 2;
   while (angle < -Math.PI) angle += Math.PI * 2;

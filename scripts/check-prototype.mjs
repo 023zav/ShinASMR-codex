@@ -11,6 +11,7 @@ const index = read("index.html");
 const main = read("src/main.ts");
 const render = read("src/render.ts");
 const plates = read("src/plates.ts");
+const audio = read("src/audio.ts");
 const css = read("src/style.css");
 const vite = read("vite.config.ts");
 
@@ -95,6 +96,15 @@ assert(
   "Runtime trains do not use the isometric consist sprites"
 );
 assert(render.includes("accuracyPanel"), "Coordinate accuracy debug inset is missing");
+
+// Ambient life: day/night grade, idle camera drift, soft audio crossfades.
+assert(plates.includes("ambientGradeForMinutes"), "Day/night ambient grade is missing");
+assert(
+  render.includes("setAmbientMinutes") && main.includes("setAmbientMinutes"),
+  "Plate tint is not driven by the sim clock"
+);
+assert(render.includes("IDLE_DRIFT_DELAY_MS"), "Idle camera drift is missing");
+assert(audio.includes("setTargetAtTime"), "Audio gains do not crossfade smoothly");
 
 // style.css: art layer is fallback-only; compact HUD survives.
 assert(css.includes("body.no-webgl"), "no-WebGL fallback styling is missing");

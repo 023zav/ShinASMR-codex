@@ -134,7 +134,8 @@ const run = async () => {
       });
 
       const open = async (query) => {
-        await page.goto(`${BASE}/?time=485&paused${query}`, { waitUntil: "load" });
+        // `qa` keeps captures deterministic (no idle camera drift).
+        await page.goto(`${BASE}/?time=485&paused&qa${query}`, { waitUntil: "load" });
         await page.waitForSelector("body.is-ready", { timeout: 25000 });
         await page.waitForFunction(() => Boolean(window.__shinkansen), undefined, {
           timeout: 10000

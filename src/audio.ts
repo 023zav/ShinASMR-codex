@@ -21,13 +21,18 @@ export class AudioEngine {
   }
 
   setVolume(value: number) {
-    if (this.master) this.master.gain.value = value;
+    if (!this.context || !this.master) return;
+    this.master.gain.setTargetAtTime(value, this.context.currentTime, 0.08);
   }
 
   update(trackIntensity: number, whooshIntensity: number) {
-    if (!this.started || !this.track || !this.whoosh) return;
-    this.track.gain.value = 0.02 + trackIntensity * 0.08;
-    this.whoosh.gain.value = whooshIntensity * 0.12;
+    if (!this.started || !this.context || !this.track || !this.whoosh) return;
+    // Soft crossfade: gains chase their targets exponentially, so a train
+    // sweeping past screen center swells in and falls away without zipper
+    // steps between throttled updates.
+    const now = this.context.currentTime;
+    this.track.gain.setTargetAtTime(0.02 + trackIntensity * 0.08, now, 0.6);
+    this.whoosh.gain.setTargetAtTime(whooshIntensity * 0.12, now, 0.35);
   }
 
   private createNoiseLayer(baseGain: number, lowpass: number) {

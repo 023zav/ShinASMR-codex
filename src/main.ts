@@ -618,6 +618,7 @@ const boot = async () => {
       serviceAlerts.textContent = t("service_alerts", { count: 0 });
       dateLabel.textContent = formatDate(new Date());
     }
+    renderer.setAmbientMinutes(sim.timeMinutes);
     renderer.update(filtered);
     if (selectedTrainId && now - lastDetailsUpdate > 250) {
       lastDetailsUpdate = now;

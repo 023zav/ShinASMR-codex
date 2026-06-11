@@ -1,6 +1,6 @@
 # Visual QA report
 
-Generated: 2026-06-10T20:08:29.542Z
+Generated: 2026-06-11T10:38:20.374Z
 Bundle: fresh vite build
 Route debug overlay: off
 
@@ -24,6 +24,10 @@ Route debug overlay: off
 - qa/screenshots/desktop/close-kyoto.png
 - qa/screenshots/desktop/city-osaka.png
 - qa/screenshots/desktop/close-osaka.png
+- qa/screenshots/desktop/regional-nagoya.png
+- qa/screenshots/desktop/approach-nagoya.png
+- qa/screenshots/desktop/regional-osaka.png
+- qa/screenshots/desktop/approach-osaka.png
 - qa/screenshots/mobile/band-0_5.png
 - qa/screenshots/mobile/band-1_5.png
 - qa/screenshots/mobile/band-2_5.png
@@ -42,6 +46,10 @@ Route debug overlay: off
 - qa/screenshots/mobile/close-kyoto.png
 - qa/screenshots/mobile/city-osaka.png
 - qa/screenshots/mobile/close-osaka.png
+- qa/screenshots/mobile/regional-nagoya.png
+- qa/screenshots/mobile/approach-nagoya.png
+- qa/screenshots/mobile/regional-osaka.png
+- qa/screenshots/mobile/approach-osaka.png
 
 ## Browser errors
 

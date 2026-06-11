@@ -19,6 +19,8 @@ import {
   axisDelta,
   sampleRoute,
   lineProgress,
+  ambientGradeForMinutes,
+  gradeToTint,
   PALETTE
 } from "./plates";
 
@@ -41,6 +43,7 @@ export type RenderHandles = {
   setTrainTapHandler: (handler: (id: string) => void) => void;
   setStationTapHandler: (handler: (id: string) => void) => void;
   setStationLabelLanguage: (lang: "en" | "ja") => void;
+  setAmbientMinutes: (minutes: number) => void;
   update: (trains: SimTrainState[]) => void;
   getCameraCenter: () => PIXI.Point;
   getZoom: () => number;
@@ -116,11 +119,33 @@ export const initRenderer = async (
   let followTarget: string | null = null;
   let accuracyDebug = false;
   const routeDebug = typeof window !== "undefined" && window.location.search.includes("routedebug");
+  // QA captures must be deterministic, so the idle drift stays off there.
+  const qaMode =
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).has("qa");
   let trainTapHandler: ((id: string) => void) | null = null;
   let stationTapHandler: ((id: string) => void) | null = null;
   let latestTrains: SimTrainState[] = [];
   let panX = 0;
   let panY = 0;
+
+  // ------------------------------------------------------- ambient grade --
+  // Day/night tint follows the sim clock; the current value eases toward the
+  // target so scrubbing time doesn't flash (reduced motion snaps instead).
+  let ambientMinutes = 720;
+  const ambientCurrent = { r: 1, g: 1, b: 1 };
+
+  // -------------------------------------------------------- idle drift --
+  // After 30s without interaction the camera wanders very slowly, a calm
+  // "screensaver breath". Any input eases it back out.
+  const IDLE_DRIFT_DELAY_MS = 30000;
+  let lastInteractionAt = performance.now();
+  let driftStrength = 0;
+  let driftX = 0;
+  let driftY = 0;
+  let driftClock = 0;
+  const markInteraction = () => {
+    lastInteractionAt = performance.now();
+  };
 
   // ----------------------------------------------------- texture pipeline --
   const MAX_CACHED_PLATES = 6;
@@ -220,8 +245,8 @@ export const initRenderer = async (
     const ih = texture.height;
     const cover = Math.max(sw / iw, sh / ih);
     const scale = cover * (1 + bandFraction() * BAND_INNER_SCALE);
-    let offsetX = sw / 2 - spec.focus[0] * iw * scale + panX;
-    let offsetY = sh / 2 - spec.focus[1] * ih * scale + panY;
+    let offsetX = sw / 2 - spec.focus[0] * iw * scale + panX + driftX;
+    let offsetY = sh / 2 - spec.focus[1] * ih * scale + panY + driftY;
     offsetX = clamp(offsetX, sw - iw * scale, 0);
     offsetY = clamp(offsetY, sh - ih * scale, 0);
     return { spec, texture, scale, offsetX, offsetY };
@@ -494,6 +519,47 @@ export const initRenderer = async (
     }
   });
 
+  // Ambient grade ticker: ease the plate tint toward the sim clock's grade.
+  app.ticker.add(() => {
+    const target = ambientGradeForMinutes(ambientMinutes);
+    const blend = reducedMotion ? 1 : Math.min(1, app.ticker.deltaMS / 1200);
+    ambientCurrent.r += (target.r - ambientCurrent.r) * blend;
+    ambientCurrent.g += (target.g - ambientCurrent.g) * blend;
+    ambientCurrent.b += (target.b - ambientCurrent.b) * blend;
+    const tint = gradeToTint(ambientCurrent);
+    if (activeSprite) activeSprite.tint = tint;
+    for (const { sprite } of fadingSprites) sprite.tint = tint;
+  });
+
+  // Idle drift ticker: ease a slow Lissajous wander in after 30s idle.
+  app.ticker.add(() => {
+    const allowDrift = !reducedMotion && !qaMode;
+    const idle = performance.now() - lastInteractionAt > IDLE_DRIFT_DELAY_MS;
+    const targetStrength = allowDrift && idle ? 1 : 0;
+    const blend = Math.min(1, app.ticker.deltaMS / 2400);
+    driftStrength += (targetStrength - driftStrength) * blend;
+    if (driftStrength < 0.002) {
+      if (driftX !== 0 || driftY !== 0) {
+        driftX = 0;
+        driftY = 0;
+        driftClock = 0;
+        layoutPlate();
+        layoutStations();
+        layoutDebug();
+        updateTrains(latestTrains);
+      }
+      return;
+    }
+    driftClock += app.ticker.deltaMS / 1000;
+    const reach = Math.min(app.screen.width, app.screen.height) * 0.02;
+    driftX = Math.sin(driftClock * ((Math.PI * 2) / 47)) * reach * driftStrength;
+    driftY = Math.sin(driftClock * ((Math.PI * 2) / 61) + 1.3) * reach * 0.8 * driftStrength;
+    layoutPlate();
+    layoutStations();
+    layoutDebug();
+    updateTrains(latestTrains);
+  });
+
   // --------------------------------------------------------------- trains --
   type TrainVisual = {
     container: PIXI.Container;
@@ -682,6 +748,7 @@ export const initRenderer = async (
   };
 
   const zoomTo = (next: number) => {
+    markInteraction();
     if (reducedMotion) {
       zoomTweenTarget = null;
       setZoomImmediate(next);
@@ -704,6 +771,7 @@ export const initRenderer = async (
   const focusStation = (id: string) => {
     const station = stations.find((s) => s.id === id);
     if (!station) return;
+    markInteraction();
     const changed = focusedStationId !== station.id;
     focusedStationId = station.id;
     if (changed && bandIndex() >= 6) {
@@ -733,6 +801,7 @@ export const initRenderer = async (
   let pinchBaseZoom = 0;
 
   app.stage.on("pointerdown", (e) => {
+    markInteraction();
     pointers.set(e.pointerId, new PIXI.Point(e.global.x, e.global.y));
     if (pointers.size === 2) {
       const [a, b] = Array.from(pointers.values());
@@ -743,6 +812,7 @@ export const initRenderer = async (
   app.stage.on("pointermove", (e) => {
     const prev = pointers.get(e.pointerId);
     if (!prev) return;
+    markInteraction();
     const next = new PIXI.Point(e.global.x, e.global.y);
     if (pointers.size === 1) {
       panX += next.x - prev.x;
@@ -775,6 +845,7 @@ export const initRenderer = async (
     "wheel",
     (e) => {
       e.preventDefault();
+      markInteraction();
       zoomTweenTarget = null;
       setZoomImmediate(zoom - e.deltaY * 0.0016);
     },
@@ -885,6 +956,9 @@ export const initRenderer = async (
       stationLabelLang = lang;
       rebuildStationChips();
       layoutStations();
+    },
+    setAmbientMinutes: (minutes) => {
+      ambientMinutes = minutes;
     },
     update,
     getCameraCenter: () => new PIXI.Point(app.screen.width / 2, app.screen.height / 2),
