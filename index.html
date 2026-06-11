@@ -53,29 +53,30 @@
             <span class="clock-icon">◷</span>
             <strong id="timeLabel">06:00</strong>
             <span class="status-divider"></span>
-            <span>May 18, 1995</span>
-            <span class="weather">☀ Clear</span>
+            <span id="dateLabel">JST</span>
+            <span class="weather" id="clockModeBadge">● LIVE JST</span>
           </div>
 
           <div class="ops-title">
             <div class="logo">ASMR Shinkansen</div>
-            <div class="subtitle">Tokaido corridor / timetable-driven ambience</div>
+            <div class="subtitle">Tokaido &amp; San'yō corridor / live JST timetable</div>
           </div>
 
           <div class="ops-metrics" aria-label="Service metrics">
             <span>Active <strong id="activeServiceMetric">--</strong></span>
             <span>Flow <strong>Calm</strong></span>
-            <span>On-time <strong class="metric-good">98%</strong></span>
+            <span>Schedule <strong class="metric-good" id="scheduleMetric">On time</strong></span>
           </div>
 
           <div class="controls ops-controls" aria-label="Playback controls">
-            <button id="playPause" class="hud-button primary">Pause</button>
+            <button id="liveBtn" class="hud-button primary">● LIVE</button>
+            <button id="playPause" class="hud-button">Pause</button>
             <div class="speed segmented" aria-label="Simulation speed">
               <button data-speed="1" class="active">x1</button>
               <button data-speed="10">x10</button>
               <button data-speed="60">x60</button>
             </div>
-            <input id="timeScrub" class="hud-range" type="range" min="0" max="1080" value="120" aria-label="Simulation time" />
+            <input id="timeScrub" class="hud-range" type="range" min="0" max="1439" value="120" aria-label="Simulation time" />
             <div class="zoom-tools" aria-label="Map zoom controls">
               <button id="zoomOut" class="hud-button mini" type="button">−</button>
               <input id="zoomSlider" class="hud-range zoom-range" type="range" min="4.15" max="12.65" step="0.01" value="12.35" aria-label="Map zoom level" />
@@ -98,7 +99,7 @@
             <div class="section-kicker">Focus Station</div>
             <h2 id="stationSummaryTitle">Tokyo Station</h2>
             <div class="badge-row">
-              <span class="route-badge blue">Tokaido Shinkansen</span>
+              <span class="route-badge blue">Tokaido &amp; San'yō Shinkansen</span>
               <span class="grade-badge">Quiet mode</span>
             </div>
             <dl id="stationSummary" class="stat-grid">

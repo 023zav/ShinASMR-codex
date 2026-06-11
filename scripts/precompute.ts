@@ -43,16 +43,26 @@ const line_runtime = lines.map((line) => {
   for (const stationId of line.station_ids_in_order) {
     const st = stationById.get(stationId);
     if (!st) continue;
-    let bestIndex = 0;
+    // Project the station onto each segment (not just vertices) so offsets stay
+    // accurate even where the polyline has sparse shape points.
+    let bestOffset = 0;
     let bestDist = Number.POSITIVE_INFINITY;
-    for (let i = 0; i < line.polyline.length; i += 1) {
-      const d = haversine([st.lat, st.lon], line.polyline[i]);
+    for (let i = 0; i < line.polyline.length - 1; i += 1) {
+      const [aLat, aLon] = line.polyline[i];
+      const [bLat, bLon] = line.polyline[i + 1];
+      const dLat = bLat - aLat;
+      const dLon = bLon - aLon;
+      const len2 = dLat * dLat + dLon * dLon;
+      const t = len2 < 1e-12 ? 0 : Math.max(0, Math.min(1, ((st.lat - aLat) * dLat + (st.lon - aLon) * dLon) / len2));
+      const pLat = aLat + dLat * t;
+      const pLon = aLon + dLon * t;
+      const d = haversine([st.lat, st.lon], [pLat, pLon]);
       if (d < bestDist) {
         bestDist = d;
-        bestIndex = i;
+        bestOffset = cumulative[i] + haversine([aLat, aLon], [pLat, pLon]);
       }
     }
-    station_offsets[stationId] = cumulative[bestIndex];
+    station_offsets[stationId] = bestOffset;
   }
   return {
     id: line.id,

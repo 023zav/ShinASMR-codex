@@ -228,10 +228,39 @@ const boot = async () => {
   let selectedTrainId: string | null = null;
   let selectedStationId: string | null = null;
 
+  const liveBtn = document.getElementById("liveBtn") as HTMLButtonElement;
+  const dateLabel = document.getElementById("dateLabel") as HTMLSpanElement;
+  const clockModeBadge = document.getElementById("clockModeBadge") as HTMLSpanElement;
+
+  const jstDateText = () =>
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Tokyo",
+      day: "numeric",
+      month: "short",
+      weekday: "short"
+    }).format(new Date());
+
+  const syncClockModeUi = () => {
+    const live = sim.clockMode === "live";
+    liveBtn.classList.toggle("primary", live);
+    liveBtn.textContent = live ? "● LIVE" : "○ Go live";
+    clockModeBadge.textContent = live ? "● LIVE JST" : "◷ Sandbox";
+    dateLabel.textContent = live ? jstDateText() : "Sandbox time";
+  };
+
+  liveBtn.addEventListener("click", () => {
+    sim.goLive();
+    playing = true;
+    playPauseBtn.textContent = "Pause";
+    speedBtns.forEach((b) => b.classList.toggle("active", b.dataset.speed === "1"));
+    syncClockModeUi();
+  });
+
   playPauseBtn.addEventListener("click", () => {
     playing = !playing;
     sim.setPlaying(playing);
     playPauseBtn.textContent = playing ? "Pause" : "Play";
+    syncClockModeUi();
   });
 
   speedBtns.forEach((btn) => {
@@ -240,12 +269,15 @@ const boot = async () => {
       sim.setSpeed(speed);
       speedBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
+      syncClockModeUi();
     });
   });
 
   timeScrub.addEventListener("input", () => {
     sim.setTime(Number(timeScrub.value));
+    syncClockModeUi();
   });
+  syncClockModeUi();
 
   soundBtn.addEventListener("click", async () => {
     await audio.start();
@@ -332,18 +364,29 @@ const boot = async () => {
       const station = sim.getStation(stationId);
       if (!station) return;
       detailsTitle.textContent = station.name_en;
-      const departures = parsedServices
-        .flatMap((service) =>
-          service.stops
-            .filter((stop) => stop.station_id === station.id)
-            .map((stop) => ({ service, stop }))
-        )
-        .slice(0, 5);
+      const now = sim.timeMinutes;
+      const allCalls = parsedServices.flatMap((service) =>
+        service.stops
+          .filter((stop) => stop.station_id === station.id)
+          .map((stop) => ({ service, stop, dep: parseClock(stop.departure) }))
+      );
+      // Departure board: next services from the current clock, wrapping to
+      // the morning if the day is over.
+      const upcoming = allCalls.filter((call) => call.dep >= now).sort((a, b) => a.dep - b.dep);
+      const wrapped = allCalls.sort((a, b) => a.dep - b.dep);
+      const departures = (upcoming.length > 0 ? upcoming : wrapped).slice(0, 6);
+      const meta = (station.metadata ?? {}) as { description_en?: string; rank?: string };
+      const tracksByRank: Record<string, string> = {
+        terminal: "8 tracks",
+        major: "6 tracks",
+        regional: "4 tracks",
+        local: "2 tracks"
+      };
       detailsBody.innerHTML = `
         <div class="station-preview station-preview-${station.id}" aria-hidden="true"></div>
         <div class="detail-row"><span>Local name</span><strong>${station.name_local ?? "Station"}</strong></div>
-        <div class="detail-row"><span>Line</span><strong>Tokaido</strong></div>
-        <div class="detail-row"><span>Ambience</span><strong>Platform hush</strong></div>
+        <div class="detail-row"><span>Line</span><strong>Tokaido &amp; San'yō</strong></div>
+        ${meta.description_en ? `<p class="station-blurb">${meta.description_en}</p>` : ""}
         <div class="route-timeline">
           ${departures
             .map(
@@ -355,8 +398,8 @@ const boot = async () => {
       stationSummaryTitle.textContent = station.name_en;
       stationSummary.innerHTML = `
         <div><dt>Local</dt><dd>${station.name_local ?? "—"}</dd></div>
-        <div><dt>Platforms</dt><dd>${station.id === "tokyo" || station.id === "osaka" ? "8 tracks" : "4 tracks"}</dd></div>
-        <div><dt>Departures</dt><dd>${departures.length}</dd></div>`;
+        <div><dt>Platforms</dt><dd>${tracksByRank[meta.rank ?? "regional"] ?? "4 tracks"}</dd></div>
+        <div><dt>Next deps</dt><dd>${departures.length}</dd></div>`;
       return;
     }
     detailsTitle.textContent = t("no_selection");
@@ -419,9 +462,34 @@ const boot = async () => {
   };
 
   const renderTimetable = () => {
-    timetableList.innerHTML = parsedServices
-      .slice(0, 8)
-      .map((service, index) => {
+    // Departure-board behaviour: running services first, then the next
+    // scheduled departures. At night this naturally empties out.
+    const now = sim.timeMinutes;
+    const annotated = parsedServices.map((service) => ({
+      service,
+      first: parseClock(service.stops[0].departure),
+      last: parseClock(service.stops[service.stops.length - 1].arrival)
+    }));
+    const running = annotated.filter((s) => now >= s.first && now <= s.last);
+    const upcoming = annotated
+      .filter((s) => s.first > now)
+      .sort((a, b) => a.first - b.first);
+    const rows = [...running.slice(0, 6), ...upcoming.slice(0, Math.max(2, 8 - running.length))].slice(0, 8);
+    if (rows.length === 0) {
+      const next = [...annotated].sort((a, b) => a.first - b.first)[0];
+      timetableList.innerHTML = `
+        <div class="timetable-row">
+          <span class="timetable-dot" style="background:var(--blue)"></span>
+          <span class="timetable-main">
+            <span class="timetable-name">Network at rest</span>
+            <span class="timetable-route">First departure ${next ? formatTime(next.first) : "06:00"} JST</span>
+          </span>
+          <span class="timetable-status">Night</span>
+        </div>`;
+      return;
+    }
+    timetableList.innerHTML = rows
+      .map(({ service }, index) => {
         const first = service.stops[0];
         const last = service.stops[service.stops.length - 1];
         const origin = sim.getStation(first.station_id)?.name_en ?? first.station_id;
@@ -443,11 +511,25 @@ const boot = async () => {
 
   const renderNotifications = (activeTrains: number) => {
     const timeText = formatTime(sim.timeMinutes);
+    if (activeTrains === 0) {
+      // Honest night state: no artificial trains. The network sleeps when
+      // the real one does.
+      const now = sim.timeMinutes;
+      const futureFirsts = parsedServices
+        .map((service) => parseClock(service.stops[0].departure))
+        .sort((a, b) => a - b);
+      const next = futureFirsts.find((first) => first > now) ?? futureFirsts[0];
+      notificationFeed.innerHTML = `
+        <span>${timeText}&nbsp;&nbsp;No trains running — the corridor is closed for the night.</span>
+        <span>${timeText}&nbsp;&nbsp;Overnight track inspection and maintenance window.</span>
+        <span>${timeText}&nbsp;&nbsp;First departure at ${formatTime(next)} JST.</span>`;
+      return;
+    }
     const selected = selectedTrainId
       ? sim.getTrainStates().find((train) => train.id === selectedTrainId)?.name
       : null;
     notificationFeed.innerHTML = `
-      <span>${timeText}&nbsp;&nbsp;${activeTrains} active Shinkansen services in the corridor.</span>
+      <span>${timeText}&nbsp;&nbsp;${activeTrains} scheduled Shinkansen services running right now.</span>
       <span>${timeText}&nbsp;&nbsp;Track ambience responding to timetable density.</span>
       <span>${timeText}&nbsp;&nbsp;${selected ? `${selected} selected for close listening.` : "Tap a train for close listening."}</span>`;
   };

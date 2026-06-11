@@ -24,6 +24,14 @@
     "facts_en": ["Retro-futuristic profile used here as a heritage visual variant.", "Narrow pointed nose gives it a distinct silhouette."]
   },
   {
+    "id": "n700kyushu",
+    "name_en": "N700 Sakura",
+    "max_speed_kmh": 300,
+    "length_m": 200,
+    "livery_key": "white-sakura",
+    "facts_en": ["8-car N700 series used on San'yō Sakura and Mizuho services.", "Warm wood-tone interiors in its 2+2 green-style ordinary cars."]
+  },
+  {
     "id": "doctor923",
     "name_en": "923 Doctor Yellow",
     "max_speed_kmh": 270,

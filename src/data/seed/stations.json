@@ -5,7 +5,29 @@
     "name_local": "東京",
     "lat": 35.681236,
     "lon": 139.767125,
-    "line_ids": ["tokaido"]
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Tokyo",
+      "rank": "terminal",
+      "description_en": "The eastern terminus of the Shinkansen network, beneath the red-brick Marunouchi station front and the towers of the capital.",
+      "landmarks_en": ["Tokyo Station red-brick Marunouchi building", "Imperial Palace moats and gardens", "Marunouchi skyscraper skyline"],
+      "art_theme": "dense capital city core, red-brick palace-front station, glass towers, imperial moat greenery"
+    }
+  },
+  {
+    "id": "shinagawa",
+    "name_en": "Shinagawa",
+    "name_local": "品川",
+    "lat": 35.630152,
+    "lon": 139.74044,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Tokyo",
+      "rank": "major",
+      "description_en": "Tokyo's southern gateway, an office-tower district laced with old Tokaido post-town lanes and bay canals.",
+      "landmarks_en": ["Shinagawa Intercity tower row", "Sengakuji Temple", "Tennozu Isle canals"],
+      "art_theme": "modern office tower rows beside bay canals, hints of an old post town"
+    }
   },
   {
     "id": "yokohama",
@@ -13,7 +35,149 @@
     "name_local": "新横浜",
     "lat": 35.508971,
     "lon": 139.6171,
-    "line_ids": ["tokaido"]
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Kanagawa",
+      "rank": "major",
+      "description_en": "Business district of Japan's second city; the harbor skyline of Minato Mirai rises beyond the arena and the ramen museum.",
+      "landmarks_en": ["Minato Mirai ferris wheel and Landmark Tower", "Yokohama Arena", "Shin-Yokohama Ramen Museum"],
+      "art_theme": "harbor city skyline with giant ferris wheel and sail-shaped tower in the distance"
+    }
+  },
+  {
+    "id": "odawara",
+    "name_en": "Odawara",
+    "name_local": "小田原",
+    "lat": 35.256528,
+    "lon": 139.155556,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Kanagawa",
+      "rank": "regional",
+      "description_en": "Castle town on Sagami Bay where the line meets the sea, gateway to the Hakone hot-spring mountains.",
+      "landmarks_en": ["Odawara Castle keep", "Sagami Bay fishing harbor", "Hakone foothills"],
+      "art_theme": "white castle keep above a coastal town, fishing harbor, forested mountains behind"
+    }
+  },
+  {
+    "id": "atami",
+    "name_en": "Atami",
+    "name_local": "熱海",
+    "lat": 35.103217,
+    "lon": 139.077664,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Shizuoka",
+      "rank": "regional",
+      "description_en": "A hot-spring resort stacked on steep slopes over the sea; steam drifts between retro ryokan terraces.",
+      "landmarks_en": ["Seaside onsen resort terraces", "Atami plum garden", "Atami Castle viewpoint"],
+      "art_theme": "steep seaside onsen town, terraced retro resort hotels, steam wisps, blue bay"
+    }
+  },
+  {
+    "id": "mishima",
+    "name_en": "Mishima",
+    "name_local": "三島",
+    "lat": 35.126334,
+    "lon": 138.910997,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Shizuoka",
+      "rank": "regional",
+      "description_en": "Spring-water town at the foot of Mount Fuji, crossed by crystal streams from the mountain's snowmelt.",
+      "landmarks_en": ["Mishima Taisha shrine", "Genbei River spring streams", "Mount Fuji rising north"],
+      "art_theme": "clear spring streams through a small shrine town, Mount Fuji huge on the horizon"
+    }
+  },
+  {
+    "id": "shin-fuji",
+    "name_en": "Shin-Fuji",
+    "name_local": "新富士",
+    "lat": 35.142167,
+    "lon": 138.663527,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Shizuoka",
+      "rank": "regional",
+      "description_en": "The classic Fuji panorama stop: paper-mill chimneys and tea fields under the full cone of the mountain.",
+      "landmarks_en": ["Mount Fuji full view", "Fuji City paper mills", "Green tea fields"],
+      "art_theme": "Mount Fuji towering over tea fields and a small industrial mill town"
+    }
+  },
+  {
+    "id": "shizuoka",
+    "name_en": "Shizuoka",
+    "name_local": "静岡",
+    "lat": 34.971698,
+    "lon": 138.388871,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Shizuoka",
+      "rank": "major",
+      "description_en": "Prefectural capital ringed by Japan's largest tea hills, built around the moats of Sunpu Castle park.",
+      "landmarks_en": ["Sunpu Castle park moats", "Nihondaira tea plantations", "Miho pine grove coast"],
+      "art_theme": "castle-moat park in a mid-size city surrounded by rolling tea plantations"
+    }
+  },
+  {
+    "id": "kakegawa",
+    "name_en": "Kakegawa",
+    "name_local": "掛川",
+    "lat": 34.769758,
+    "lon": 138.014772,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Shizuoka",
+      "rank": "local",
+      "description_en": "A small castle town among tea terraces, rebuilt around one of Japan's few wooden castle keeps.",
+      "landmarks_en": ["Kakegawa Castle wooden keep", "Tea terraces", "Kakegawa old clock tower"],
+      "art_theme": "small wooden castle keep over a quiet town wrapped in tea terraces"
+    }
+  },
+  {
+    "id": "hamamatsu",
+    "name_en": "Hamamatsu",
+    "name_local": "浜松",
+    "lat": 34.703839,
+    "lon": 137.734302,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Shizuoka",
+      "rank": "major",
+      "description_en": "City of pianos and motorcycles on the shore of Lake Hamana, its eel farms glinting between sandbars.",
+      "landmarks_en": ["Act City tower shaped like a harmonica", "Lake Hamana eel farms", "Nakatajima sand dunes"],
+      "art_theme": "industrial-creative city by a wide lagoon lake, tall slender tower, eel farm rafts"
+    }
+  },
+  {
+    "id": "toyohashi",
+    "name_en": "Toyohashi",
+    "name_local": "豊橋",
+    "lat": 34.762795,
+    "lon": 137.381733,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Aichi",
+      "rank": "regional",
+      "description_en": "A harbor city where vintage streetcars still ring through the streets below Yoshida Castle's corner turret.",
+      "landmarks_en": ["Vintage city streetcars", "Yoshida Castle turret", "Toyokawa river mouth"],
+      "art_theme": "retro streetcars in a riverside town with a small castle turret"
+    }
+  },
+  {
+    "id": "mikawa-anjo",
+    "name_en": "Mikawa-Anjō",
+    "name_local": "三河安城",
+    "lat": 34.96838,
+    "lon": 137.060488,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Aichi",
+      "rank": "local",
+      "description_en": "Flat farm country at the edge of the automotive belt — rice paddies meeting factory roofs.",
+      "landmarks_en": ["Rice paddy grid", "Automotive plants", "Denpark flower park windmill"],
+      "art_theme": "geometric rice paddies beside clean modern factories, a dutch-style windmill park"
+    }
   },
   {
     "id": "nagoya",
@@ -21,7 +185,44 @@
     "name_local": "名古屋",
     "lat": 35.170915,
     "lon": 136.881537,
-    "line_ids": ["tokaido"]
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Aichi",
+      "rank": "terminal",
+      "description_en": "Industrial heart of central Japan; golden dolphins crown the castle north of the twin station towers.",
+      "landmarks_en": ["Nagoya Castle with golden shachihoko", "JR Central twin towers", "Osu arcade lanterns"],
+      "art_theme": "broad industrial metropolis, green-roofed castle with golden dolphins, twin cylindrical towers"
+    }
+  },
+  {
+    "id": "gifu-hashima",
+    "name_en": "Gifu-Hashima",
+    "name_local": "岐阜羽島",
+    "lat": 35.31654,
+    "lon": 136.685389,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Gifu",
+      "rank": "local",
+      "description_en": "A quiet stop in the Nobi plain rice fields, with Gifu Castle visible on its mountain far to the north.",
+      "landmarks_en": ["Nobi plain rice fields", "Gifu Castle on Mount Kinka (distant)", "Nagara river levees"],
+      "art_theme": "wide rice plain with levee rivers, a tiny castle silhouette on a far mountain"
+    }
+  },
+  {
+    "id": "maibara",
+    "name_en": "Maibara",
+    "name_local": "米原",
+    "lat": 35.314194,
+    "lon": 136.289642,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Shiga",
+      "rank": "regional",
+      "description_en": "Junction town between snowy Mount Ibuki and the reed shores of Lake Biwa, Japan's largest lake.",
+      "landmarks_en": ["Lake Biwa shoreline", "Mount Ibuki snowcap", "Railway junction yards"],
+      "art_theme": "rail junction between a vast lake and a snow-capped mountain"
+    }
   },
   {
     "id": "kyoto",
@@ -29,7 +230,14 @@
     "name_local": "京都",
     "lat": 34.985849,
     "lon": 135.758766,
-    "line_ids": ["tokaido"]
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Kyoto",
+      "rank": "major",
+      "description_en": "The thousand-year capital: To-ji's pagoda rises beside the line as temple roofs ripple toward the eastern hills.",
+      "landmarks_en": ["To-ji five-storey pagoda", "Kiyomizu-dera terrace", "Kamo River and machiya townhouses"],
+      "art_theme": "ancient capital of wooden temples, five-storey pagoda by the tracks, tiled machiya rows, forested hills"
+    }
   },
   {
     "id": "osaka",
@@ -37,6 +245,283 @@
     "name_local": "新大阪",
     "lat": 34.733452,
     "lon": 135.500585,
-    "line_ids": ["tokaido"]
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Osaka",
+      "rank": "terminal",
+      "description_en": "Where Tokaido meets San'yō: the merchant metropolis of canals, Osaka Castle and the neon south.",
+      "landmarks_en": ["Osaka Castle on its stone ramparts", "Umeda tower cluster", "Dotonbori canal signs"],
+      "art_theme": "big merchant metropolis, white-and-gold castle on massive stone walls, canal districts"
+    }
+  },
+  {
+    "id": "shin-kobe",
+    "name_en": "Shin-Kōbe",
+    "name_local": "新神戸",
+    "lat": 34.706855,
+    "lon": 135.196295,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hyogo",
+      "rank": "major",
+      "description_en": "Pinned between the Rokko mountains and the port, with the Nunobiki waterfall hidden directly behind the platforms.",
+      "landmarks_en": ["Nunobiki Falls behind the station", "Kobe Port Tower and harbor", "Kitano western-style houses"],
+      "art_theme": "port city squeezed between green mountains and sea, red lattice port tower, waterfall gorge"
+    }
+  },
+  {
+    "id": "nishi-akashi",
+    "name_en": "Nishi-Akashi",
+    "name_local": "西明石",
+    "lat": 34.666839,
+    "lon": 134.959846,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hyogo",
+      "rank": "local",
+      "description_en": "Suburban stop by the Akashi strait, where the world's longest suspension bridge leaps to Awaji Island.",
+      "landmarks_en": ["Akashi Kaikyō suspension bridge", "Akashi planetarium clock tower", "Strait fishing boats"],
+      "art_theme": "colossal suspension bridge over a strait, small coastal suburb, fishing boats"
+    }
+  },
+  {
+    "id": "himeji",
+    "name_en": "Himeji",
+    "name_local": "姫路",
+    "lat": 34.826819,
+    "lon": 134.690239,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hyogo",
+      "rank": "major",
+      "description_en": "The white heron castle — Japan's most perfect keep — floats above the dead-straight castle avenue from the station.",
+      "landmarks_en": ["Himeji Castle white heron keep", "Otemae-dori castle avenue", "Mount Shosha temple ropeway"],
+      "art_theme": "brilliant white multi-tiered castle dominating a straight boulevard town"
+    }
+  },
+  {
+    "id": "aioi",
+    "name_en": "Aioi",
+    "name_local": "相生",
+    "lat": 34.80406,
+    "lon": 134.468627,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hyogo",
+      "rank": "local",
+      "description_en": "A shipyard town folded into a deep Inland Sea inlet, cranes leaning over still water.",
+      "landmarks_en": ["Shipyard gantry cranes", "Aioi Bay inlet", "Peron dragon-boat races"],
+      "art_theme": "quiet deep bay with shipyard cranes and terraced houses"
+    }
+  },
+  {
+    "id": "okayama",
+    "name_en": "Okayama",
+    "name_local": "岡山",
+    "lat": 34.666627,
+    "lon": 133.918297,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Okayama",
+      "rank": "major",
+      "description_en": "Sunny gateway to Shikoku, home of the black crow castle and Korakuen, one of Japan's three great gardens.",
+      "landmarks_en": ["Okayama Castle black keep", "Korakuen landscape garden", "Momotaro boulevard trams"],
+      "art_theme": "black castle keep over a classic strolling garden with streams and lawns"
+    }
+  },
+  {
+    "id": "shin-kurashiki",
+    "name_en": "Shin-Kurashiki",
+    "name_local": "新倉敷",
+    "lat": 34.59669,
+    "lon": 133.69431,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Okayama",
+      "rank": "local",
+      "description_en": "Stop for Kurashiki's Bikan quarter: white-walled storehouses mirrored in a willow-lined canal.",
+      "landmarks_en": ["Bikan canal storehouses", "Willow-lined banks", "Ivy Square brickworks"],
+      "art_theme": "white earthen storehouses with black tile along a willow canal"
+    }
+  },
+  {
+    "id": "fukuyama",
+    "name_en": "Fukuyama",
+    "name_local": "福山",
+    "lat": 34.488861,
+    "lon": 133.361822,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hiroshima",
+      "rank": "regional",
+      "description_en": "The castle stands so close its moat almost touches the platforms; a city of roses and steelworks.",
+      "landmarks_en": ["Fukuyama Castle beside the station", "Rose gardens", "Tomonoura port (distant)"],
+      "art_theme": "castle keep immediately beside shinkansen platforms, rose gardens, steel port haze"
+    }
+  },
+  {
+    "id": "shin-onomichi",
+    "name_en": "Shin-Onomichi",
+    "name_local": "新尾道",
+    "lat": 34.428819,
+    "lon": 133.193915,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hiroshima",
+      "rank": "local",
+      "description_en": "Hillside temple town tumbling to the Inland Sea, famous for slope alleys, cats and the island-hopping cycling road.",
+      "landmarks_en": ["Senko-ji temple hillside", "Shimanami Kaido bridges", "Slope alleys and cats"],
+      "art_theme": "temple-dotted hillside town cascading to an island-studded sea"
+    }
+  },
+  {
+    "id": "mihara",
+    "name_en": "Mihara",
+    "name_local": "三原",
+    "lat": 34.398947,
+    "lon": 133.078364,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hiroshima",
+      "rank": "local",
+      "description_en": "A ferry port wedged between castle stones and the sea — the station sits on the old castle foundations.",
+      "landmarks_en": ["Mihara Castle foundations under the station", "Island ferry port", "Octopus fishing boats"],
+      "art_theme": "small port town built into old castle stone walls, ferries among islands"
+    }
+  },
+  {
+    "id": "higashi-hiroshima",
+    "name_en": "Higashi-Hiroshima",
+    "name_local": "東広島",
+    "lat": 34.41759,
+    "lon": 132.738991,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hiroshima",
+      "rank": "local",
+      "description_en": "The sake capital Saijō: rows of white brewery walls and red-brick chimneys among university hills.",
+      "landmarks_en": ["Saijō sake brewery chimneys", "White namako-wall storehouses", "University campus hills"],
+      "art_theme": "sake brewery quarter with brick chimneys and white storehouse walls"
+    }
+  },
+  {
+    "id": "hiroshima",
+    "name_en": "Hiroshima",
+    "name_local": "広島",
+    "lat": 34.397622,
+    "lon": 132.475489,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Hiroshima",
+      "rank": "major",
+      "description_en": "Delta city of rivers and peace: the A-Bomb Dome and Peace Park at its heart, the floating torii across the bay.",
+      "landmarks_en": ["Atomic Bomb Dome and Peace Park", "Itsukushima floating torii (Miyajima)", "Six river delta bridges"],
+      "art_theme": "river-delta city of bridges, domed memorial ruin in a green park, great red torii in the bay beyond"
+    }
+  },
+  {
+    "id": "shin-iwakuni",
+    "name_en": "Shin-Iwakuni",
+    "name_local": "新岩国",
+    "lat": 34.158853,
+    "lon": 132.16972,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Yamaguchi",
+      "rank": "local",
+      "description_en": "Mountain stop for the Kintai-kyō — five wooden arches leaping the Nishiki river below a ropeway castle.",
+      "landmarks_en": ["Kintai-kyō five-arch wooden bridge", "Iwakuni Castle ropeway", "Nishiki river shallows"],
+      "art_theme": "five-arched wooden bridge over a clear river, tiny castle on the ridge"
+    }
+  },
+  {
+    "id": "tokuyama",
+    "name_en": "Tokuyama",
+    "name_local": "徳山",
+    "lat": 34.05241,
+    "lon": 131.80616,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Yamaguchi",
+      "rank": "local",
+      "description_en": "A petrochemical bay whose silver towers and pipes glitter against the Inland Sea — famous for its night factory views.",
+      "landmarks_en": ["Petrochemical complex on the bay", "Night factory illumination", "Shunan zoo hills"],
+      "art_theme": "gleaming petrochemical plant towers and pipes along a calm industrial bay"
+    }
+  },
+  {
+    "id": "shin-yamaguchi",
+    "name_en": "Shin-Yamaguchi",
+    "name_local": "新山口",
+    "lat": 34.093928,
+    "lon": 131.39655,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Yamaguchi",
+      "rank": "regional",
+      "description_en": "Gateway to the 'Kyoto of the west': Rurikō-ji's pagoda and steaming Yuda onsen lie up the valley.",
+      "landmarks_en": ["Rurikō-ji five-storey pagoda", "Yuda Onsen fox statues", "SL Yamaguchi steam train"],
+      "art_theme": "rural junction with a heritage steam locomotive, pagoda valley and onsen steam"
+    }
+  },
+  {
+    "id": "asa",
+    "name_en": "Asa",
+    "name_local": "厚狭",
+    "lat": 34.046951,
+    "lon": 131.158324,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Yamaguchi",
+      "rank": "local",
+      "description_en": "The quietest stop on the San'yō line: a rice-farming town with a single folk-tale statue on its plaza.",
+      "landmarks_en": ["Sannen Netaro folk-tale statue", "Rice valley", "Karst plateau of Akiyoshidai (distant)"],
+      "art_theme": "sleepy rice-farming valley town, limestone karst hills on the horizon"
+    }
+  },
+  {
+    "id": "shin-shimonoseki",
+    "name_en": "Shin-Shimonoseki",
+    "name_local": "新下関",
+    "lat": 34.00533,
+    "lon": 130.962184,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Yamaguchi",
+      "rank": "regional",
+      "description_en": "Honshu's last stop, above the Kanmon strait whirlpools and the pufferfish markets of Shimonoseki.",
+      "landmarks_en": ["Kanmon Bridge over the strait", "Karato fugu fish market", "Akama shrine vermilion gate"],
+      "art_theme": "great strait bridge between two shores, vermilion shrine, fish market harbor"
+    }
+  },
+  {
+    "id": "kokura",
+    "name_en": "Kokura",
+    "name_local": "小倉",
+    "lat": 33.886836,
+    "lon": 130.882486,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Fukuoka",
+      "rank": "major",
+      "description_en": "Kyushu's northern gate: the castle sits in a moat garden ringed by monorail viaducts and steel-town energy.",
+      "landmarks_en": ["Kokura Castle and garden", "Tanga market arcades", "Monorail over the streets"],
+      "art_theme": "castle in a moat garden surrounded by a lively industrial city and monorail"
+    }
+  },
+  {
+    "id": "hakata",
+    "name_en": "Hakata",
+    "name_local": "博多",
+    "lat": 33.589728,
+    "lon": 130.420727,
+    "line_ids": ["tokaido"],
+    "metadata": {
+      "prefecture": "Fukuoka",
+      "rank": "terminal",
+      "description_en": "The western terminus in Fukuoka: canal-side shopping palaces, bayside towers and yatai food stalls steaming at dusk.",
+      "landmarks_en": ["Canal City terraces", "Fukuoka Tower on the bay", "Nakasu yatai food stalls"],
+      "art_theme": "bright southern port metropolis, canal mall terraces, slender seaside tower, street food stalls"
+    }
   }
 ]

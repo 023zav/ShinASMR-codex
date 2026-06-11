@@ -701,13 +701,30 @@ export const initRenderer = async (
   const trainMotion = new Map<string, TrainMotion>();
   const livery = new Map(trainTypes.map((t) => [t.id, t.livery_key]));
 
+  // Stations sit on the art route at exactly the parameter trains use
+  // (t = 1 - corridor progress), so nodes, labels and passing trains always
+  // agree on where a city is.
+  const corridorLine = lines[0];
+  const stationRouteT = new Map(
+    stations.map((st) => [st.id, corridorLine ? 1 - routeProgressFromLatLon(corridorLine, st.lat, st.lon) : 0.5])
+  );
+  const stationRank = new Map(
+    stations.map((st) => [st.id, ((st.metadata as { rank?: string } | undefined)?.rank) ?? "regional"])
+  );
+  const labelMinBand = (stationId: string) => {
+    const rank = stationRank.get(stationId);
+    if (rank === "terminal") return 0;
+    if (rank === "major") return 2;
+    if (rank === "regional") return 6;
+    return 8;
+  };
+
   const positionStationItems = (band = syncDetailBand()) => {
     const artProjection = !showAccuracyDebug;
-    const artSpec = artRouteSpecFor(band);
     stationItems.forEach(({ station, district, node, label, landmark }) => {
-      const artT = artSpec.labelT?.[station.id] ?? artSpec.stationT[station.id];
+      const artT = stationRouteT.get(station.id);
       const artPose = artProjection && Number.isFinite(artT)
-        ? sampleArtRoute(app, band, artT)
+        ? sampleArtRoute(app, band, artT as number)
         : null;
       const pos = artPose?.point ?? toScreen(station.lat, station.lon);
       district.position.set(pos.x, pos.y + 12);
@@ -732,7 +749,7 @@ export const initRenderer = async (
         band.index < 12 ||
         station.id === focusedStationId ||
         (band.index <= 12 && station.id === "yokohama");
-      label.visible = band.index >= 2 && showGeneratedLabel && Boolean(pos);
+      label.visible = band.index >= Math.max(2, labelMinBand(station.id)) && showGeneratedLabel && Boolean(pos);
       label.zIndex = pos.y + 70;
 
       if (landmark) {
@@ -826,7 +843,7 @@ export const initRenderer = async (
       const hiddenOutsideCloseStation =
         !showAccuracyDebug &&
         focusedStationId === "tokyo" &&
-        artLineProgress > 0.17;
+        artLineProgress > 0.085;
       const closeFade = clamp((lod - 11.2) / 0.8, 0, 1);
       const targetAlpha = hiddenOutsideCloseStation ? 1 - closeFade : 1;
 
@@ -1501,7 +1518,9 @@ const artRouteTFor = (band: DetailBand, focusedStationId: string, lineProgress: 
   band.index >= 12 && focusedStationId === "tokyo"
     // Close Tokyo station art should only show the local Tokyo/Shin-Yokohama
     // approach. More distant timetable services are hidden by updateTrains.
-    ? clamp(0.70 - lineProgress * 5.2, 0.12, 0.86)
+    // The multiplier is calibrated in corridor kilometres: the full line is
+    // now Tokyo–Hakata (~1025 km), so the local approach is a smaller slice.
+    ? clamp(0.70 - lineProgress * 10.4, 0.12, 0.86)
     : 1 - lineProgress;
 
 const artTrainPose = (
