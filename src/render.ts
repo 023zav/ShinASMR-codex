@@ -355,12 +355,10 @@ const ART_ROUTE_BY_LOD: ArtRouteSpec[] = [
   }
 ];
 
-const artRouteSpecFor = (band: DetailBand): ArtRouteSpec => {
-  if (band.index >= 12) return ART_ROUTE_BY_LOD[3];
-  if (band.index >= 8) return ART_ROUTE_BY_LOD[2];
-  if (band.index >= 4) return ART_ROUTE_BY_LOD[1];
-  return ART_ROUTE_BY_LOD[0];
-};
+const artRouteSpecIndex = (band: DetailBand) =>
+  band.index >= 12 ? 3 : band.index >= 8 ? 2 : band.index >= 4 ? 1 : 0;
+
+const artRouteSpecFor = (band: DetailBand): ArtRouteSpec => ART_ROUTE_BY_LOD[artRouteSpecIndex(band)];
 
 const applyWorldArt = (artEl: HTMLDivElement, plate: WorldArtPlate, band: DetailBand) => {
   document.body.classList.add("generated-world");
@@ -650,6 +648,22 @@ export const initRenderer = async (
     return getDetailBandByIndex(clamp(Math.min(visualIndex, zoomIndex), 0, 15));
   };
 
+  // Continuous companion to visualDetailBand: same gating, without the floor.
+  // Train scale and pose blending consume this so zooming reads as one smooth
+  // dolly move instead of 16 visible steps.
+  const visualLodValue = () => {
+    const zoomValue = clamp(((map.getZoom() - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN)) * 16, 0, 15);
+    if (requestedViewMode === "station") return zoomValue;
+    const tokyo = stations.find((station) => station.id === "tokyo") ?? stations[0];
+    const osaka = stations.find((station) => station.id === "osaka") ?? stations[stations.length - 1];
+    if (!tokyo || !osaka) return zoomValue;
+    const a = toScreen(tokyo.lat, tokyo.lon);
+    const b = toScreen(osaka.lat, osaka.lon);
+    const corridorSpan = Math.hypot(a.x - b.x, a.y - b.y);
+    const visualValue = (Math.log2(Math.max(corridorSpan, 1)) - 8.3) * 4.2;
+    return clamp(Math.min(visualValue, zoomValue), 0, 15);
+  };
+
   const stationSprites = new Map<string, PIXI.Container>();
   const stationItems: StationSceneItem[] = stations.map((station, idx) => {
     const district = buildCityDistrict(station.id, idx);
@@ -673,10 +687,18 @@ export const initRenderer = async (
 
   const trainSprites = new Map<string, PIXI.Container>();
   const trainShadows = new Map<string, PIXI.Graphics>();
-  const prevTrainPos = new Map<string, PIXI.Point>();
-  const displayTrainPos = new Map<string, PIXI.Point>();
-  const displayTrainFacing = new Map<string, 1 | -1>();
-  const displayTrainRotation = new Map<string, number>();
+  type TrainMotion = {
+    pos: PIXI.Point;
+    lane: number;
+    along: number;
+    rotation: number;
+    facing: number;
+    scale: number;
+    alpha: number;
+    poseT: number;
+    poseRate: number;
+  };
+  const trainMotion = new Map<string, TrainMotion>();
   const livery = new Map(trainTypes.map((t) => [t.id, t.livery_key]));
 
   const positionStationItems = (band = syncDetailBand()) => {
@@ -767,38 +789,105 @@ export const initRenderer = async (
   };
   requestStaticRedraw = () => scheduleStaticRedraw(true);
 
+  let lastMotionTime = performance.now();
+
   const updateTrains = (trains: SimTrainState[]) => {
+    const nowMs = performance.now();
+    const dt = clamp((nowMs - lastMotionTime) / 1000, 0, 0.1);
+    lastMotionTime = nowMs;
+    // Time-based exponential smoothing: identical feel at 30 and 144 fps, and
+    // extra updateTrains calls from map events contribute dt≈0 instead of
+    // double-stepping the filters.
+    const ease = (tau: number) => (reducedMotion ? 1 : 1 - Math.exp(-dt / tau));
+
+    const band = syncDetailBand();
+    const lod = visualLodValue();
+    const lodFloor = Math.floor(lod);
+    const lodFrac = lod - lodFloor;
+    // Band-dependent constants interpolate by the fractional LOD so nothing
+    // about a train steps visibly when the camera crosses a band edge.
+    const lerpBand = (value: (index: number) => number) => {
+      const a = value(lodFloor);
+      return a + (value(Math.min(15, lodFloor + 1)) - a) * lodFrac;
+    };
+    const baseScale = lerpBand((i) => trainScaleForBand(getDetailBandByIndex(i)));
+    const railSeatOffset = lerpBand((i) => (i < 8 ? -1.2 : i < 13 ? -1.6 : -0.7));
+    const shadowBaseAlpha = lerpBand((i) => (i < 4 ? 0.36 : i >= 12 ? 0.24 : 0.44));
+
     const existing = new Set(trainSprites.keys());
     const stationSlots = new Map<string, number>();
     const stationAlongSlots = new Map<string, number>();
     trains.forEach((train) => {
-      const band = syncDetailBand();
       const rawPos = toScreen(train.lat, train.lon);
       const line = lines.find((candidate) => candidate.id === train.lineId) ?? lines[0];
       const artLineProgress = line ? routeProgressFromLatLon(line, train.lat, train.lon) : 0;
+      // Trains beyond the local approach do not exist on the close-up Tokyo
+      // plate; they fade out with the zoom instead of popping at a band edge.
       const hiddenOutsideCloseStation =
         !showAccuracyDebug &&
-        band.index >= 12 &&
         focusedStationId === "tokyo" &&
         artLineProgress > 0.17;
-      if (hiddenOutsideCloseStation) {
-        const hiddenSprite = trainSprites.get(train.id);
-        const hiddenShadow = trainShadows.get(train.id);
-        if (hiddenSprite) hiddenSprite.visible = false;
-        if (hiddenShadow) hiddenShadow.visible = false;
-        existing.delete(train.id);
-        return;
-      }
+      const closeFade = clamp((lod - 11.2) / 0.8, 0, 1);
+      const targetAlpha = hiddenOutsideCloseStation ? 1 - closeFade : 1;
+
       const pose = !showAccuracyDebug && line
-        ? artTrainPose(app, band, line, train, focusedStationId)
+        ? sampleArtPoseBlended(app, lod, artLineProgress, focusedStationId)
         : line
           ? routePoseAtScreen(line, rawPos, toScreen)
           : null;
       const pos = pose?.trackPoint ?? rawPos;
       const tangent = pose?.tangent ?? new PIXI.Point(1, 0);
-      const lane = train.status === "moving" ? movingLane(train.id, band) : stationLane(train, stationSlots, band);
-      const laneX = -tangent.y * lane;
-      const laneY = tangent.x * lane;
+      const poseT = 1 - artLineProgress;
+
+      const laneTarget = train.status === "moving" ? movingLane(train.id, band) : stationLane(train, stationSlots, band);
+      const alongTarget = train.status === "moving" ? 0 : stationSlotAlong(train, stationAlongSlots, band);
+      const modelBoost = train.trainTypeId === "series500" ? 1.06 : train.trainTypeId === "doctor923" ? 0.98 : 1;
+      const scaleTarget = baseScale * modelBoost;
+
+      let motion = trainMotion.get(train.id);
+      if (!motion) {
+        motion = {
+          pos: pos.clone(),
+          lane: laneTarget,
+          along: alongTarget,
+          rotation: 0,
+          facing: 1,
+          scale: scaleTarget,
+          alpha: targetAlpha,
+          poseT,
+          poseRate: 0
+        };
+        trainMotion.set(train.id, motion);
+      }
+
+      // Lane and platform offsets glide rather than jump when a train departs
+      // a station or a platform slot reshuffles.
+      const offsetBlend = ease(0.45);
+      motion.lane += (laneTarget - motion.lane) * offsetBlend;
+      motion.along += (alongTarget - motion.along) * offsetBlend;
+      motion.scale += (scaleTarget - motion.scale) * ease(0.16);
+      motion.alpha += (targetAlpha - motion.alpha) * ease(0.18);
+
+      // Facing derives from route-space progress, so camera pans and zooms can
+      // never flip a train; the flip itself eases through a brief squash.
+      if (dt > 0.0005) {
+        const rate = (poseT - motion.poseT) / dt;
+        motion.poseRate += (rate - motion.poseRate) * ease(0.3);
+        motion.poseT = poseT;
+      }
+      if (train.status === "moving" && Math.abs(motion.poseRate) > 0.00015) {
+        const facingTarget = Math.sign(tangent.x * motion.poseRate) || motion.facing;
+        motion.facing += (facingTarget - motion.facing) * ease(0.12);
+      }
+
+      // Screen position is computed fresh from the (already time-continuous)
+      // route pose plus smoothed offsets. There is intentionally no screen-space
+      // position filter: it made trains swim against the track during camera
+      // moves and then snap back.
+      motion.pos.set(
+        pos.x - tangent.y * motion.lane + tangent.x * motion.along,
+        pos.y + tangent.x * motion.lane + tangent.y * motion.along + railSeatOffset
+      );
 
       let shadow = trainShadows.get(train.id);
       if (!shadow) {
@@ -807,10 +896,6 @@ export const initRenderer = async (
         shadowLayer.addChild(shadow);
         trainShadows.set(train.id, shadow);
       }
-      shadow.visible = true;
-      shadow.position.set(pos.x + laneX + 7, pos.y + laneY + 12);
-      shadow.zIndex = pos.y + 8;
-
       let sprite = trainSprites.get(train.id);
       if (!sprite) {
         sprite = buildTrainSprite(train.trainTypeId, livery.get(train.trainTypeId) ?? "white-blue", textures);
@@ -820,50 +905,33 @@ export const initRenderer = async (
         objectLayer.addChild(sprite);
         trainSprites.set(train.id, sprite);
       }
-      sprite.visible = true;
 
-      const alongDwell = train.status === "moving" ? 0 : stationSlotAlong(train, stationAlongSlots, band);
-      const railSeatOffset = band.index < 8 ? -1.2 : band.index < 13 ? -1.6 : -0.7;
-      const target = new PIXI.Point(
-        pos.x + laneX + tangent.x * alongDwell,
-        pos.y + laneY + tangent.y * alongDwell + railSeatOffset
-      );
-      const display = displayTrainPos.get(train.id)?.clone() ?? target.clone();
-      const dist = Math.hypot(target.x - display.x, target.y - display.y);
-      const smoothing = reducedMotion || dist > 240 ? 1 : 0.16;
-      display.x += (target.x - display.x) * smoothing;
-      display.y += (target.y - display.y) * smoothing;
-      displayTrainPos.set(train.id, display);
+      const visible = motion.alpha > 0.02;
+      sprite.visible = visible;
+      shadow.visible = visible;
+      existing.delete(train.id);
+      if (!visible) return;
 
-      setTrainLod(sprite, band);
-      const modelBoost = train.trainTypeId === "series500" ? 1.06 : train.trainTypeId === "doctor923" ? 0.98 : 1;
-      const scale = trainScaleForBand(band) * modelBoost;
-      const prev = prevTrainPos.get(train.id);
-      let facing = displayTrainFacing.get(train.id) ?? 1;
-      if (prev && train.status === "moving") {
-        const dx = target.x - prev.x;
-        if (Math.abs(dx) > 0.45) {
-          facing = dx >= 0 ? 1 : -1;
-          displayTrainFacing.set(train.id, facing);
-        }
-      }
+      setTrainLod(sprite, band, ease(0.14));
       const routeAngle = Math.atan2(tangent.y, tangent.x);
       const desiredRotation = Number.isFinite(routeAngle) ? clamp(routeAngle * 0.32, -0.22, 0.22) : 0;
-      const previousRotation = displayTrainRotation.get(train.id) ?? sprite.rotation;
-      const rotationBlend = reducedMotion ? 1 : train.status === "moving" ? 0.18 : 0.08;
-      const nextRotation = previousRotation + normalizeAngle(desiredRotation - previousRotation) * rotationBlend;
-      displayTrainRotation.set(train.id, nextRotation);
-      sprite.rotation = nextRotation;
-      sprite.scale.set(scale * facing, scale);
-      sprite.position.set(display.x, display.y);
-      shadow.position.set(display.x + 7, display.y + 19);
-      const shadowX = band.index < 4 ? 0.46 : band.index < 8 ? 0.82 : scale * 3.2;
-      const shadowY = band.index < 4 ? 0.42 : band.index < 8 ? 0.68 : scale * 1.7;
-      shadow.scale.set(shadowX, shadowY);
-      shadow.alpha = band.index < 4 ? 0.36 : band.index >= 12 ? 0.24 : 0.44;
-      sprite.zIndex = display.y + 45;
-      prevTrainPos.set(train.id, target);
-      existing.delete(train.id);
+      const rotationBlend = train.status === "moving" ? ease(0.22) : ease(0.5);
+      motion.rotation += normalizeAngle(desiredRotation - motion.rotation) * rotationBlend;
+
+      sprite.alpha = motion.alpha;
+      sprite.rotation = motion.rotation;
+      sprite.scale.set(motion.scale * motion.facing, motion.scale);
+      sprite.position.set(motion.pos.x, motion.pos.y);
+      sprite.zIndex = motion.pos.y + 45;
+
+      const trainScale = motion.scale;
+      shadow.position.set(motion.pos.x + 7, motion.pos.y + 19);
+      shadow.scale.set(
+        lerpBand((i) => (i < 4 ? 0.46 : i < 8 ? 0.82 : trainScale * 3.2)),
+        lerpBand((i) => (i < 4 ? 0.42 : i < 8 ? 0.68 : trainScale * 1.7))
+      );
+      shadow.alpha = shadowBaseAlpha * motion.alpha;
+      shadow.zIndex = motion.pos.y + 8;
     });
 
     existing.forEach((id) => {
@@ -871,10 +939,7 @@ export const initRenderer = async (
       trainShadows.get(id)?.destroy();
       trainSprites.delete(id);
       trainShadows.delete(id);
-      prevTrainPos.delete(id);
-      displayTrainPos.delete(id);
-      displayTrainFacing.delete(id);
-      displayTrainRotation.delete(id);
+      trainMotion.delete(id);
     });
   };
 
@@ -891,7 +956,7 @@ export const initRenderer = async (
     if (followTarget) {
       const target = trains.find((train) => train.id === followTarget);
       if (target) {
-        const targetPoint = displayTrainPos.get(target.id) ?? toScreen(target.lat, target.lon);
+        const targetPoint = trainMotion.get(target.id)?.pos ?? toScreen(target.lat, target.lon);
         const desired = new PIXI.Point(
           app.screen.width / 2 - targetPoint.x,
           app.screen.height / 2 - targetPoint.y
@@ -1298,12 +1363,54 @@ const artViewportBounds = (app: PIXI.Application, band: DetailBand) => {
   };
 };
 
+const ART_ROUTE_SMOOTH_SAMPLES = 12;
+const artRouteCache = new Map<string, PIXI.Point[]>();
+
+const catmullRomValue = (p0: number, p1: number, p2: number, p3: number, t: number) => {
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3);
+};
+
+// The authored routes are coarse polylines, so anything riding them snaps its
+// heading at every vertex. Resampling through a Catmull-Rom spline gives the
+// drawn rails, station anchors and train paths one continuously curving track.
+const smoothPolyline = (points: PIXI.Point[]) => {
+  if (points.length < 3) return points;
+  const out: PIXI.Point[] = [];
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const p0 = points[Math.max(0, i - 1)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(points.length - 1, i + 2)];
+    for (let s = 0; s < ART_ROUTE_SMOOTH_SAMPLES; s += 1) {
+      const t = s / ART_ROUTE_SMOOTH_SAMPLES;
+      out.push(new PIXI.Point(
+        catmullRomValue(p0.x, p1.x, p2.x, p3.x, t),
+        catmullRomValue(p0.y, p1.y, p2.y, p3.y, t)
+      ));
+    }
+  }
+  out.push(points[points.length - 1].clone());
+  return out;
+};
+
 const artRoutePoints = (app: PIXI.Application, band: DetailBand) => {
   const spec = artRouteSpecFor(band);
   const bounds = artViewportBounds(app, band);
   const width = Math.max(1, bounds.right - bounds.left);
   const height = Math.max(1, bounds.bottom - bounds.top);
-  return spec.points.map(([x, y]) => new PIXI.Point(bounds.left + x * width, bounds.top + y * height));
+  const key = `${artRouteSpecIndex(band)}:${band.index >= 12 ? 1 : 0}:${bounds.left}:${bounds.top}:${width}x${height}`;
+  const cached = artRouteCache.get(key);
+  if (cached) return cached;
+  const raw = spec.points.map(([x, y]) => new PIXI.Point(bounds.left + x * width, bounds.top + y * height));
+  const smooth = smoothPolyline(raw);
+  artRouteCache.set(key, smooth);
+  if (artRouteCache.size > 24) {
+    const oldest = artRouteCache.keys().next().value;
+    if (oldest) artRouteCache.delete(oldest);
+  }
+  return smooth;
 };
 
 const samplePolyline = (points: PIXI.Point[], t: number) => {
@@ -1390,6 +1497,13 @@ const routeProgressFromLatLon = (line: Line, lat: number, lon: number) => {
   return clamp(bestProgress, 0, 1);
 };
 
+const artRouteTFor = (band: DetailBand, focusedStationId: string, lineProgress: number) =>
+  band.index >= 12 && focusedStationId === "tokyo"
+    // Close Tokyo station art should only show the local Tokyo/Shin-Yokohama
+    // approach. More distant timetable services are hidden by updateTrains.
+    ? clamp(0.70 - lineProgress * 5.2, 0.12, 0.86)
+    : 1 - lineProgress;
+
 const artTrainPose = (
   app: PIXI.Application,
   band: DetailBand,
@@ -1398,13 +1512,35 @@ const artTrainPose = (
   focusedStationId: string
 ) => {
   const lineProgress = routeProgressFromLatLon(line, train.lat, train.lon);
-  const generatedRouteT =
-    band.index >= 12 && focusedStationId === "tokyo"
-      // Close Tokyo station art should only show the local Tokyo/Shin-Yokohama
-      // approach. More distant timetable services are hidden by updateTrains.
-      ? clamp(0.70 - lineProgress * 5.2, 0.12, 0.86)
-      : 1 - lineProgress;
-  return sampleArtRoute(app, band, generatedRouteT);
+  return sampleArtRoute(app, band, artRouteTFor(band, focusedStationId, lineProgress));
+};
+
+// Art-route geometry and the close-station parameterization both change at
+// band edges (3→4, 7→8, 11→12). Blending the two adjacent poses by the
+// fractional LOD keeps a zooming camera from teleporting every train.
+const sampleArtPoseBlended = (
+  app: PIXI.Application,
+  lod: number,
+  lineProgress: number,
+  focusedStationId: string
+) => {
+  const lower = Math.floor(lod);
+  const frac = lod - lower;
+  const bandA = getDetailBandByIndex(lower);
+  const poseA = sampleArtRoute(app, bandA, artRouteTFor(bandA, focusedStationId, lineProgress));
+  const bandB = getDetailBandByIndex(Math.min(15, lower + 1));
+  if (frac < 0.02 || bandA.index === bandB.index) return poseA;
+  if (artRouteSpecIndex(bandA) === artRouteSpecIndex(bandB)) return poseA;
+  const poseB = sampleArtRoute(app, bandB, artRouteTFor(bandB, focusedStationId, lineProgress));
+  const point = new PIXI.Point(
+    poseA.point.x + (poseB.point.x - poseA.point.x) * frac,
+    poseA.point.y + (poseB.point.y - poseA.point.y) * frac
+  );
+  const tx = poseA.tangent.x + (poseB.tangent.x - poseA.tangent.x) * frac;
+  const ty = poseA.tangent.y + (poseB.tangent.y - poseA.tangent.y) * frac;
+  const len = Math.hypot(tx, ty) || 1;
+  const tangent = new PIXI.Point(tx / len, ty / len);
+  return { point, trackPoint: point, tangent, normal: new PIXI.Point(-tangent.y, tangent.x), distance: 0 };
 };
 
 const drawGeneratedSceneRoute = (
@@ -2693,7 +2829,7 @@ const trainScaleForBand = (band: DetailBand) => {
   return clamp(band.trainScale * 1.18, 0.105, 0.165);
 };
 
-const setTrainLod = (sprite: PIXI.Container, band: DetailBand) => {
+const setTrainLod = (sprite: PIXI.Container, band: DetailBand, blend = 1) => {
   const hasGenerated = sprite.children.some((child) => (child as PIXI.Container & { lod?: string }).lod === "generated");
   const visibleLod =
     band.trainMode === "pin" ? "overview" :
@@ -2702,7 +2838,11 @@ const setTrainLod = (sprite: PIXI.Container, band: DetailBand) => {
     hasGenerated ? "generated" : "detail";
   sprite.children.forEach((child) => {
     const lod = (child as PIXI.Container & { lod?: string }).lod;
-    if (lod) child.visible = lod === visibleLod;
+    if (!lod) return;
+    // Crossfade LOD swaps so the model change reads as a dissolve, not a pop.
+    const targetAlpha = lod === visibleLod ? 1 : 0;
+    child.alpha = blend >= 1 ? targetAlpha : child.alpha + (targetAlpha - child.alpha) * blend;
+    child.visible = child.alpha > 0.02;
   });
 };
 
