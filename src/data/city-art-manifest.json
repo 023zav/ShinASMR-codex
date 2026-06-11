@@ -1,12 +1,12 @@
 {
   "tokyo": {
     "plates": {
-      "10": "/assets-generated/zoom-plates-v3/tokyo-z10-station-district.webp",
-      "11": "/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp",
-      "12": "/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp",
-      "13": "/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp",
-      "14": "/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp",
-      "15": "/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp"
+      "10": "/assets-generated/cities/tokyo/z10.webp",
+      "11": "/assets-generated/cities/tokyo/z11.webp",
+      "12": "/assets-generated/cities/tokyo/z12.webp",
+      "13": "/assets-generated/cities/tokyo/z13.webp",
+      "14": "/assets-generated/cities/tokyo/z14.webp",
+      "15": "/assets-generated/cities/tokyo/z15.webp"
     },
     "landmark": "/assets/landmark-tokyo.png",
     "node": "/assets-generated/station-nodes-alpha/station-node-tokyo.png"
@@ -25,12 +25,12 @@
   },
   "yokohama": {
     "plates": {
-      "10": "/assets-generated/zoom-plates-v3/yokohama-z10-station-district.webp",
-      "11": "/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp",
-      "12": "/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp",
-      "13": "/assets-generated/zoom-plates-v3/yokohama-z13-station-yard.webp",
-      "14": "/assets-generated/polish-v4/yokohama-z14-rail-district-v4.webp",
-      "15": "/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp"
+      "10": "/assets-generated/cities/yokohama/z10.webp",
+      "11": "/assets-generated/cities/yokohama/z11.webp",
+      "12": "/assets-generated/cities/yokohama/z12.webp",
+      "13": "/assets-generated/cities/yokohama/z13.webp",
+      "14": "/assets-generated/cities/yokohama/z14.webp",
+      "15": "/assets-generated/cities/yokohama/z15.webp"
     },
     "landmark": "/assets/landmark-yokohama.png",
     "node": "/assets-generated/station-nodes-alpha/station-node-shin-yokohama.png"
@@ -124,12 +124,12 @@
   },
   "nagoya": {
     "plates": {
-      "10": "/assets-generated/zoom-plates-v3/nagoya-z10-station-district.webp",
-      "11": "/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp",
-      "12": "/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp",
-      "13": "/assets-generated/zoom-plates-v3/nagoya-z13-station-yard.webp",
-      "14": "/assets-generated/polish-v4/nagoya-z14-rail-district-v4.webp",
-      "15": "/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp"
+      "10": "/assets-generated/cities/nagoya/z10.webp",
+      "11": "/assets-generated/cities/nagoya/z11.webp",
+      "12": "/assets-generated/cities/nagoya/z12.webp",
+      "13": "/assets-generated/cities/nagoya/z13.webp",
+      "14": "/assets-generated/cities/nagoya/z14.webp",
+      "15": "/assets-generated/cities/nagoya/z15.webp"
     },
     "landmark": "/assets/landmark-nagoya.png",
     "node": "/assets-generated/station-nodes-alpha/station-node-nagoya.png"
@@ -154,24 +154,24 @@
   },
   "kyoto": {
     "plates": {
-      "10": "/assets-generated/zoom-plates-v3/kyoto-z10-station-district.webp",
-      "11": "/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp",
-      "12": "/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp",
-      "13": "/assets-generated/zoom-plates-v3/kyoto-z13-station-yard.webp",
-      "14": "/assets-generated/polish-v4/kyoto-z14-rail-district-v4.webp",
-      "15": "/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp"
+      "10": "/assets-generated/cities/kyoto/z10.webp",
+      "11": "/assets-generated/cities/kyoto/z11.webp",
+      "12": "/assets-generated/cities/kyoto/z12.webp",
+      "13": "/assets-generated/cities/kyoto/z13.webp",
+      "14": "/assets-generated/cities/kyoto/z14.webp",
+      "15": "/assets-generated/cities/kyoto/z15.webp"
     },
     "landmark": "/assets/landmark-kyoto.png",
     "node": "/assets-generated/station-nodes-alpha/station-node-kyoto.png"
   },
   "osaka": {
     "plates": {
-      "10": "/assets-generated/zoom-plates-v3/osaka-z10-station-district.webp",
-      "11": "/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp",
-      "12": "/assets-generated/polish-v5/osaka-z12-station-context-v5.webp",
-      "13": "/assets-generated/zoom-plates-v3/osaka-z13-station-yard.webp",
-      "14": "/assets-generated/polish-v4/osaka-z14-rail-district-v4.webp",
-      "15": "/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp"
+      "10": "/assets-generated/cities/osaka/z10.webp",
+      "11": "/assets-generated/cities/osaka/z11.webp",
+      "12": "/assets-generated/cities/osaka/z12.webp",
+      "13": "/assets-generated/cities/osaka/z13.webp",
+      "14": "/assets-generated/cities/osaka/z14.webp",
+      "15": "/assets-generated/cities/osaka/z15.webp"
     },
     "landmark": "/assets/landmark-osaka.png",
     "node": "/assets-generated/station-nodes-alpha/station-node-shin-osaka.png"

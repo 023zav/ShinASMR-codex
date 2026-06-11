@@ -287,13 +287,13 @@ body,
 #artLayer[data-station="tokyo"][data-detail="10"],
 #artLayer[data-station="tokyo"][data-detail="11"],
 #artLayer[data-station="tokyo"][data-detail="12"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/tokyo-z10-station-district.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/tokyo/z10.webp");
 }
 #artLayer[data-station="tokyo"][data-detail="13"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/tokyo/z13.webp");
 }
 #artLayer[data-station="tokyo"][data-detail="14"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/tokyo/z14.webp");
 }
 #artLayer[data-station="tokyo"][data-detail="15"] {
   background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/tokyo-z15-platform-macro.webp");
@@ -302,13 +302,13 @@ body,
 #artLayer[data-station="yokohama"][data-detail="10"],
 #artLayer[data-station="yokohama"][data-detail="11"],
 #artLayer[data-station="yokohama"][data-detail="12"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/yokohama-z10-station-district.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/yokohama/z10.webp");
 }
 #artLayer[data-station="yokohama"][data-detail="13"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/yokohama-z13-station-yard.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/yokohama/z13.webp");
 }
 #artLayer[data-station="yokohama"][data-detail="14"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/yokohama-z14-rail-district-v4.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/yokohama/z14.webp");
 }
 #artLayer[data-station="yokohama"][data-detail="15"] {
   background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/yokohama-z15-platform-macro.webp");
@@ -317,13 +317,13 @@ body,
 #artLayer[data-station="nagoya"][data-detail="10"],
 #artLayer[data-station="nagoya"][data-detail="11"],
 #artLayer[data-station="nagoya"][data-detail="12"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/nagoya-z10-station-district.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/nagoya/z10.webp");
 }
 #artLayer[data-station="nagoya"][data-detail="13"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/nagoya-z13-station-yard.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/nagoya/z13.webp");
 }
 #artLayer[data-station="nagoya"][data-detail="14"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/nagoya-z14-rail-district-v4.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/nagoya/z14.webp");
 }
 #artLayer[data-station="nagoya"][data-detail="15"] {
   background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/nagoya-z15-platform-macro.webp");
@@ -332,13 +332,13 @@ body,
 #artLayer[data-station="kyoto"][data-detail="10"],
 #artLayer[data-station="kyoto"][data-detail="11"],
 #artLayer[data-station="kyoto"][data-detail="12"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/kyoto-z10-station-district.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/kyoto/z10.webp");
 }
 #artLayer[data-station="kyoto"][data-detail="13"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/kyoto-z13-station-yard.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/kyoto/z13.webp");
 }
 #artLayer[data-station="kyoto"][data-detail="14"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/kyoto-z14-rail-district-v4.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/kyoto/z14.webp");
 }
 #artLayer[data-station="kyoto"][data-detail="15"] {
   background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/kyoto-z15-platform-macro.webp");
@@ -347,13 +347,13 @@ body,
 #artLayer[data-station="osaka"][data-detail="10"],
 #artLayer[data-station="osaka"][data-detail="11"],
 #artLayer[data-station="osaka"][data-detail="12"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/osaka-z10-station-district.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/osaka/z10.webp");
 }
 #artLayer[data-station="osaka"][data-detail="13"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/osaka-z13-station-yard.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/osaka/z13.webp");
 }
 #artLayer[data-station="osaka"][data-detail="14"] {
-  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v4/osaka-z14-rail-district-v4.webp");
+  background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/osaka/z14.webp");
 }
 #artLayer[data-station="osaka"][data-detail="15"] {
   background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/zoom-plates-v3/osaka-z15-platform-macro.webp");
@@ -1325,25 +1325,25 @@ select {
 #artLayer[data-detail="12"] { opacity: 0.095; background-size: auto, 116% auto; }
 #artLayer[data-detail="15"] { opacity: 0.05; background-size: auto, 130% auto; }
 
-#artLayer[data-station="tokyo"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="tokyo"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp"); }
-#artLayer[data-station="tokyo"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp"); }
+#artLayer[data-station="tokyo"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/tokyo/z11.webp"); }
+#artLayer[data-station="tokyo"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/tokyo/z12.webp"); }
+#artLayer[data-station="tokyo"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/tokyo/z15.webp"); }
 
-#artLayer[data-station="yokohama"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="yokohama"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp"); }
-#artLayer[data-station="yokohama"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp"); }
+#artLayer[data-station="yokohama"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/yokohama/z11.webp"); }
+#artLayer[data-station="yokohama"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/yokohama/z12.webp"); }
+#artLayer[data-station="yokohama"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/yokohama/z15.webp"); }
 
-#artLayer[data-station="nagoya"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="nagoya"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp"); }
-#artLayer[data-station="nagoya"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp"); }
+#artLayer[data-station="nagoya"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/nagoya/z11.webp"); }
+#artLayer[data-station="nagoya"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/nagoya/z12.webp"); }
+#artLayer[data-station="nagoya"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/nagoya/z15.webp"); }
 
-#artLayer[data-station="kyoto"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="kyoto"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp"); }
-#artLayer[data-station="kyoto"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp"); }
+#artLayer[data-station="kyoto"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/kyoto/z11.webp"); }
+#artLayer[data-station="kyoto"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/kyoto/z12.webp"); }
+#artLayer[data-station="kyoto"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/kyoto/z15.webp"); }
 
-#artLayer[data-station="osaka"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="osaka"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/osaka-z12-station-context-v5.webp"); }
-#artLayer[data-station="osaka"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp"); }
+#artLayer[data-station="osaka"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/osaka/z11.webp"); }
+#artLayer[data-station="osaka"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/osaka/z12.webp"); }
+#artLayer[data-station="osaka"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7, 15, 18, 0.04), rgba(7, 15, 18, 0.14)), url("/assets-generated/cities/osaka/z15.webp"); }
 
 
 /* Coordinate-fidelity override, v7.
@@ -1464,39 +1464,39 @@ select {
 }
 
 #artLayer[data-station="tokyo"][data-detail="10"],
-#artLayer[data-station="tokyo"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="tokyo"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp"); }
-#artLayer[data-station="tokyo"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/tokyo-z13-station-yard.webp"); }
-#artLayer[data-station="tokyo"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/tokyo-z14-rail-district-v4.webp"); }
-#artLayer[data-station="tokyo"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp"); }
+#artLayer[data-station="tokyo"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/tokyo/z11.webp"); }
+#artLayer[data-station="tokyo"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/tokyo/z12.webp"); }
+#artLayer[data-station="tokyo"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/tokyo/z13.webp"); }
+#artLayer[data-station="tokyo"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/tokyo/z14.webp"); }
+#artLayer[data-station="tokyo"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/tokyo/z15.webp"); }
 
 #artLayer[data-station="yokohama"][data-detail="10"],
-#artLayer[data-station="yokohama"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="yokohama"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp"); }
-#artLayer[data-station="yokohama"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/yokohama-z13-station-yard.webp"); }
-#artLayer[data-station="yokohama"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/yokohama-z14-rail-district-v4.webp"); }
-#artLayer[data-station="yokohama"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp"); }
+#artLayer[data-station="yokohama"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/yokohama/z11.webp"); }
+#artLayer[data-station="yokohama"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/yokohama/z12.webp"); }
+#artLayer[data-station="yokohama"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/yokohama/z13.webp"); }
+#artLayer[data-station="yokohama"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/yokohama/z14.webp"); }
+#artLayer[data-station="yokohama"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/yokohama/z15.webp"); }
 
 #artLayer[data-station="nagoya"][data-detail="10"],
-#artLayer[data-station="nagoya"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="nagoya"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp"); }
-#artLayer[data-station="nagoya"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/nagoya-z13-station-yard.webp"); }
-#artLayer[data-station="nagoya"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/nagoya-z14-rail-district-v4.webp"); }
-#artLayer[data-station="nagoya"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp"); }
+#artLayer[data-station="nagoya"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/nagoya/z11.webp"); }
+#artLayer[data-station="nagoya"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/nagoya/z12.webp"); }
+#artLayer[data-station="nagoya"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/nagoya/z13.webp"); }
+#artLayer[data-station="nagoya"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/nagoya/z14.webp"); }
+#artLayer[data-station="nagoya"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/nagoya/z15.webp"); }
 
 #artLayer[data-station="kyoto"][data-detail="10"],
-#artLayer[data-station="kyoto"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="kyoto"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp"); }
-#artLayer[data-station="kyoto"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/kyoto-z13-station-yard.webp"); }
-#artLayer[data-station="kyoto"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/kyoto-z14-rail-district-v4.webp"); }
-#artLayer[data-station="kyoto"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp"); }
+#artLayer[data-station="kyoto"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/kyoto/z11.webp"); }
+#artLayer[data-station="kyoto"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/kyoto/z12.webp"); }
+#artLayer[data-station="kyoto"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/kyoto/z13.webp"); }
+#artLayer[data-station="kyoto"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/kyoto/z14.webp"); }
+#artLayer[data-station="kyoto"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/kyoto/z15.webp"); }
 
 #artLayer[data-station="osaka"][data-detail="10"],
-#artLayer[data-station="osaka"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp"); }
-#artLayer[data-station="osaka"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/osaka-z12-station-context-v5.webp"); }
-#artLayer[data-station="osaka"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/zoom-plates-v3/osaka-z13-station-yard.webp"); }
-#artLayer[data-station="osaka"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v4/osaka-z14-rail-district-v4.webp"); }
-#artLayer[data-station="osaka"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp"); }
+#artLayer[data-station="osaka"][data-detail="11"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/osaka/z11.webp"); }
+#artLayer[data-station="osaka"][data-detail="12"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/osaka/z12.webp"); }
+#artLayer[data-station="osaka"][data-detail="13"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/osaka/z13.webp"); }
+#artLayer[data-station="osaka"][data-detail="14"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/osaka/z14.webp"); }
+#artLayer[data-station="osaka"][data-detail="15"] { background-image: linear-gradient(180deg, rgba(7,15,18,0.02), rgba(7,15,18,0.1)), url("/assets-generated/cities/osaka/z15.webp"); }
 
 #map[data-view="overview"] .maplibregl-canvas { opacity: 0.28; filter: saturate(0.9) contrast(1.04) brightness(0.68); }
 #map[data-view="regional"] .maplibregl-canvas { opacity: 0.24; filter: saturate(0.86) contrast(1.04) brightness(0.64); }
@@ -1576,7 +1576,7 @@ select {
 #artLayer[data-station="tokyo"][data-detail="15"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.04)),
-    url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp");
+    url("/assets-generated/cities/tokyo/z15.webp");
 }
 
 /* Speed, usability, and reference-style pass, v15. */
@@ -1761,63 +1761,63 @@ body.hud-minimal #hudToggle {
 #artLayer[data-view="city"][data-station="tokyo"][data-detail="15"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
-    url("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp") !important;
+    url("/assets-generated/cities/tokyo/z15.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="yokohama"][data-detail="12"],
 #artLayer[data-view="city"][data-station="yokohama"][data-detail="13"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
-    url("/assets-generated/polish-v5/yokohama-z12-station-context-v5.webp") !important;
+    url("/assets-generated/cities/yokohama/z12.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="yokohama"][data-detail="14"],
 #artLayer[data-view="city"][data-station="yokohama"][data-detail="15"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
-    url("/assets-generated/polish-v5/yokohama-z15-platform-close-v5.webp") !important;
+    url("/assets-generated/cities/yokohama/z15.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="nagoya"][data-detail="12"],
 #artLayer[data-view="city"][data-station="nagoya"][data-detail="13"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
-    url("/assets-generated/polish-v5/nagoya-z12-station-context-v5.webp") !important;
+    url("/assets-generated/cities/nagoya/z12.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="nagoya"][data-detail="14"],
 #artLayer[data-view="city"][data-station="nagoya"][data-detail="15"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
-    url("/assets-generated/polish-v5/nagoya-z15-platform-close-v5.webp") !important;
+    url("/assets-generated/cities/nagoya/z15.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="kyoto"][data-detail="12"],
 #artLayer[data-view="city"][data-station="kyoto"][data-detail="13"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
-    url("/assets-generated/polish-v5/kyoto-z12-station-context-v5.webp") !important;
+    url("/assets-generated/cities/kyoto/z12.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="kyoto"][data-detail="14"],
 #artLayer[data-view="city"][data-station="kyoto"][data-detail="15"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
-    url("/assets-generated/polish-v5/kyoto-z15-platform-close-v5.webp") !important;
+    url("/assets-generated/cities/kyoto/z15.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="osaka"][data-detail="12"],
 #artLayer[data-view="city"][data-station="osaka"][data-detail="13"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.025)),
-    url("/assets-generated/polish-v5/osaka-z12-station-context-v5.webp") !important;
+    url("/assets-generated/cities/osaka/z12.webp") !important;
 }
 
 #artLayer[data-view="city"][data-station="osaka"][data-detail="14"],
 #artLayer[data-view="city"][data-station="osaka"][data-detail="15"] {
   background-image:
     linear-gradient(180deg, rgba(5, 11, 14, 0.00), rgba(5, 11, 14, 0.02)),
-    url("/assets-generated/polish-v5/osaka-z15-platform-close-v5.webp") !important;
+    url("/assets-generated/cities/osaka/z15.webp") !important;
 }
 
 #map[data-view="city"] #scene {
@@ -2338,14 +2338,14 @@ body[data-station="tokyo"][data-detail="10"] #artLayer,
 body[data-station="tokyo"][data-detail="11"] #artLayer {
   background-image:
     linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
-    url("/assets-generated/polish-v5/tokyo-z11-wide-approach-v5.webp") !important;
+    url("/assets-generated/cities/tokyo/z11.webp") !important;
 }
 
 body[data-station="tokyo"][data-detail="12"] #artLayer,
 body[data-station="tokyo"][data-detail="13"] #artLayer {
   background-image:
     linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.035)),
-    url("/assets-generated/polish-v5/tokyo-z12-station-context-v5.webp") !important;
+    url("/assets-generated/cities/tokyo/z12.webp") !important;
 }
 
 body[data-station="tokyo"][data-detail="14"] #artLayer,
@@ -2359,28 +2359,28 @@ body[data-station="yokohama"][data-detail="10"] #artLayer,
 body[data-station="yokohama"][data-detail="11"] #artLayer {
   background-image:
     linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
-    url("/assets-generated/polish-v5/yokohama-z11-wide-approach-v5.webp") !important;
+    url("/assets-generated/cities/yokohama/z11.webp") !important;
 }
 
 body[data-station="nagoya"][data-detail="10"] #artLayer,
 body[data-station="nagoya"][data-detail="11"] #artLayer {
   background-image:
     linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
-    url("/assets-generated/polish-v5/nagoya-z11-wide-approach-v5.webp") !important;
+    url("/assets-generated/cities/nagoya/z11.webp") !important;
 }
 
 body[data-station="kyoto"][data-detail="10"] #artLayer,
 body[data-station="kyoto"][data-detail="11"] #artLayer {
   background-image:
     linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
-    url("/assets-generated/polish-v5/kyoto-z11-wide-approach-v5.webp") !important;
+    url("/assets-generated/cities/kyoto/z11.webp") !important;
 }
 
 body[data-station="osaka"][data-detail="10"] #artLayer,
 body[data-station="osaka"][data-detail="11"] #artLayer {
   background-image:
     linear-gradient(180deg, rgba(6, 18, 20, 0.00), rgba(6, 18, 20, 0.045)),
-    url("/assets-generated/polish-v5/osaka-z11-wide-approach-v5.webp") !important;
+    url("/assets-generated/cities/osaka/z11.webp") !important;
 }
 
 body[data-detail="12"] #scene,

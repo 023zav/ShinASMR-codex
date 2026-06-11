@@ -15,7 +15,7 @@ import { initI18n, t } from "./i18n";
 import { Simulation } from "./sim";
 import { withBase } from "./asset-base";
 
-const DEFAULT_TOKYO_ART = withBase("/assets-generated/polish-v5/tokyo-z15-platform-close-v5.webp");
+const DEFAULT_TOKYO_ART = withBase("/assets-generated/cities/tokyo/z15.webp");
 
 const errorMessage = (err: unknown) => {
   if (err instanceof Error) return err.message;
