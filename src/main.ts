@@ -365,6 +365,15 @@ const boot = async () => {
   zoomSlider.max = String(zoomRange.max);
   zoomSlider.value = renderer.getZoom().toFixed(2);
   zoomSlider.addEventListener("input", () => renderer.setZoom(Number(zoomSlider.value)));
+  // The slider mirrors the live zoom every frame, except while the user is
+  // scrubbing it (writing back mid-drag would fight their thumb).
+  let zoomScrubbing = false;
+  zoomSlider.addEventListener("pointerdown", () => {
+    zoomScrubbing = true;
+  });
+  window.addEventListener("pointerup", () => {
+    zoomScrubbing = false;
+  });
   lodDebugToggle.addEventListener("click", () => {
     lodDebug.classList.toggle("collapsed");
     lodDebugToggle.textContent = lodDebug.classList.contains("collapsed") ? t("show") : t("hide");
@@ -624,6 +633,7 @@ const boot = async () => {
     }
     renderer.setAmbientMinutes(sim.timeMinutes);
     renderer.update(filtered);
+    if (!zoomScrubbing) zoomSlider.value = renderer.getZoom().toFixed(2);
     if (selectedTrainId && now - lastDetailsUpdate > 250) {
       lastDetailsUpdate = now;
       updateDetails(selectedTrainId, null);
@@ -663,7 +673,6 @@ const boot = async () => {
     if (now - fpsLastEmit > 500) {
       const fps = fpsFrames / Math.max(0.001, fpsAccum);
       const zoom = renderer.getZoom();
-      zoomSlider.value = zoom.toFixed(2);
       const stats = renderer.getStats();
       perfHud.textContent = `FPS: ${Math.round(fps)} | Z${stats.detailLevel}/8 ${stats.view} · ${stats.routeMode}`;
       debugZoom.textContent = zoom.toFixed(2);

@@ -220,7 +220,13 @@ export const initRenderer = async (
   );
 
   // ------------------------------------------------------- plate transform --
-  type PlateSprite = PIXI.Sprite & { plateUrl?: string };
+  type PlateSprite = PIXI.Sprite & {
+    plateUrl?: string;
+    plateSpec?: PlateSpec;
+    plateBand?: number;
+    platePanX?: number;
+    platePanY?: number;
+  };
 
   type PlateView = {
     spec: PlateSpec;
@@ -232,23 +238,37 @@ export const initRenderer = async (
 
   let activeView: PlateView | null = null;
   let activeSprite: PlateSprite | null = null;
+  let activeBand = 0;
   let fadingSprites: Array<{ sprite: PlateSprite; bornAt: number }> = [];
 
   const bandIndex = () => clamp(Math.floor(zoom), 0, BAND_COUNT - 1);
-  const bandFraction = () => clamp(zoom - bandIndex(), 0, 1);
   const activePlateSpec = () => plateForBand(bandIndex(), focusedStationId);
 
-  const computeView = (spec: PlateSpec, texture: PIXI.Texture): PlateView => {
+  /**
+   * Continuous cover transform for a plate that belongs to zoom band `band`.
+   * The band fraction is allowed to run past [0, 1]: while the next plate's
+   * texture is still loading (or the previous one is crossfading out) the
+   * visible plate keeps magnifying with the live zoom value instead of
+   * freezing, so the world never lags behind the input.
+   */
+  const computeView = (
+    spec: PlateSpec,
+    texture: PIXI.Texture,
+    band: number,
+    px = panX,
+    py = panY
+  ): PlateView => {
     const sw = app.screen.width;
     const sh = app.screen.height;
     const iw = texture.width;
     const ih = texture.height;
     const cover = Math.max(sw / iw, sh / ih);
-    const scale = cover * (1 + bandFraction() * BAND_INNER_SCALE);
-    let offsetX = sw / 2 - spec.focus[0] * iw * scale + panX + driftX;
-    let offsetY = sh / 2 - spec.focus[1] * ih * scale + panY + driftY;
-    offsetX = clamp(offsetX, sw - iw * scale, 0);
-    offsetY = clamp(offsetY, sh - ih * scale, 0);
+    const fraction = clamp(zoom - band, -0.75, 1.75);
+    const scale = cover * (1 + fraction * BAND_INNER_SCALE);
+    let offsetX = sw / 2 - spec.focus[0] * iw * scale + px + driftX;
+    let offsetY = sh / 2 - spec.focus[1] * ih * scale + py + driftY;
+    if (iw * scale >= sw) offsetX = clamp(offsetX, sw - iw * scale, 0);
+    if (ih * scale >= sh) offsetY = clamp(offsetY, sh - ih * scale, 0);
     return { spec, texture, scale, offsetX, offsetY };
   };
 
@@ -440,7 +460,7 @@ export const initRenderer = async (
   // --------------------------------------------------------------- plates --
   let plateGeneration = 0;
 
-  const showPlate = async (spec: PlateSpec, immediate = false) => {
+  const showPlate = async (spec: PlateSpec, band: number, immediate = false) => {
     const generation = ++plateGeneration;
     const texture = await loadPlateTexture(spec.url);
     if (!texture || generation !== plateGeneration) return;
@@ -450,15 +470,24 @@ export const initRenderer = async (
       if (immediate || reducedMotion) {
         old.destroy();
       } else {
+        // The outgoing plate keeps the pan it was viewed with; the live pan
+        // resets so the incoming plate opens centered on its focus.
+        old.platePanX = panX;
+        old.platePanY = panY;
         fadingSprites.push({ sprite: old, bornAt: performance.now() });
       }
     }
+    panX = 0;
+    panY = 0;
     const sprite = new PIXI.Sprite(texture) as PlateSprite;
     sprite.plateUrl = spec.url;
+    sprite.plateSpec = spec;
+    sprite.plateBand = band;
     sprite.alpha = immediate || reducedMotion ? 1 : 0;
     plateLayer.addChild(sprite);
     activeSprite = sprite;
-    activeView = computeView(spec, texture);
+    activeBand = band;
+    activeView = computeView(spec, texture, band);
     layoutPlate();
     layoutStations();
     layoutDebug();
@@ -467,9 +496,23 @@ export const initRenderer = async (
 
   const layoutPlate = () => {
     if (!activeSprite || !activeView) return;
-    activeView = computeView(activeView.spec, activeView.texture);
+    activeView = computeView(activeView.spec, activeView.texture, activeBand);
     activeSprite.position.set(activeView.offsetX, activeView.offsetY);
     activeSprite.scale.set(activeView.scale);
+    // Outgoing plates keep tracking the live zoom while they fade so a fast
+    // zoom never shows a frozen world underneath the crossfade.
+    for (const { sprite } of fadingSprites) {
+      if (!sprite.plateSpec || sprite.plateBand === undefined) continue;
+      const view = computeView(
+        sprite.plateSpec,
+        sprite.texture,
+        sprite.plateBand,
+        sprite.platePanX ?? 0,
+        sprite.platePanY ?? 0
+      );
+      sprite.position.set(view.offsetX, view.offsetY);
+      sprite.scale.set(view.scale);
+    }
     if (routeDebug) {
       console.info(
         `[plate] ${activeView.spec.id} tex=${activeView.texture.width}x${activeView.texture.height} ` +
@@ -477,7 +520,6 @@ export const initRenderer = async (
           `screen=${app.screen.width}x${app.screen.height} pan=${panX.toFixed(0)},${panY.toFixed(0)}`
       );
     }
-    // Fading-out plates keep their last transform; they disappear quickly.
   };
 
   const prefetchNeighbours = () => {
@@ -490,10 +532,9 @@ export const initRenderer = async (
   const syncPlate = (immediate = false) => {
     const spec = activePlateSpec();
     if (!activeView || activeView.spec.id !== spec.id) {
-      panX = 0;
-      panY = 0;
-      void showPlate(spec, immediate);
-      return;
+      // Pan stays live while the next texture loads; showPlate resets it at
+      // the actual swap so the visible plate never jumps mid-zoom.
+      void showPlate(spec, bandIndex(), immediate);
     }
     layoutPlate();
     layoutStations();
@@ -572,6 +613,8 @@ export const initRenderer = async (
     hasDisplay: boolean;
     lastProgress: number;
     direction: 1 | -1;
+    alpha: number;
+    targetAlpha: number;
   };
 
   const trainSprites = new Map<string, PIXI.Container>();
@@ -609,7 +652,9 @@ export const initRenderer = async (
       rotation: 0,
       hasDisplay: false,
       lastProgress: -1,
-      direction: 1
+      direction: 1,
+      alpha: 0,
+      targetAlpha: 1
     };
     trainVisuals.set(train.id, visual);
     trainSprites.set(train.id, container);
@@ -639,14 +684,15 @@ export const initRenderer = async (
         // lat/lon is only the fallback for externally injected states.
         const p = train.lineFraction ?? lineProgress(line, train.lat, train.lon);
         if (p < c0 - margin || p > c1 + margin) {
+          // Fade out instead of popping when a train leaves the plate.
           const existing = trainVisuals.get(train.id);
-          if (existing) existing.container.visible = false;
+          if (existing) existing.targetAlpha = 0;
           seen.add(train.id);
           return;
         }
         const visual = ensureTrainVisual(train);
         seen.add(train.id);
-        visual.container.visible = true;
+        visual.targetAlpha = 1;
 
         if (visual.lastProgress >= 0 && Math.abs(p - visual.lastProgress) > 1e-7) {
           visual.direction = p > visual.lastProgress ? 1 : -1;
@@ -727,6 +773,14 @@ export const initRenderer = async (
     Array.from(trainVisuals.keys()).forEach((id) => {
       if (!seen.has(id)) removeTrainVisual(id);
     });
+
+    // Ease train visibility so coverage-edge crossings breathe in and out.
+    const fadeBlend = reducedMotion || qaMode ? 1 : Math.min(1, app.ticker.deltaMS / 300);
+    trainVisuals.forEach((visual) => {
+      visual.alpha += (visual.targetAlpha - visual.alpha) * fadeBlend;
+      visual.container.alpha = visual.alpha;
+      visual.container.visible = visual.alpha > 0.02;
+    });
     updateAccuracyTrains();
   };
 
@@ -767,7 +821,7 @@ export const initRenderer = async (
       zoomTweenTarget = null;
       return;
     }
-    setZoomImmediate(zoom + delta * Math.min(1, app.ticker.deltaMS / 140));
+    setZoomImmediate(zoom + delta * Math.min(1, app.ticker.deltaMS / 240));
   });
 
   const focusStation = (id: string) => {
@@ -847,9 +901,9 @@ export const initRenderer = async (
     "wheel",
     (e) => {
       e.preventDefault();
-      markInteraction();
-      zoomTweenTarget = null;
-      setZoomImmediate(zoom - e.deltaY * 0.0016);
+      // Accumulate into the tween target so wheel zoom glides instead of
+      // stepping per event.
+      zoomTo((zoomTweenTarget ?? zoom) - e.deltaY * 0.0016);
     },
     { passive: false }
   );
@@ -964,7 +1018,8 @@ export const initRenderer = async (
     },
     update,
     getCameraCenter: () => new PIXI.Point(app.screen.width / 2, app.screen.height / 2),
-    getZoom: () => zoomTweenTarget ?? zoom,
+    // The live zoom, not the tween target: HUD readouts track the glide.
+    getZoom: () => zoom,
     getZoomRange: () => ({ min: ZOOM_MIN, max: ZOOM_MAX }),
     getStats: () => ({
       trains: Array.from(trainVisuals.values()).filter((v) => v.container.visible).length,

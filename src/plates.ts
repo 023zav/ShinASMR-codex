@@ -460,10 +460,14 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
 export const BAND_COUNT = 8;
 export const ZOOM_MIN = 0;
 export const ZOOM_MAX = BAND_COUNT - 0.01;
-export const DEFAULT_ZOOM = 6.45;
+/**
+ * Open on the regional viaduct tableau (band 4): full trains in a calm
+ * landscape, with room to zoom both ways, instead of a station close-up.
+ */
+export const DEFAULT_ZOOM = 4.45;
 /** Extra plate magnification across one band before the next plate fades in. */
 export const BAND_INNER_SCALE = 0.38;
-export const CROSSFADE_MS = 320;
+export const CROSSFADE_MS = 460;
 
 export const plateForBand = (band: number, focusedStationId: string): PlateSpec => {
   const cityArt = CITY_PLATES[focusedStationId] ?? CITY_PLATES.tokyo;
