@@ -266,14 +266,13 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.3,
       coverage: [0, 0.02],
       route: [
-        [0.52, 0.33],
-        [0.38, 0.45],
-        [0.24, 0.56],
-        [0.1, 0.66],
-        [-0.04, 0.76]
+        [0.56, 0.3],
+        [0.4, 0.44],
+        [0.22, 0.6],
+        [0.0, 0.79]
       ],
       stations: { tokyo: 0.04 },
-      focus: [0.46, 0.42],
+      focus: [0.42, 0.44],
       lanes: 4,
       laneSpread: 0.016
     },
@@ -285,16 +284,15 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.4,
       coverage: [0, 0.009],
       route: [
-        [0.58, 0.34],
-        [0.42, 0.47],
-        [0.26, 0.6],
-        [0.08, 0.74],
-        [-0.06, 0.85]
+        [0.5, 0.628],
+        [0.66, 0.578],
+        [0.823, 0.528],
+        [1.0, 0.472]
       ],
       stations: { tokyo: 0.05 },
-      focus: [0.45, 0.45],
+      focus: [0.55, 0.52],
       lanes: 5,
-      laneSpread: 0.024
+      laneSpread: 0.02
     }
   },
   yokohama: {
@@ -306,14 +304,15 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.28,
       coverage: [0.028, 0.064],
       route: [
-        [0.88, 0.1],
-        [0.66, 0.23],
-        [0.44, 0.36],
-        [0.22, 0.48],
-        [0.02, 0.6]
+        [0.78, 0.05],
+        [0.62, 0.185],
+        [0.5, 0.285],
+        [0.36, 0.405],
+        [0.22, 0.525],
+        [0.0, 0.71]
       ],
       stations: { yokohama: 0.5 },
-      focus: [0.45, 0.28],
+      focus: [0.45, 0.33],
       lanes: 2,
       laneSpread: 0.014
     },
@@ -325,14 +324,16 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.36,
       coverage: [0.038, 0.054],
       route: [
-        [0.02, 0.12],
-        [0.24, 0.26],
-        [0.46, 0.4],
-        [0.68, 0.53],
-        [0.92, 0.65]
+        [0.0, 0.165],
+        [0.2, 0.32],
+        [0.4, 0.47],
+        [0.52, 0.545],
+        [0.66, 0.615],
+        [0.82, 0.72],
+        [1.0, 0.84]
       ],
       stations: { yokohama: 0.5 },
-      focus: [0.45, 0.38],
+      focus: [0.42, 0.46],
       lanes: 3,
       laneSpread: 0.02
     }
@@ -346,14 +347,17 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.28,
       coverage: [0.616, 0.716],
       route: [
-        [0.97, 0.2],
-        [0.73, 0.32],
-        [0.5, 0.45],
-        [0.26, 0.57],
-        [0.03, 0.69]
+        [1.0, 0.04],
+        [0.85, 0.16],
+        [0.7, 0.29],
+        [0.55, 0.42],
+        [0.4, 0.55],
+        [0.27, 0.675],
+        [0.1, 0.82],
+        [0.0, 0.9]
       ],
       stations: { nagoya: 0.5 },
-      focus: [0.48, 0.4],
+      focus: [0.48, 0.45],
       lanes: 3,
       laneSpread: 0.014
     },
@@ -365,14 +369,14 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.36,
       coverage: [0.646, 0.686],
       route: [
-        [0.85, 0.5],
-        [0.62, 0.37],
-        [0.4, 0.24],
-        [0.18, 0.11],
-        [0.02, 0.02]
+        [0.62, 0.0],
+        [0.45, 0.136],
+        [0.3, 0.256],
+        [0.15, 0.376],
+        [0.0, 0.496]
       ],
       stations: { nagoya: 0.5 },
-      focus: [0.42, 0.35],
+      focus: [0.38, 0.28],
       lanes: 3,
       laneSpread: 0.022
     }
@@ -426,13 +430,13 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.28,
       coverage: [0.95, 1],
       route: [
-        [0.92, 0.1],
-        [0.73, 0.22],
-        [0.55, 0.33],
-        [0.36, 0.44]
+        [0.85, 0.0],
+        [0.7, 0.124],
+        [0.63, 0.18],
+        [0.52, 0.27]
       ],
       stations: { osaka: 1 },
-      focus: [0.5, 0.32],
+      focus: [0.58, 0.22],
       lanes: 4,
       laneSpread: 0.014
     },

@@ -1,6 +1,6 @@
 # Visual QA report
 
-Generated: 2026-06-12T09:05:21.702Z
+Generated: 2026-06-12T10:10:56.138Z
 Bundle: existing dist/
 Route debug overlay: off
 
@@ -57,10 +57,10 @@ None.
 
 ## Golden comparison
 
-- OK desktop/band-0_5 (0.03% pixels differ)
+- OK desktop/band-0_5 (0.00% pixels differ)
 - OK desktop/band-1_5 (0.00% pixels differ)
 - OK desktop/band-2_5 (0.00% pixels differ)
-- OK desktop/band-3_5 (0.03% pixels differ)
+- OK desktop/band-3_5 (0.00% pixels differ)
 - OK desktop/band-4_5 (0.00% pixels differ)
 - OK desktop/band-5_5 (0.00% pixels differ)
 - OK desktop/band-6_5 (0.00% pixels differ)
@@ -69,13 +69,13 @@ None.
 - OK desktop/close-tokyo (0.00% pixels differ)
 - OK desktop/city-yokohama (0.00% pixels differ)
 - OK desktop/close-yokohama (0.00% pixels differ)
-- OK desktop/city-nagoya (0.04% pixels differ)
-- OK desktop/close-nagoya (0.00% pixels differ)
-- OK desktop/city-kyoto (0.00% pixels differ)
+- OK desktop/city-nagoya (0.00% pixels differ)
+- OK desktop/close-nagoya (0.03% pixels differ)
+- OK desktop/city-kyoto (0.04% pixels differ)
 - OK desktop/close-kyoto (0.00% pixels differ)
-- OK desktop/city-osaka (0.03% pixels differ)
+- OK desktop/city-osaka (0.00% pixels differ)
 - OK desktop/close-osaka (0.00% pixels differ)
-- OK desktop/regional-nagoya (0.00% pixels differ)
+- OK desktop/regional-nagoya (0.04% pixels differ)
 - OK desktop/approach-nagoya (0.00% pixels differ)
 - OK desktop/regional-osaka (0.00% pixels differ)
 - OK desktop/approach-osaka (0.00% pixels differ)
