@@ -786,6 +786,8 @@ export const initRenderer = async (
 
   // ------------------------------------------------------------ camera ops --
   let zoomTweenTarget: number | null = null;
+  /** Screen point the zoom glide keeps fixed (wheel cursor); null = focus. */
+  let zoomAnchor: { x: number; y: number } | null = null;
 
   const setZoomImmediate = (next: number) => {
     const clamped = clamp(next, ZOOM_MIN, ZOOM_MAX);
@@ -802,12 +804,18 @@ export const initRenderer = async (
     updateTrains(latestTrains);
   };
 
-  const zoomTo = (next: number) => {
+  const zoomStep = (next: number) => {
+    if (zoomAnchor) zoomTowards(next, zoomAnchor.x, zoomAnchor.y, zoomAnchor.x, zoomAnchor.y);
+    else setZoomImmediate(next);
+  };
+
+  const zoomTo = (next: number, anchor: { x: number; y: number } | null = null) => {
     markInteraction();
+    zoomAnchor = anchor;
     // QA captures need exact zoom states, so the tween snaps there too.
     if (reducedMotion || qaMode) {
       zoomTweenTarget = null;
-      setZoomImmediate(next);
+      zoomStep(next);
       return;
     }
     zoomTweenTarget = clamp(next, ZOOM_MIN, ZOOM_MAX);
@@ -817,11 +825,12 @@ export const initRenderer = async (
     if (zoomTweenTarget === null) return;
     const delta = zoomTweenTarget - zoom;
     if (Math.abs(delta) < 0.005) {
-      setZoomImmediate(zoomTweenTarget);
+      zoomStep(zoomTweenTarget);
       zoomTweenTarget = null;
+      zoomAnchor = null;
       return;
     }
-    setZoomImmediate(zoom + delta * Math.min(1, app.ticker.deltaMS / 240));
+    zoomStep(zoom + delta * Math.min(1, app.ticker.deltaMS / 240));
   });
 
   const focusStation = (id: string) => {
@@ -856,14 +865,47 @@ export const initRenderer = async (
   let pinchBaseDist = 0;
   let pinchBaseZoom = 0;
 
+  const relayout = () => {
+    layoutPlate();
+    layoutStations();
+    layoutDebug();
+    updateTrains(latestTrains);
+  };
+
+  /**
+   * Zoom toward an on-screen point: the plate point that was under
+   * (fromX, fromY) ends up under (toX, toY) after the scale change. With
+   * identical from/to this is anchored zoom (wheel at cursor); with the
+   * moving pinch centroid it folds two-finger pan into the same step.
+   */
+  const zoomTowards = (next: number, fromX: number, fromY: number, toX: number, toY: number) => {
+    const before = activeView;
+    if (!before) {
+      setZoomImmediate(next);
+      return;
+    }
+    const ix = (fromX - before.offsetX) / (before.texture.width * before.scale);
+    const iy = (fromY - before.offsetY) / (before.texture.height * before.scale);
+    setZoomImmediate(next);
+    const after = activeView;
+    // A band switch recenters on the new plate's focus instead.
+    if (!after || after.spec.id !== before.spec.id) return;
+    panX += toX - (after.offsetX + ix * after.texture.width * after.scale);
+    panY += toY - (after.offsetY + iy * after.texture.height * after.scale);
+    relayout();
+  };
+
+  const rebaselinePinch = () => {
+    if (pointers.size !== 2) return;
+    const [a, b] = Array.from(pointers.values());
+    pinchBaseDist = Math.hypot(a.x - b.x, a.y - b.y);
+    pinchBaseZoom = zoom;
+  };
+
   app.stage.on("pointerdown", (e) => {
     markInteraction();
     pointers.set(e.pointerId, new PIXI.Point(e.global.x, e.global.y));
-    if (pointers.size === 2) {
-      const [a, b] = Array.from(pointers.values());
-      pinchBaseDist = Math.hypot(a.x - b.x, a.y - b.y);
-      pinchBaseZoom = zoom;
-    }
+    rebaselinePinch();
   });
   app.stage.on("pointermove", (e) => {
     const prev = pointers.get(e.pointerId);
@@ -873,17 +915,25 @@ export const initRenderer = async (
     if (pointers.size === 1) {
       panX += next.x - prev.x;
       panY += next.y - prev.y;
-      layoutPlate();
-      layoutStations();
-      layoutDebug();
-      updateTrains(latestTrains);
+      relayout();
     } else if (pointers.size === 2) {
+      const prevPts = Array.from(pointers.values());
+      const prevCx = (prevPts[0].x + prevPts[1].x) / 2;
+      const prevCy = (prevPts[0].y + prevPts[1].y) / 2;
       pointers.set(e.pointerId, next);
-      const [a, b] = Array.from(pointers.values());
-      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      const pts = Array.from(pointers.values());
+      const cx = (pts[0].x + pts[1].x) / 2;
+      const cy = (pts[0].y + pts[1].y) / 2;
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       if (pinchBaseDist > 0) {
         zoomTweenTarget = null;
-        setZoomImmediate(pinchBaseZoom + Math.log2(dist / pinchBaseDist) * 1.4);
+        zoomTowards(
+          pinchBaseZoom + Math.log2(dist / pinchBaseDist) * 1.4,
+          prevCx,
+          prevCy,
+          cx,
+          cy
+        );
       }
       return;
     }
@@ -892,6 +942,8 @@ export const initRenderer = async (
   const releasePointer = (e: PIXI.FederatedPointerEvent) => {
     pointers.delete(e.pointerId);
     if (pointers.size < 2) pinchBaseDist = 0;
+    // Dropping from three fingers back to two starts a fresh pinch.
+    rebaselinePinch();
   };
   app.stage.on("pointerup", releasePointer);
   app.stage.on("pointerupoutside", releasePointer);
@@ -901,9 +953,19 @@ export const initRenderer = async (
     "wheel",
     (e) => {
       e.preventDefault();
+      const anchor = { x: e.offsetX, y: e.offsetY };
+      if (e.ctrlKey) {
+        // Trackpad pinch arrives as ctrl+wheel: track the gesture directly,
+        // zooming at the cursor (the gesture itself is already smooth).
+        markInteraction();
+        zoomTweenTarget = null;
+        zoomAnchor = null;
+        zoomTowards(zoom - e.deltaY * 0.012, anchor.x, anchor.y, anchor.x, anchor.y);
+        return;
+      }
       // Accumulate into the tween target so wheel zoom glides instead of
-      // stepping per event.
-      zoomTo((zoomTweenTarget ?? zoom) - e.deltaY * 0.0016);
+      // stepping per event, keeping the cursor's point fixed.
+      zoomTo((zoomTweenTarget ?? zoom) - e.deltaY * 0.0016, anchor);
     },
     { passive: false }
   );

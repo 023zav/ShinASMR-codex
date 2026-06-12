@@ -77,6 +77,8 @@ body,
   display: block;
   image-rendering: pixelated;
   z-index: 2;
+  /* Both fingers belong to the renderer: never page-zoom/scroll. */
+  touch-action: none;
 }
 
 #ui {
