@@ -108,12 +108,14 @@ const findChromium = () => {
   return candidates.sort().pop() ?? null;
 };
 
-const waitForServer = async (url, timeoutMs = 20000) => {
+const waitForServer = async (url, timeoutMs = 60000) => {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     try {
-      const res = await fetch(url);
-      if (res.ok) return;
+      // Any HTTP response (even a 404) means the server is bound and serving;
+      // we only need it reachable before Playwright navigates.
+      await fetch(url);
+      return;
     } catch {
       // Server not up yet.
     }
@@ -149,10 +151,15 @@ const run = async () => {
   }
 
   console.log("Starting preview server...");
-  const server = spawn("npx", ["vite", "preview", "--port", String(PORT), "--strictPort"], {
-    cwd: root,
-    stdio: "ignore"
-  });
+  // Bind IPv4 explicitly: the harness polls 127.0.0.1, but `vite preview`
+  // otherwise listens on `localhost`, which resolves to IPv6 ::1 on the CI
+  // runner — so 127.0.0.1 requests are refused and the wait times out. Server
+  // output is surfaced (not ignored) so a real startup failure is diagnosable.
+  const server = spawn(
+    "npx",
+    ["vite", "preview", "--host", "127.0.0.1", "--port", String(PORT), "--strictPort"],
+    { cwd: root, stdio: ["ignore", "inherit", "inherit"] }
+  );
   const stopServer = () => {
     try {
       server.kill("SIGTERM");
