@@ -1,6 +1,6 @@
 # Visual QA report
 
-Generated: 2026-06-13T10:24:16.958Z
+Generated: 2026-06-13T10:44:05.424Z
 Bundle: existing dist/
 Route debug overlay: off
 

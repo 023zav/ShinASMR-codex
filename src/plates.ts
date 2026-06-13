@@ -475,10 +475,12 @@ export const BAND_COUNT = 8;
 export const ZOOM_MIN = 0;
 export const ZOOM_MAX = BAND_COUNT - 0.01;
 /**
- * Open on the regional viaduct tableau (band 4): full trains in a calm
- * landscape, with room to zoom both ways, instead of a station close-up.
+ * Open on the whole Tokaido corridor (band 2): the entire line in frame with
+ * every running service visible as a moving mini-consist — calm, clearly
+ * alive, and zoomed out — rather than a single-station or single-segment view
+ * that can read as empty when no train is in that slice.
  */
-export const DEFAULT_ZOOM = 4.45;
+export const DEFAULT_ZOOM = 2.45;
 /** Extra plate magnification across one band before the next plate fades in. */
 export const BAND_INNER_SCALE = 0.38;
 export const CROSSFADE_MS = 460;
