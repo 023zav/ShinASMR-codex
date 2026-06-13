@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071018" />
+    <link rel="manifest" href="/ShinASMR-codex/manifest.webmanifest" />
+    <link rel="icon" href="/ShinASMR-codex/icon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/ShinASMR-codex/assets-generated/lod-style-v2/lod-03-tokaido-national-corridor.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/ShinASMR-codex/assets-generated/lod-style-v2/lod-05-kanagawa-corridor.webp" as="image" />
+    <link rel="preload" href="/ShinASMR-codex/assets-generated/lod-style-v2/lod-07-tokyo-yard-city.webp" as="image" />
+    <link rel="preload" href="/ShinASMR-codex/assets-generated/vehicle-alpha/train-n700s-blue.webp" as="image" />
+    <title>ASMR Shinkansen</title>
+    <script>
+      (() => {
+        const devHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+        if (!devHosts.has(location.hostname)) return;
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.getRegistrations().then((registrations) => {
+            registrations.forEach((registration) => registration.unregister());
+          });
+        }
+        if ("caches" in window) {
+          caches.keys().then((keys) => {
+            keys.forEach((key) => caches.delete(key));
+          });
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/ShinASMR-codex/assets/index-c_5CCfvr.js"></script>
+    <link rel="modulepreload" crossorigin href="/ShinASMR-codex/assets/vendor-2jBLUAmt.js">
+    <link rel="modulepreload" crossorigin href="/ShinASMR-codex/assets/vendor-pixi-CEpXrvYn.js">
+    <link rel="stylesheet" crossorigin href="/ShinASMR-codex/assets/index-BnkiK83y.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="artLayer" aria-hidden="true"></div>
+      <canvas id="scene"></canvas>
+
+      <div id="loadingScreen" class="loading-screen" role="status" aria-live="polite">
+        <div class="loading-card">
+          <div class="loading-kicker" data-i18n="app_title">ASMR Shinkansen</div>
+          <div class="loading-title" data-i18n="loading_title">Preparing Tokyo Station</div>
+          <div class="loading-track" aria-hidden="true"><span></span></div>
+          <div id="loadingStatus" class="loading-status">Loading timetable and station data</div>
+        </div>
+      </div>
+
+      <div id="ui" aria-label="ASMR Shinkansen simulator interface">
+        <header class="topbar ops-topbar">
+          <div class="ops-clock" aria-label="Simulation status">
+            <span class="clock-icon">◷</span>
+            <strong id="timeLabel">--:--</strong>
+            <span class="status-divider"></span>
+            <span id="dateLabel"></span>
+            <span id="dayPhase" class="weather"></span>
+          </div>
+
+          <div class="ops-title">
+            <div class="logo" data-i18n="app_title">ASMR Shinkansen</div>
+            <div class="subtitle" data-i18n="subtitle">Tokaido corridor / timetable-driven ambience</div>
+          </div>
+
+          <div class="ops-metrics" aria-label="Service metrics">
+            <span><span data-i18n="active">Active</span> <strong id="activeServiceMetric">--</strong></span>
+            <span><span data-i18n="flow">Flow</span> <strong id="flowMetric">--</strong></span>
+            <span><span data-i18n="on_time">On-time</span> <strong id="onTimeMetric" class="metric-good">--</strong></span>
+          </div>
+
+          <div class="controls ops-controls" aria-label="Playback controls">
+            <button id="playPause" class="hud-button primary" data-i18n="pause">Pause</button>
+            <div class="speed segmented" aria-label="Simulation speed">
+              <button data-speed="1" class="active">x1</button>
+              <button data-speed="10">x10</button>
+              <button data-speed="60">x60</button>
+            </div>
+            <input id="timeScrub" class="hud-range" type="range" min="0" max="1439" value="360" aria-label="Simulation time" />
+            <div class="zoom-tools" aria-label="Map zoom controls">
+              <button id="zoomOut" class="hud-button mini" type="button">−</button>
+              <input id="zoomSlider" class="hud-range zoom-range" type="range" min="0" max="7.99" step="0.01" value="6.45" aria-label="Map zoom level" />
+              <button id="zoomReset" class="hud-button mini" type="button" data-i18n="fit">Fit</button>
+              <button id="zoomIn" class="hud-button mini" type="button">+</button>
+            </div>
+          </div>
+
+          <div class="right ops-sound" aria-label="Audio and app controls">
+            <button id="soundBtn" class="hud-button" data-i18n="enable_sound">Enable sound</button>
+            <input id="volume" class="hud-range compact" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Master volume" />
+            <button id="langToggle" class="hud-button" type="button" aria-label="Language">EN</button>
+            <button id="hudToggle" class="hud-button" type="button" data-i18n="clean_view">Clean view</button>
+            <button id="aboutBtn" class="hud-button" data-i18n="about">About</button>
+          </div>
+        </header>
+
+        <aside class="ops-panel ops-left" aria-label="Timetable and controls">
+          <section class="panel-section station-card">
+            <div class="section-kicker" data-i18n="focus_station">Focus Station</div>
+            <h2 id="stationSummaryTitle">Tokyo</h2>
+            <div class="badge-row">
+              <span class="route-badge blue" data-i18n="tokaido_line">Tokaido Shinkansen</span>
+              <span class="grade-badge" data-i18n="quiet_mode">Quiet mode</span>
+            </div>
+            <dl id="stationSummary" class="stat-grid"></dl>
+          </section>
+
+          <section class="panel-section filters" id="filters" aria-label="Filters">
+            <label>
+              <span data-i18n="line">Line</span>
+              <select id="lineFilter"></select>
+            </label>
+            <label>
+              <span data-i18n="train">Train</span>
+              <select id="trainFilter"></select>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="followToggle" class="toggle-decal" />
+              <span data-i18n="follow_train">Follow train</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="reducedMotionToggle" class="toggle-decal" />
+              <span data-i18n="reduced_motion">Reduced motion</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="accuracyDebugToggle" class="toggle-decal" />
+              <span data-i18n="map_accuracy">Map accuracy</span>
+            </label>
+            <label>
+              <span data-i18n="view">View</span>
+              <select id="viewModeSelect">
+                <option value="station" selected data-i18n="view_station">Station</option>
+                <option value="corridor" data-i18n="view_corridor">Corridor</option>
+                <option value="japan" data-i18n="view_japan">Japan</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="detail">Detail</span>
+              <select id="qualitySelect">
+                <option value="high" data-i18n="detail_high">High</option>
+                <option value="medium" selected data-i18n="detail_medium">Medium</option>
+                <option value="low" data-i18n="detail_low">Low</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="panel-section timetable-card">
+            <div class="section-header">
+              <h3 data-i18n="timetable">Timetable</h3>
+              <span>1 / 1</span>
+            </div>
+            <div id="timetableList" class="timetable-list"></div>
+          </section>
+
+          <section class="panel-section passenger-card">
+            <div class="section-header">
+              <h3 data-i18n="passenger_flow">Passenger Flow</h3>
+              <span data-i18n="asmr_load">ASMR load</span>
+            </div>
+            <div class="flow-bars" aria-hidden="true">
+              <i style="height: 34%"></i><i style="height: 48%"></i><i style="height: 72%"></i><i style="height: 84%"></i><i style="height: 66%"></i><i style="height: 78%"></i><i style="height: 58%"></i><i style="height: 62%"></i><i style="height: 46%"></i>
+            </div>
+          </section>
+        </aside>
+
+        <aside id="details" class="ops-panel details current-card" aria-live="polite">
+          <div class="section-kicker" data-i18n="current_train">Current Train</div>
+          <div class="details-title" data-i18n="no_selection">No selection</div>
+          <div class="details-body" data-i18n="tap_hint">Tap a train or station.</div>
+        </aside>
+
+        <aside class="ops-panel ops-right" aria-label="Legend and minimap">
+          <section class="panel-section legend-card">
+            <div class="section-header"><h3 data-i18n="line_legend">Line Legend</h3></div>
+            <div class="legend-row"><span class="legend-swatch blue"></span><span data-i18n="tokaido_line">Tokaido Shinkansen</span></div>
+            <div class="legend-row"><span class="legend-swatch amber"></span><span data-i18n="legend_stations">Station markers</span></div>
+            <div class="legend-row"><span class="legend-swatch green"></span><span data-i18n="legend_art">Authored world art</span></div>
+          </section>
+          <section class="panel-section minimap-card">
+            <div class="section-header"><h3 data-i18n="map_of_japan">Map of Japan</h3></div>
+            <div class="mini-japan" aria-hidden="true"><span></span></div>
+          </section>
+          <div id="perfHud" class="perf-hud">FPS: -- | Zoom: --</div>
+          <section id="lodDebug" class="panel-section lod-debug collapsed" aria-label="Zoom level debug">
+            <div class="section-header"><h3 data-i18n="lod_debug">LOD Debug</h3><button id="lodDebugToggle" class="hud-button mini" type="button" data-i18n="show">Show</button></div>
+            <div id="lodDebugBody" class="lod-debug-body">
+              <div><span data-i18n="lod_zoom">Zoom</span><strong id="debugZoom">--</strong></div>
+              <div><span data-i18n="lod_level">Level</span><strong id="debugLevel">--</strong></div>
+              <div><span data-i18n="lod_view">View</span><strong id="debugView">--</strong></div>
+              <div><span data-i18n="lod_city_art">City art</span><strong id="debugCityArt">--</strong></div>
+              <div><span data-i18n="lod_accuracy">Accuracy</span><strong id="debugAccuracy">--</strong></div>
+            </div>
+          </section>
+        </aside>
+
+        <footer class="ops-bottom" aria-label="Notifications">
+          <button class="notification-tab" data-i18n="notifications">Notifications</button>
+          <div id="notificationFeed" class="notification-feed"></div>
+          <strong id="serviceAlerts" class="alert-soft"></strong>
+        </footer>
+
+        <div id="aboutModal" class="modal hidden">
+          <div class="modal-card">
+            <div class="modal-title" data-i18n="about_title">About & Attribution</div>
+            <div class="modal-body">
+              <p data-i18n="about_p1"></p>
+              <p data-i18n="about_p2"></p>
+              <p data-i18n="about_p3"></p>
+              <div id="perfStats" class="perf-stats">Performance: --</div>
+            </div>
+            <button id="aboutClose" class="hud-button primary" data-i18n="close">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

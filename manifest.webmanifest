@@ -1,0 +1,18 @@
+{
+  "name": "ASMR Shinkansen",
+  "short_name": "Shinkansen",
+  "description": "Relaxing isometric Shinkansen traffic simulator",
+  "theme_color": "#08131b",
+  "background_color": "#08131b",
+  "display": "standalone",
+  "start_url": "./",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
