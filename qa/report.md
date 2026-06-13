@@ -1,7 +1,7 @@
 # Visual QA report
 
-Generated: 2026-06-13T09:59:09.153Z
-Bundle: fresh vite build
+Generated: 2026-06-13T10:24:16.958Z
+Bundle: existing dist/
 Route debug overlay: off
 
 ## Captured screenshots
@@ -64,17 +64,17 @@ None.
 - OK desktop/band-4_5 (0.00% pixels differ)
 - OK desktop/band-5_5 (0.00% pixels differ)
 - OK desktop/band-6_5 (0.00% pixels differ)
-- OK desktop/band-7_5 (0.04% pixels differ)
+- OK desktop/band-7_5 (0.00% pixels differ)
 - OK desktop/city-tokyo (0.00% pixels differ)
-- OK desktop/close-tokyo (0.04% pixels differ)
+- OK desktop/close-tokyo (0.00% pixels differ)
 - OK desktop/city-yokohama (0.00% pixels differ)
 - OK desktop/close-yokohama (0.00% pixels differ)
 - OK desktop/city-nagoya (0.00% pixels differ)
-- OK desktop/close-nagoya (0.03% pixels differ)
-- OK desktop/city-kyoto (0.04% pixels differ)
+- OK desktop/close-nagoya (0.00% pixels differ)
+- OK desktop/city-kyoto (0.00% pixels differ)
 - OK desktop/close-kyoto (0.00% pixels differ)
-- OK desktop/city-osaka (0.03% pixels differ)
-- OK desktop/close-osaka (0.03% pixels differ)
+- OK desktop/city-osaka (0.00% pixels differ)
+- OK desktop/close-osaka (0.00% pixels differ)
 - OK desktop/regional-nagoya (0.00% pixels differ)
 - OK desktop/approach-nagoya (0.00% pixels differ)
 - OK desktop/regional-osaka (0.00% pixels differ)

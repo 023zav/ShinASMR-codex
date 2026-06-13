@@ -287,16 +287,19 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainMode: "full",
       trainScale: 0.4,
       coverage: [0, 0.009],
+      // Frontmost open departure tracks, traced at the true isometric slope so
+      // consists sit in the rails beside the painted trains.
       route: [
-        [0.5, 0.628],
-        [0.66, 0.578],
-        [0.823, 0.528],
-        [1.0, 0.472]
+        [0.46, 0.8],
+        [0.578, 0.699],
+        [0.695, 0.598],
+        [0.813, 0.497],
+        [0.93, 0.396]
       ],
-      stations: { tokyo: 0.05 },
-      focus: [0.55, 0.52],
-      lanes: 5,
-      laneSpread: 0.02
+      stations: { tokyo: 0.32 },
+      focus: [0.66, 0.58],
+      lanes: 4,
+      laneSpread: 0.018
     }
   },
   yokohama: {
@@ -370,17 +373,18 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       url: `${ART}/lod-12-nagoya-station-close.webp`,
       macro: "city",
       trainMode: "full",
-      trainScale: 0.36,
+      trainScale: 0.26,
       coverage: [0.646, 0.686],
+      // The platforms sit under the trainshed roof; route along the open
+      // throat tracks to its north where trains are actually visible.
       route: [
-        [0.62, 0.0],
-        [0.45, 0.136],
-        [0.3, 0.256],
-        [0.15, 0.376],
-        [0.0, 0.496]
+        [0.66, 0.06],
+        [0.46, 0.14],
+        [0.24, 0.22],
+        [0.02, 0.3]
       ],
       stations: { nagoya: 0.5 },
-      focus: [0.38, 0.28],
+      focus: [0.31, 0.22],
       lanes: 3,
       laneSpread: 0.022
     }
@@ -393,15 +397,17 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainMode: "full",
       trainScale: 0.28,
       coverage: [0.878, 0.978],
+      // Kyoto's tracks run up-right at ~-0.30 rad (shallower than Tokyo's);
+      // the prior route was on the opposite diagonal across the rooftops.
       route: [
-        [0.96, 0.7],
-        [0.72, 0.58],
-        [0.49, 0.46],
-        [0.26, 0.34],
-        [0.03, 0.22]
+        [0.92, 0.33],
+        [0.705, 0.448],
+        [0.49, 0.566],
+        [0.275, 0.685],
+        [0.06, 0.803]
       ],
       stations: { kyoto: 0.5 },
-      focus: [0.5, 0.42],
+      focus: [0.49, 0.55],
       lanes: 3,
       laneSpread: 0.014
     },
@@ -413,14 +419,14 @@ export const CITY_PLATES: Record<string, { city: PlateSpec; close: PlateSpec }> 
       trainScale: 0.36,
       coverage: [0.906, 0.95],
       route: [
-        [0.95, 0.31],
-        [0.72, 0.42],
-        [0.5, 0.54],
-        [0.27, 0.64],
-        [0.04, 0.74]
+        [0.92, 0.3],
+        [0.71, 0.415],
+        [0.5, 0.531],
+        [0.29, 0.646],
+        [0.08, 0.762]
       ],
       stations: { kyoto: 0.5 },
-      focus: [0.48, 0.4],
+      focus: [0.5, 0.53],
       lanes: 3,
       laneSpread: 0.022
     }
