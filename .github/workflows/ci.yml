@@ -31,9 +31,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install chromium --with-deps
-      # Compares fresh captures against qa/goldens and fails on drift;
-      # refresh intentional changes with `npm run qa:visual -- --update-goldens`.
-      - run: npm run qa:visual -- --compare
+      # Hard gate: build + capture the matrix, failing on any captured browser
+      # error (runtime exceptions, failed asset loads).
+      - run: npm run qa:visual
+      # Advisory: compare against committed goldens and write diffs to
+      # qa/screenshots/diffs. The goldens are captured on a developer machine,
+      # and a pixel gate is only reliable with an identically pinned renderer
+      # (font hinting / GPU rasterization differ between environments), so drift
+      # here surfaces in the artifacts for review rather than blocking the build.
+      # A strict gate would need a containerized renderer; see qa/goldens.
+      - run: npm run qa:visual -- --compare --skip-build
+        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
