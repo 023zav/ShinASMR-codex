@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  // Served from a GitHub Pages project subpath (023zav.github.io/ShinASMR-codex/).
+  base: "/ShinASMR-codex/",
   build: {
     rollupOptions: {
       output: {

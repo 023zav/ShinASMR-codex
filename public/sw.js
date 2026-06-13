@@ -1,7 +1,9 @@
 const DEV_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 const IS_DEV_HOST = DEV_HOSTS.has(self.location.hostname);
 const CACHE_NAME = "asmr-shinkansen-v3";
-const CORE_ASSETS = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg"];
+// Scope-relative so the worker is correct both at the dev root and the
+// GitHub Pages "/ShinASMR-codex/" subpath (resolved against the SW location).
+const CORE_ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 if (IS_DEV_HOST) {
   self.addEventListener("install", (event) => {
@@ -59,7 +61,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match("/index.html"))
+      fetch(event.request).catch(() => caches.match("./index.html"))
     );
     return;
   }

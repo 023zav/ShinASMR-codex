@@ -43,7 +43,7 @@ const nowJstMinutes = () => {
   return Math.floor((utc / 60000 + 9 * 60) % 1440);
 };
 
-const DEFAULT_TOKYO_ART = "/assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp";
+const DEFAULT_TOKYO_ART = `${import.meta.env.BASE_URL}assets-generated/lod-style-v2/lod-08-tokyo-station-close.webp`;
 
 const errorMessage = (err: unknown) => {
   if (err instanceof Error) return err.message;
@@ -130,7 +130,7 @@ if (import.meta.env.DEV && "serviceWorker" in navigator) {
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch((err) => {
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch((err) => {
       console.warn("Service worker registration failed", err);
     });
   });

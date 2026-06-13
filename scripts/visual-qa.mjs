@@ -24,7 +24,10 @@ const root = process.cwd();
 const outDir = path.join(root, "qa", "screenshots");
 const goldenDir = path.join(root, "qa", "goldens");
 const PORT = 4173;
+// `vite preview` honors the configured base, so the app lives at the subpath.
+const BASE_PATH = "/ShinASMR-codex/";
 const BASE = `http://127.0.0.1:${PORT}`;
+const APP_URL = `${BASE}${BASE_PATH}`;
 
 const args = new Set(process.argv.slice(2));
 const DEBUG_ROUTES = args.has("--debug-routes");
@@ -160,7 +163,7 @@ const run = async () => {
   process.on("exit", stopServer);
 
   try {
-    await waitForServer(BASE);
+    await waitForServer(APP_URL);
     fs.rmSync(outDir, { recursive: true, force: true });
     fs.mkdirSync(outDir, { recursive: true });
 
@@ -193,7 +196,7 @@ const run = async () => {
 
       const open = async (query) => {
         // `qa` keeps captures deterministic (no idle camera drift).
-        await page.goto(`${BASE}/?time=485&paused&qa${query}`, { waitUntil: "load" });
+        await page.goto(`${APP_URL}?time=485&paused&qa${query}`, { waitUntil: "load" });
         await page.waitForSelector("body.is-ready", { timeout: 25000 });
         await page.waitForFunction(() => Boolean(window.__shinkansen), undefined, {
           timeout: 10000

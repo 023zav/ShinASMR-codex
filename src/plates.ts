@@ -35,7 +35,11 @@ export type PlateSpec = {
   laneSpread?: number;
 };
 
-const ART = "/assets-generated/lod-style-v2";
+// Asset URLs are resolved against Vite's base so the build works both at the
+// dev-server root and the GitHub Pages "/ShinASMR-codex/" subpath. BASE_URL
+// always ends in a slash.
+const BASE = import.meta.env.BASE_URL;
+const ART = `${BASE}assets-generated/lod-style-v2`;
 
 const JAPAN_BOARD: PlateSpec = {
   id: "japan-board",
@@ -497,10 +501,10 @@ export const plateForBand = (band: number, focusedStationId: string): PlateSpec 
 };
 
 export const TRAIN_TEXTURES: Record<string, string> = {
-  n700s: "/assets-generated/vehicle-alpha/train-n700s-blue.webp",
-  n700a: "/assets-generated/vehicle-alpha/train-n700a-gold.webp",
-  series500: "/assets-generated/vehicle-alpha/train-500series-slate.webp",
-  doctor923: "/assets-generated/vehicle-alpha/train-doctor-yellow.webp"
+  n700s: `${BASE}assets-generated/vehicle-alpha/train-n700s-blue.webp`,
+  n700a: `${BASE}assets-generated/vehicle-alpha/train-n700a-gold.webp`,
+  series500: `${BASE}assets-generated/vehicle-alpha/train-500series-slate.webp`,
+  doctor923: `${BASE}assets-generated/vehicle-alpha/train-doctor-yellow.webp`
 };
 
 /** Undirected body axis of the isometric consist sprites (nose lower-left). */
